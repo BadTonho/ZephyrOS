@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7675**
-- Casos de teste: **193**
+- Superfícies ativas: **7687**
+- Casos de teste: **194**
 - Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1652 |
 | `asm_entry` | 101 |
-| `c_function` | 5802 |
+| `c_function` | 5814 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7606 |
+| `COVERED` | 7615 |
 | `MANUAL` | 0 |
-| `PENDING` | 69 |
+| `PENDING` | 72 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 193 |
+| `AUTOMATED` | 194 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -47,12 +47,12 @@
 | `kernel` | 66 |
 | `memory` | 202 |
 | `process` | 332 |
-| `settings` | 57 |
-| `shell` | 1096 |
+| `settings` | 62 |
+| `shell` | 1099 |
 | `taskbar` | 47 |
 | `thread` | 36 |
 | `ui` | 149 |
-| `updater` | 87 |
+| `updater` | 91 |
 | `wm` | 81 |
 
 ## Superfícies
@@ -86,15 +86,15 @@
 | `api:src/include/apps/mediaplayer.h:mp_resume` | `src/include/apps/mediaplayer.h` | `mp_resume` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_stop` | `src/include/apps/mediaplayer.h` | `mp_stop` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_update` | `src/include/apps/mediaplayer.h` | `mp_update` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_handle_mouse` | `src/include/apps/shell.h` | `shell_handle_mouse` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell.h:shell_init` | `src/include/apps/shell.h` | `shell_init` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts` | `src/include/apps/shell_checks.h` | `shell_checks_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 7 |
@@ -211,13 +211,13 @@
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/taskmanager.h:taskmgr_close` | `src/include/apps/taskmanager.h` | `taskmgr_close` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_key` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_key` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_mouse` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_mouse` | `apps` | `COVERED` | 2 |
@@ -6339,6 +6339,7 @@
 | `c:src/settings/settings.c:settings_draw_classic_dialog` | `src/settings/settings.c` | `settings_draw_classic_dialog` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_draw_classic_main` | `src/settings/settings.c` | `settings_draw_classic_main` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_draw_simple` | `src/settings/settings.c` | `settings_draw_simple` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:settings_draw_update_simple` | `src/settings/settings.c` | `settings_draw_update_simple` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_execute_selected_action` | `src/settings/settings.c` | `settings_execute_selected_action` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_get_mode` | `src/settings/settings.c` | `settings_get_mode` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_category_row_height` | `src/settings/settings.c` | `settings_gui_category_row_height` | `settings` | `COVERED` | 2 |
@@ -6353,6 +6354,8 @@
 | `c:src/settings/settings.c:settings_gui_draw_process_list` | `src/settings/settings.c` | `settings_gui_draw_process_list` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_draw_storage_status` | `src/settings/settings.c` | `settings_gui_draw_storage_status` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_draw_surface` | `src/settings/settings.c` | `settings_gui_draw_surface` | `settings` | `COVERED` | 2 |
+| `c:src/settings/settings.c:settings_gui_draw_update_status` | `src/settings/settings.c` | `settings_gui_draw_update_status` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:settings_gui_draw_update_version` | `src/settings/settings.c` | `settings_gui_draw_update_version` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_handle_dialog_mouse` | `src/settings/settings.c` | `settings_gui_handle_dialog_mouse` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_handle_icon_mouse` | `src/settings/settings.c` | `settings_gui_handle_icon_mouse` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_hit` | `src/settings/settings.c` | `settings_gui_hit` | `settings` | `COVERED` | 1 |
@@ -6371,6 +6374,8 @@
 | `c:src/settings/settings.c:settings_select_mode` | `src/settings/settings.c` | `settings_select_mode` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_sync_display_scale` | `src/settings/settings.c` | `settings_sync_display_scale` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_sync_mouse_preferences` | `src/settings/settings.c` | `settings_sync_mouse_preferences` | `settings` | `COVERED` | 2 |
+| `c:src/settings/settings.c:settings_update_phase` | `src/settings/settings.c` | `settings_update_phase` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:settings_update_slot_valid` | `src/settings/settings.c` | `settings_update_slot_valid` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_update_taskbar_position_options` | `src/settings/settings.c` | `settings_update_taskbar_position_options` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_update_window_order_values` | `src/settings/settings.c` | `settings_update_window_order_values` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_visible_category_count` | `src/settings/settings.c` | `settings_visible_category_count` | `settings` | `COVERED` | 2 |
@@ -6446,27 +6451,27 @@
 | `c:src/shell/mediaplayer.c:mp_stop` | `src/shell/mediaplayer.c` | `mp_stop` | `shell` | `COVERED` | 1 |
 | `c:src/shell/mediaplayer.c:mp_update` | `src/shell/mediaplayer.c` | `mp_update` | `shell` | `COVERED` | 1 |
 | `c:src/shell/mediaplayer.c:str_copy` | `src/shell/mediaplayer.c` | `str_copy` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:process_input` | `src/shell/shell.c` | `process_input` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell.c:process_input` | `src/shell/shell.c` | `process_input` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_handle_app_request` | `src/shell/shell.c` | `shell_handle_app_request` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_handle_mouse` | `src/shell/shell.c` | `shell_handle_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_init` | `src/shell/shell.c` | `shell_init` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 9 |
-| `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell.c:shell_prompt_hide` | `src/shell/shell.c` | `shell_prompt_hide` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_prompt_reconcile` | `src/shell/shell.c` | `shell_prompt_reconcile` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_prompt_request` | `src/shell/shell.c` | `shell_prompt_request` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:shell_prompt_hide` | `src/shell/shell.c` | `shell_prompt_hide` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell.c:shell_prompt_reconcile` | `src/shell/shell.c` | `shell_prompt_reconcile` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell.c:shell_prompt_request` | `src/shell/shell.c` | `shell_prompt_request` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell.c:shell_redraw_after_overlay_close` | `src/shell/shell.c` | `shell_redraw_after_overlay_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_report_app_loader_result` | `src/shell/shell.c` | `shell_report_app_loader_result` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_report_user_test_result` | `src/shell/shell.c` | `shell_report_user_test_result` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_runtime_finish_command` | `src/shell/shell.c` | `shell_runtime_finish_command` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell.c:shell_runtime_handle_terminal_key` | `src/shell/shell.c` | `shell_runtime_handle_terminal_key` | `shell` | `COVERED` | 10 |
+| `c:src/shell/shell.c:shell_runtime_handle_terminal_key` | `src/shell/shell.c` | `shell_runtime_handle_terminal_key` | `shell` | `COVERED` | 9 |
 | `c:src/shell/shell.c:shell_runtime_prepare_filemanager` | `src/shell/shell.c` | `shell_runtime_prepare_filemanager` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell.c:shell_runtime_resume_terminal` | `src/shell/shell.c` | `shell_runtime_resume_terminal` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell.c:shell_runtime_resume_terminal` | `src/shell/shell.c` | `shell_runtime_resume_terminal` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal` | `src/shell/shell.c` | `shell_runtime_suspend_terminal` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene` | `src/shell/shell.c` | `shell_runtime_suspend_terminal_for_scene` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_update_hosted_terminal` | `src/shell/shell.c` | `shell_update_hosted_terminal` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_checks.c:cmd_appcheck` | `src/shell/shell_checks.c` | `cmd_appcheck` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_devices` | `src/shell/shell_checks.c` | `cmd_appcheck_devices` | `shell` | `COVERED` | 1 |
@@ -7087,11 +7092,14 @@
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_cancel` | `src/shell/shell_commands_packages.c` | `cmd_update_system_cancel` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_check` | `src/shell/shell_commands_packages.c` | `cmd_update_system_check` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_fetch` | `src/shell/shell_commands_packages.c` | `cmd_update_system_fetch` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_phase` | `src/shell/shell_commands_packages.c` | `cmd_update_system_phase` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_print_result` | `src/shell/shell_commands_packages.c` | `cmd_update_system_print_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_slot_valid` | `src/shell/shell_commands_packages.c` | `cmd_update_system_slot_valid` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_slots` | `src/shell/shell_commands_packages.c` | `cmd_update_system_slots` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_slots_print_slot` | `src/shell/shell_commands_packages.c` | `cmd_update_system_slots_print_slot` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_stage` | `src/shell/shell_commands_packages.c` | `cmd_update_system_stage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_status` | `src/shell/shell_commands_packages.c` | `cmd_update_system_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_summary` | `src/shell/shell_commands_packages.c` | `cmd_update_system_summary` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_system_verify` | `src/shell/shell_commands_packages.c` | `cmd_update_system_verify` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_test_fail_after` | `src/shell/shell_commands_packages.c` | `cmd_update_test_fail_after` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_update_verify` | `src/shell/shell_commands_packages.c` | `cmd_update_verify` | `shell` | `COVERED` | 1 |
@@ -7523,18 +7531,22 @@
 | `c:src/updater/updater.c:updater_simple_draw_remote` | `src/updater/updater.c` | `updater_simple_draw_remote` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_simple_draw_result` | `src/updater/updater.c` | `updater_simple_draw_result` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_simple_draw_status` | `src/updater/updater.c` | `updater_simple_draw_status` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_draw_system` | `src/updater/updater.c` | `updater_simple_draw_system` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_simple_draw_tabs` | `src/updater/updater.c` | `updater_simple_draw_tabs` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_print_num` | `src/updater/updater.c` | `updater_simple_print_num` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_simple_print_version` | `src/updater/updater.c` | `updater_simple_print_version` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_sort_packages` | `src/updater/updater.c` | `updater_sort_packages` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_action` | `src/updater/updater.c` | `updater_system_action` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_cached_path` | `src/updater/updater.c` | `updater_system_cached_path` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_offer_final_reboot` | `src/updater/updater.c` | `updater_system_offer_final_reboot` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_system_phase` | `src/updater/updater.c` | `updater_system_phase` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_run_apply` | `src/updater/updater.c` | `updater_system_run_apply` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_run_cancel` | `src/updater/updater.c` | `updater_system_run_cancel` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_run_check` | `src/updater/updater.c` | `updater_system_run_check` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_run_fetch` | `src/updater/updater.c` | `updater_system_run_fetch` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_run_verify` | `src/updater/updater.c` | `updater_system_run_verify` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_slot_name` | `src/updater/updater.c` | `updater_system_slot_name` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_system_slot_valid` | `src/updater/updater.c` | `updater_system_slot_valid` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_tag_begin` | `src/updater/updater.c` | `updater_system_tag_begin` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_tag_finish` | `src/updater/updater.c` | `updater_system_tag_finish` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_tag_key` | `src/updater/updater.c` | `updater_system_tag_key` | `updater` | `COVERED` | 1 |
@@ -7910,6 +7922,8 @@
 | `qemu:shell1:prompt-lifecycle` | `qemu` | `smoke` | `qemu:tst5:shell1-prompt-lifecycle` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell inicializado e teclado virtual disponivel | executar comandos validos, invalidos, cancelados, um job e retornar de uma cena | cada operacao retorna ao prompt uma unica vez e a entrada permanece disponivel | prompt ausente ou duplicado, entrada presa, job residual, timeout ou QEMU | somente texto e estado da sessao no snapshot | encerrar QEMU e preservar serial, QMP e resultado |
 | `qemu:shell2:commands-diagnostics` | `qemu` | `smoke` | `qemu:tst5:shell2-commands-diagnostics` | `AUTOMATED` | 240 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell inicializado e teclado virtual disponivel | executar comandos basicos validos e invalidos, diagnosticos, cancelamento e reentrada | mensagens e erros permanecem deterministas, diagnosticos nao reinicializam hardware e o prompt retorna uma vez | argumento invalido, hardware ausente, prompt ausente ou duplicado, estado residual, timeout ou QEMU | somente mount pode alterar o estado de volume; diagnosticos usam snapshots read-only | encerrar o QEMU e preservar serial, QMP e resultado |
 | `qemu:shell3:files-admin` | `qemu` | `smoke` | `qemu:tst5:shell3-files-admin` | `AUTOMATED` | 300 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell inicializado e teclado virtual disponivel | executar comandos de caminho, pipeline, redirecionamento, Storage e cenas do Shell | operacoes validas funcionam, rejeicoes preservam o estado e cada cena retorna uma vez ao prompt | caminho ausente, permissao negada, volume indisponivel, transicao ocupada, handle invalido, prompt ausente ou QEMU | mutacoes do Explorer ocorrem somente no snapshot descartavel; diagnosticos e rejeicoes nao mutam estado persistente | encerrar o QEMU, descartar o snapshot e preservar serial, QMP e resultado |
+| `qemu:shell4:apps-packages` | `qemu` | `smoke` | `qemu:tst5:shell4-apps-packages` | `AUTOMATED` | 360 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, fixtures locais de pacotes e teclado virtual disponivel | executar verificacao, instalacao, execucao, atualizacao, remocao, rollback, historico e fallback da App Store | pacotes validos funcionam, pacotes invalidos sao bloqueados sem mutacao persistente e cada operacao retorna ao prompt | assinatura, hash, dependencia, caminho, limite, catalogo, rede, cancelamento, falha ring3, prompt ausente ou QEMU | todas as mutacoes ficam restritas ao snapshot descartavel; a imagem base e preservada | encerrar aplicativos, jobs e QEMU; descartar o snapshot e preservar serial, QMP e artefatos |
+| `qemu:shell5:system-update` | `qemu` | `smoke` | `qemu:tst5:shell5-system-update` | `AUTOMATED` | 360 | 20 | `snapshot` | `quality` | `qemu` | imagem de teste pronta, fixture ZSYS autenticada e teclado virtual disponivel | consultar estado, verificar, buscar, cancelar e abrir o Updater com retorno ao prompt | somente artefatos autenticados avancam e a versao ativa permanece preservada | assinatura, hash, rede, espaco, cancelamento, rollback, prompt ou QEMU | mutacoes ficam restritas ao snapshot descartavel | encerrar jobs, descartar snapshot e preservar artefatos de diagnostico |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -7953,7 +7967,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `qemu:shell4:apps-packages` | `qemu` | `smoke` | `qemu:tst5:shell4-apps-packages` | `AUTOMATED` | 360 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, fixtures locais de pacotes e teclado virtual disponivel | executar verificacao, instalacao, execucao, atualizacao, remocao, rollback, historico e fallback da App Store | pacotes validos funcionam, pacotes invalidos sao bloqueados sem mutacao persistente e cada operacao retorna ao prompt | assinatura, hash, dependencia, caminho, limite, catalogo, rede, cancelamento, falha ring3, prompt ausente ou QEMU | todas as mutacoes ficam restritas ao snapshot descartavel; a imagem base e preservada | encerrar aplicativos, jobs e QEMU; descartar o snapshot e preservar serial, QMP e artefatos |
 
 ## Superfícies sem caso associado
 
@@ -8026,6 +8039,9 @@
 - `c:src/process/resource.c:process_resource_note_descriptor_success`
 - `c:src/process/resource.c:process_resource_note_pipe_success`
 - `c:src/process/signal.c:process_signal_send_generation`
+- `c:src/shell/shell.c:shell_prompt_hide`
+- `c:src/shell/shell.c:shell_prompt_reconcile`
+- `c:src/shell/shell.c:shell_prompt_request`
 
 ## Aposentadas
 

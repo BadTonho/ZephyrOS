@@ -7471,3 +7471,22 @@ dívida.
   `qpp-20260912T200700Z-22188`, incluindo o caso dedicado, com artefatos em
   `build/test-results/shell4/qpp-20260912T200700Z-22188/`; não houve timeout
   nem processo QEMU residual. Estado: SHELL4 `PASS`.
+
+
+- SHELL5 - atualizacao do sistema - implementacao iniciada em 2026-09-12
+  (America/Sao_Paulo). O Shell passou a publicar um resumo agregado de ZSYS
+  com fase, versao ativa/candidata, progresso, motivo, tentativa, confirmacao
+  e recovery. O Updater recebeu a aba System no Simple e os mesmos estados no
+  Classic; Settings passou a exibir uma consulta somente leitura usando os
+  getters existentes. O caso dedicado qemu:shell5:system-update, a matriz
+  test_shell5_matrix.py, os vinculos de black-box e os alvos Windows/Linux
+  foram adicionados.
+
+  Em 2026-09-12, passaram `make q3check` (com `DT100-003` aceita), `make
+  clean`, `make`, `make test-shell5-host` e `make catalog-test`. O catálogo
+  terminou válido com 7.687 superfícies e 194 casos. A matriz
+  `make test-shell5-qemu SHELL5_QEMU_WORKERS=4 SHELL5_QEMU_SEED=2205` passou
+  5/5 casos no run `qpp-20260912T213325Z-10552`, com artefatos em
+  `build/test-results/shell5/qpp-20260912T213325Z-10552/`; não houve processo
+  QEMU residual. Estado: SHELL5 `PASS`. `DT100-003`, `DT100-004` e `DT100-005`
+  continuam separadas.

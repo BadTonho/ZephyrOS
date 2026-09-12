@@ -15,6 +15,55 @@
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
     },
+    "shell5_system_update": {
+      "case_ids": [
+        "qemu:shell5:system-update",
+        "qemu:tst5:update-recovery",
+        "qemu:tst6:fault:update",
+        "qemu:tst6:fault:recovery",
+        "qemu:tst5:reboot"
+      ],
+      "guest_cases": [
+        "qemu:tst5:shell5-system-update"
+      ],
+      "profiles": [
+        "baseline",
+        "smoke",
+        "tst6"
+      ],
+      "tags": [
+        "shell5",
+        "shell",
+        "update",
+        "recovery",
+        "slots",
+        "reentry"
+      ],
+      "required_commands": [
+        "echo shell5-system-update",
+        "update status",
+        "update system apply",
+        "update system cancel",
+        "update system check --tag stable",
+        "update system fetch --tag stable",
+        "update system slots",
+        "update system stage ZSC0.ZSY",
+        "update system status",
+        "update system verify --cached",
+        "updater"
+      ],
+      "workers_default": 4,
+      "seed_default": 2205,
+      "artifact_directory": "build/test-results/shell5",
+      "network_policy": "offline-restricted",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
     "sec6_adversarial": {
       "case_ids": [
         "qemu:tst5:sec6-simple",
@@ -10619,6 +10668,124 @@
               "op": "key",
               "key": "enter"
             }
+          ],
+          "post_action": {
+            "type": "none",
+            "steps": []
+          }
+        }
+      }
+    },
+    {
+      "id": "shell5-system-update-qemu",
+      "domain": "shell-interface",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "surface_ids": [
+        "c:src/settings/settings.c:settings_draw_update_simple",
+        "c:src/settings/settings.c:settings_gui_draw_update_status",
+        "c:src/settings/settings.c:settings_gui_draw_update_version",
+        "c:src/settings/settings.c:settings_update_phase",
+        "c:src/settings/settings.c:settings_update_slot_valid",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_phase",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_slot_valid",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_summary",
+        "c:src/updater/updater.c:updater_simple_draw_system",
+        "c:src/updater/updater.c:updater_simple_print_num",
+        "c:src/updater/updater.c:updater_system_phase",
+        "c:src/updater/updater.c:updater_system_slot_valid"
+      ],
+      "include_public_apis": false,
+      "evidence": "Caso QEMU SHELL5 para status, verificacao, staging, aplicacao, cancelamento, rollback e retorno ao prompt",
+      "case_definition": {
+        "id": "qemu:shell5:system-update",
+        "scenario": "Atualizacao ZSYS, recuperacao e retorno deterministico ao Shell",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "smoke",
+        "guest_case": "qemu:tst5:shell5-system-update",
+        "qemu_profile": "baseline",
+        "required_capabilities": [],
+        "timeout_seconds": 360,
+        "heartbeat_timeout_seconds": 20,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "input": "qmp-keyboard",
+          "postcondition": "prompt-recovered",
+          "mutation": "snapshot-discarded",
+          "remote": "authenticated-fixture-offline-fallback"
+        },
+        "preconditions": "imagem de teste pronta, fixture ZSYS autenticada e teclado virtual disponivel",
+        "action": "consultar estado, verificar, buscar, cancelar e abrir o Updater com retorno ao prompt",
+        "expected": "somente artefatos autenticados avancam e a versao ativa permanece preservada",
+        "errors": "assinatura, hash, rede, espaco, cancelamento, rollback, prompt ou QEMU",
+        "effects": "mutacoes ficam restritas ao snapshot descartavel",
+        "cleanup": "encerrar jobs, descartar snapshot e preservar artefatos de diagnostico",
+        "surface_ids": [
+          "c:src/settings/settings.c:settings_draw_update_simple",
+          "c:src/settings/settings.c:settings_gui_draw_update_status",
+          "c:src/settings/settings.c:settings_gui_draw_update_version",
+          "c:src/settings/settings.c:settings_update_phase",
+          "c:src/settings/settings.c:settings_update_slot_valid",
+          "c:src/shell/shell_commands_packages.c:cmd_update_system_phase",
+          "c:src/shell/shell_commands_packages.c:cmd_update_system_slot_valid",
+          "c:src/shell/shell_commands_packages.c:cmd_update_system_summary",
+          "c:src/updater/updater.c:updater_simple_draw_system",
+          "c:src/updater/updater.c:updater_simple_print_num",
+          "c:src/updater/updater.c:updater_system_phase",
+          "c:src/updater/updater.c:updater_system_slot_valid"
+        ],
+        "status": "AUTOMATED",
+        "tags": [
+          "qemu",
+          "shell",
+          "shell5",
+          "update",
+          "recovery",
+          "slots",
+          "prompt",
+          "reentry",
+          "tst5"
+        ],
+        "interaction": {
+          "mode": "qmp-keyboard",
+          "steps": [
+            {"op": "key", "key": "meta_l"},
+            {"op": "key", "key": "down"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "update status"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "update system status"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "update system slots"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "update system check --tag stable"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "update system verify --cached"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "update system fetch --tag stable"},
+            {"op": "key", "key": "enter"},
+            {"op": "key", "key": "esc"},
+            {"op": "text", "text": "update system stage ZSC0.ZSY"},
+            {"op": "key", "key": "enter"},
+            {"op": "key", "key": "esc"},
+            {"op": "text", "text": "update system apply"},
+            {"op": "key", "key": "enter"},
+            {"op": "key", "key": "esc"},
+            {"op": "text", "text": "update system cancel"},
+            {"op": "key", "key": "enter"},
+            {"op": "key", "key": "esc"},
+            {"op": "text", "text": "updater"},
+            {"op": "key", "key": "enter"},
+            {"op": "keys", "keys": ["alt", "f4"]},
+            {"op": "text", "text": "echo shell5-system-update"},
+            {"op": "key", "key": "enter"}
           ],
           "post_action": {
             "type": "none",

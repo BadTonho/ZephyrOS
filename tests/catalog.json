@@ -18,7 +18,7 @@
       "PENDING"
     ],
     "strict_policy": "PENDING_and_BLOCKED_are_blocking",
-    "updated": "2026-09-10"
+    "updated": "2026-09-12"
   },
   "surfaces": [
     {
@@ -576,18 +576,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_key",
@@ -605,18 +604,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_mouse",
@@ -635,14 +633,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -664,14 +662,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -692,18 +690,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_process_command",
@@ -721,18 +718,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_app_loader_result",
@@ -750,18 +746,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_user_test_result",
@@ -779,18 +774,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_update_hosted_terminal",
@@ -808,18 +802,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts",
@@ -1844,12 +1837,12 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:dispatch",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1871,14 +1864,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1900,14 +1893,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1929,14 +1922,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1958,14 +1951,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1987,14 +1980,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2016,14 +2009,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2045,14 +2038,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2074,14 +2067,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2213,13 +2206,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2241,13 +2234,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2269,13 +2262,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2297,13 +2290,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2325,13 +2318,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2353,13 +2346,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2381,13 +2374,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2409,13 +2402,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2437,13 +2430,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2465,13 +2458,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2493,13 +2486,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2521,13 +2514,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2549,13 +2542,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2577,13 +2570,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2605,13 +2598,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2633,13 +2626,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2661,13 +2654,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2689,13 +2682,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2717,13 +2710,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2745,13 +2738,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2773,13 +2766,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2801,13 +2794,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2829,13 +2822,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2857,13 +2850,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3466,10 +3459,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:hosted",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:storage"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3491,10 +3484,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:hosted",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:storage"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3516,10 +3509,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:hosted",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:storage"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3629,14 +3622,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3657,18 +3650,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
@@ -3687,10 +3679,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:hosted",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:storage"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3711,18 +3703,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
@@ -3740,18 +3731,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
@@ -3769,18 +3759,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
@@ -3799,14 +3788,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3827,18 +3816,17 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/taskmanager.h:taskmgr_close",
@@ -5451,10 +5439,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5476,10 +5464,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5501,10 +5489,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5526,10 +5514,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5551,10 +5539,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5576,10 +5564,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5601,10 +5589,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5626,10 +5614,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5651,10 +5639,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5676,10 +5664,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5701,10 +5689,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5726,10 +5714,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5751,10 +5739,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5776,8 +5764,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5799,8 +5787,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5822,8 +5810,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5845,8 +5833,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5868,8 +5856,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5891,8 +5879,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5914,8 +5902,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5937,8 +5925,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5960,8 +5948,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -5983,8 +5971,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6006,8 +5994,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6029,8 +6017,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6052,8 +6040,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6075,8 +6063,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6098,8 +6086,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6121,8 +6109,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6144,8 +6132,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6167,8 +6155,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6190,8 +6178,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6213,8 +6201,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6236,8 +6224,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6259,8 +6247,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6282,8 +6270,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6305,8 +6293,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6328,8 +6316,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6351,8 +6339,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6374,8 +6362,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6397,8 +6385,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6420,8 +6408,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6443,8 +6431,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6466,8 +6454,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -6489,8 +6477,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36396,10 +36384,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36421,10 +36409,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36446,10 +36434,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36471,10 +36459,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36496,10 +36484,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36521,10 +36509,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36546,10 +36534,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36571,10 +36559,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36596,10 +36584,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -42936,10 +42924,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:appstore",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -48762,9 +48750,9 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -48786,9 +48774,9 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -48915,10 +48903,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -48940,10 +48928,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -49070,10 +49058,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -49116,10 +49104,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-loader",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -49204,8 +49192,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -49248,8 +49236,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -50027,8 +50015,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -50134,8 +50122,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -50199,8 +50187,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -50222,8 +50210,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -50455,8 +50443,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -50478,8 +50466,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -50522,8 +50510,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -50545,8 +50533,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -51219,8 +51207,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -51473,8 +51461,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-package",
-        "qemu:tst6:fault:package",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst6:fault:package"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -140698,6 +140686,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/settings/settings.c:settings_draw_update_simple",
+      "kind": "c_function",
+      "source": "src/settings/settings.c",
+      "symbol": "settings_draw_update_simple",
+      "linkage": "static",
+      "owner": "settings",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/settings/settings.c:settings_execute_selected_action",
       "kind": "c_function",
       "source": "src/settings/settings.c",
@@ -140996,6 +141005,48 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/settings/settings.c:settings_gui_draw_update_status",
+      "kind": "c_function",
+      "source": "src/settings/settings.c",
+      "symbol": "settings_gui_draw_update_status",
+      "linkage": "static",
+      "owner": "settings",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/settings/settings.c:settings_gui_draw_update_version",
+      "kind": "c_function",
+      "source": "src/settings/settings.c",
+      "symbol": "settings_gui_draw_update_version",
+      "linkage": "static",
+      "owner": "settings",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/settings/settings.c:settings_gui_handle_dialog_mouse",
@@ -141386,6 +141437,48 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/settings/settings.c:settings_update_phase",
+      "kind": "c_function",
+      "source": "src/settings/settings.c",
+      "symbol": "settings_update_phase",
+      "linkage": "static",
+      "owner": "settings",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/settings/settings.c:settings_update_slot_valid",
+      "kind": "c_function",
+      "source": "src/settings/settings.c",
+      "symbol": "settings_update_slot_valid",
+      "linkage": "static",
+      "owner": "settings",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/settings/settings.c:settings_update_taskbar_position_options",
@@ -142983,7 +143076,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -142991,7 +143083,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_handle_app_request",
@@ -143036,7 +143128,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -143046,7 +143137,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_handle_mouse",
@@ -143106,7 +143197,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell1:prompt-lifecycle",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -143117,7 +143207,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_process_command",
@@ -143135,7 +143225,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143143,7 +143232,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_prompt_hide",
@@ -143159,12 +143248,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:core"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell.c:shell_prompt_reconcile",
@@ -143180,12 +143266,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:core"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell.c:shell_prompt_request",
@@ -143201,12 +143284,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:core"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell.c:shell_redraw_after_overlay_close",
@@ -143245,14 +143325,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -143322,19 +143402,18 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell1:prompt-lifecycle",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_prepare_filemanager",
@@ -143352,8 +143431,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "qemu:tst5:apps",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst5:apps"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -143374,16 +143453,15 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_resume_terminal",
@@ -143401,17 +143479,16 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell1:prompt-lifecycle",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_suspend_terminal",
@@ -143450,8 +143527,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "qemu:tst5:apps",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst5:apps"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -143472,7 +143549,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143480,7 +143556,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_update_hosted_terminal",
@@ -146568,8 +146644,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:commands-apps",
-        "qemu:tst5:apps",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst5:apps"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146675,8 +146751,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:commands-apps",
-        "qemu:tst5:apps",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst5:apps"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146740,8 +146816,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:commands-apps",
-        "qemu:tst5:apps",
-        "qemu:shell4:apps-packages"
+        "qemu:shell4:apps-packages",
+        "qemu:tst5:apps"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -156574,6 +156650,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_phase",
+      "kind": "c_function",
+      "source": "src/shell/shell_commands_packages.c",
+      "symbol": "cmd_update_system_phase",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_print_result",
       "kind": "c_function",
       "source": "src/shell/shell_commands_packages.c",
@@ -156593,6 +156690,27 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_slot_valid",
+      "kind": "c_function",
+      "source": "src/shell/shell_commands_packages.c",
+      "symbol": "cmd_update_system_slot_valid",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_slots",
@@ -156677,6 +156795,27 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_summary",
+      "kind": "c_function",
+      "source": "src/shell/shell_commands_packages.c",
+      "symbol": "cmd_update_system_summary",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_verify",
@@ -158952,12 +159091,12 @@
         "host:shell:dispatch",
         "qemu:shell2:commands-diagnostics",
         "qemu:shell3:files-admin",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159159,10 +159298,10 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:hosted",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:storage"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159184,14 +159323,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159234,14 +159373,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159284,12 +159423,12 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159311,14 +159450,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159361,12 +159500,12 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159409,12 +159548,12 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159457,14 +159596,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159486,12 +159625,12 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159513,12 +159652,12 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159540,14 +159679,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159569,14 +159708,14 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:input",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159955,13 +160094,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -160004,12 +160143,12 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -160031,13 +160170,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -160143,13 +160282,13 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:job",
+        "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery",
-        "qemu:shell4:apps-packages"
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -166013,6 +166152,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/updater/updater.c:updater_simple_draw_system",
+      "kind": "c_function",
+      "source": "src/updater/updater.c",
+      "symbol": "updater_simple_draw_system",
+      "linkage": "static",
+      "owner": "updater",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/updater/updater.c:updater_simple_draw_tabs",
       "kind": "c_function",
       "source": "src/updater/updater.c",
@@ -166032,6 +166192,27 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/updater/updater.c:updater_simple_print_num",
+      "kind": "c_function",
+      "source": "src/updater/updater.c",
+      "symbol": "updater_simple_print_num",
+      "linkage": "static",
+      "owner": "updater",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/updater/updater.c:updater_simple_print_version",
@@ -166137,6 +166318,27 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/updater/updater.c:updater_system_phase",
+      "kind": "c_function",
+      "source": "src/updater/updater.c",
+      "symbol": "updater_system_phase",
+      "linkage": "static",
+      "owner": "updater",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/updater/updater.c:updater_system_run_apply",
@@ -166263,6 +166465,27 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/updater/updater.c:updater_system_slot_valid",
+      "kind": "c_function",
+      "source": "src/updater/updater.c",
+      "symbol": "updater_system_slot_valid",
+      "linkage": "static",
+      "owner": "updater",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:shell5:system-update"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/updater/updater.c:updater_system_tag_begin",
@@ -168264,7 +168487,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:app",
@@ -168286,7 +168509,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:appcheck",
@@ -168310,7 +168533,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:beep",
@@ -168332,7 +168555,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkcheck",
@@ -168356,7 +168579,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkstat",
@@ -168378,7 +168601,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cache",
@@ -168400,7 +168623,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cachestat",
@@ -168422,7 +168645,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cat",
@@ -168444,7 +168667,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cd",
@@ -168466,7 +168689,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clear",
@@ -168488,7 +168711,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clock",
@@ -168512,7 +168735,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:compress",
@@ -168534,7 +168757,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cpu",
@@ -168556,7 +168779,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:desktop",
@@ -168578,7 +168801,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devcheck",
@@ -168602,7 +168825,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-info",
@@ -168624,7 +168847,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-scan",
@@ -168646,7 +168869,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devices",
@@ -168668,7 +168891,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:display",
@@ -168690,7 +168913,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:echo",
@@ -168712,7 +168935,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:edit",
@@ -168734,7 +168957,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:explorer",
@@ -168756,7 +168979,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:grep",
@@ -168778,7 +169001,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guimode",
@@ -168800,7 +169023,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guitest",
@@ -168822,7 +169045,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:health",
@@ -168846,7 +169069,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:help",
@@ -168868,7 +169091,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:http",
@@ -168890,7 +169113,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:icons",
@@ -168912,7 +169135,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:index",
@@ -168934,7 +169157,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:irqstat",
@@ -168958,7 +169181,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:job",
@@ -168980,7 +169203,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kill",
@@ -169002,7 +169225,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kmetrics",
@@ -169026,7 +169249,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:log",
@@ -169048,7 +169271,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ls",
@@ -169070,7 +169293,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:melody",
@@ -169092,7 +169315,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mem",
@@ -169114,7 +169337,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:memcheck",
@@ -169138,7 +169361,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mount",
@@ -169160,7 +169383,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mouse",
@@ -169182,7 +169405,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:net",
@@ -169206,7 +169429,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:netstat",
@@ -169228,7 +169451,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:nslookup",
@@ -169250,7 +169473,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pagefault",
@@ -169272,7 +169495,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ping",
@@ -169294,7 +169517,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pipetest",
@@ -169316,7 +169539,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkg",
@@ -169338,7 +169561,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkgcheck",
@@ -169360,7 +169583,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:play",
@@ -169382,7 +169605,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:power",
@@ -169404,7 +169627,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:poweroff",
@@ -169426,7 +169649,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:proccheck",
@@ -169450,7 +169673,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:procs",
@@ -169472,7 +169695,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pwd",
@@ -169494,7 +169717,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:q2check",
@@ -169516,7 +169739,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:reboot",
@@ -169538,7 +169761,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:regcheck",
@@ -169562,7 +169785,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:route",
@@ -169586,7 +169809,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:schedcheck",
@@ -169610,7 +169833,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:search",
@@ -169632,7 +169855,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:selecttest",
@@ -169654,7 +169877,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:settings",
@@ -169676,7 +169899,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:shutdown",
@@ -169698,7 +169921,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sigtest",
@@ -169720,7 +169943,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:skbstat",
@@ -169742,7 +169965,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabinfo",
@@ -169764,7 +169987,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabtest",
@@ -169788,7 +170011,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sockstat",
@@ -169812,7 +170035,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stack",
@@ -169834,7 +170057,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stats",
@@ -169856,7 +170079,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stop",
@@ -169878,7 +170101,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:storage",
@@ -169902,7 +170125,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:store",
@@ -169924,7 +170147,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sync",
@@ -169946,7 +170169,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskcfg",
@@ -169968,7 +170191,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskmgr",
@@ -169990,7 +170213,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threads",
@@ -170012,7 +170235,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threadtest",
@@ -170034,7 +170257,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:timer",
@@ -170058,7 +170281,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:tls",
@@ -170082,7 +170305,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:update",
@@ -170104,7 +170327,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:updater",
@@ -170126,7 +170349,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:uptime",
@@ -170148,7 +170371,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usb",
@@ -170170,7 +170393,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usertest",
@@ -170192,7 +170415,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vfs",
@@ -170216,7 +170439,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:view",
@@ -170238,7 +170461,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vmamap",
@@ -170260,7 +170483,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wait",
@@ -170284,7 +170507,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wifi",
@@ -170306,7 +170529,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wm",
@@ -170328,7 +170551,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:workq",
@@ -170352,7 +170575,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wqinfo",
@@ -170376,7 +170599,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "syscall:0",
@@ -180012,38 +180235,15 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/apps/shell.h:shell_handle_app_request",
-        "api:src/include/apps/shell.h:shell_handle_key",
         "api:src/include/apps/shell.h:shell_handle_mouse",
         "api:src/include/apps/shell.h:shell_init",
-        "api:src/include/apps/shell.h:shell_print_prompt",
-        "api:src/include/apps/shell.h:shell_process_command",
-        "api:src/include/apps/shell.h:shell_report_app_loader_result",
-        "api:src/include/apps/shell.h:shell_report_user_test_result",
-        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
-        "c:src/shell/shell.c:process_input",
-        "c:src/shell/shell.c:shell_handle_key",
         "c:src/shell/shell.c:shell_handle_mouse",
         "c:src/shell/shell.c:shell_init",
-        "c:src/shell/shell.c:shell_print_prompt",
-        "c:src/shell/shell.c:shell_process_command",
-        "c:src/shell/shell.c:shell_prompt_hide",
-        "c:src/shell/shell.c:shell_prompt_reconcile",
-        "c:src/shell/shell.c:shell_prompt_request",
         "c:src/shell/shell.c:shell_redraw_after_overlay_close",
         "c:src/shell/shell.c:shell_runtime_finish_command",
-        "c:src/shell/shell.c:shell_runtime_handle_terminal_key",
-        "c:src/shell/shell.c:shell_runtime_reset_input",
-        "c:src/shell/shell.c:shell_runtime_resume_terminal",
-        "c:src/shell/shell.c:shell_runtime_suspend_terminal",
-        "c:src/shell/shell.c:shell_should_show_prompt"
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal"
       ],
       "tags": [
         "host",
@@ -185656,6 +185856,672 @@
       }
     },
     {
+      "id": "qemu:shell4:apps-packages",
+      "scenario": "Aplicativos, pacotes, App Store e retorno deterministico ao Shell",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:shell4-apps-packages",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 360,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered",
+        "mutation": "snapshot-discarded",
+        "trust": "ZPKG v2 required for install, update and run; v1 inspection/removal only",
+        "remote": "App Store unavailable and offline fallback are observable"
+      },
+      "preconditions": "imagem pronta, fixtures locais de pacotes e teclado virtual disponivel",
+      "action": "executar verificacao, instalacao, execucao, atualizacao, remocao, rollback, historico e fallback da App Store",
+      "expected": "pacotes validos funcionam, pacotes invalidos sao bloqueados sem mutacao persistente e cada operacao retorna ao prompt",
+      "errors": "assinatura, hash, dependencia, caminho, limite, catalogo, rede, cancelamento, falha ring3, prompt ausente ou QEMU",
+      "effects": "todas as mutacoes ficam restritas ao snapshot descartavel; a imagem base e preservada",
+      "cleanup": "encerrar aplicativos, jobs e QEMU; descartar o snapshot e preservar serial, QMP e artefatos",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/apps/shell.h:shell_handle_app_request",
+        "api:src/include/apps/shell.h:shell_handle_key",
+        "api:src/include/apps/shell.h:shell_handle_mouse",
+        "api:src/include/apps/shell.h:shell_init",
+        "api:src/include/apps/shell.h:shell_print_prompt",
+        "api:src/include/apps/shell.h:shell_process_command",
+        "api:src/include/apps/shell.h:shell_report_app_loader_result",
+        "api:src/include/apps/shell.h:shell_report_user_test_result",
+        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
+        "api:src/include/apps/shell_dispatch.h:shell_dispatch_execute",
+        "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
+        "api:src/include/apps/shell_input.h:shell_input_get_buffer",
+        "api:src/include/apps/shell_input.h:shell_input_handle_key",
+        "api:src/include/apps/shell_input.h:shell_input_init",
+        "api:src/include/apps/shell_input.h:shell_input_print_prompt",
+        "api:src/include/apps/shell_input.h:shell_input_reset",
+        "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
+        "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
+        "api:src/include/apps/shell_job.h:shell_dispatch_cmd_job",
+        "api:src/include/apps/shell_job.h:shell_job_cancel_requested",
+        "api:src/include/apps/shell_job.h:shell_job_clear_next_wake",
+        "api:src/include/apps/shell_job.h:shell_job_clear_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_generation_matches",
+        "api:src/include/apps/shell_job.h:shell_job_get_generation",
+        "api:src/include/apps/shell_job.h:shell_job_get_status",
+        "api:src/include/apps/shell_job.h:shell_job_get_wait_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_handle_key",
+        "api:src/include/apps/shell_job.h:shell_job_input_blocked",
+        "api:src/include/apps/shell_job.h:shell_job_is_active",
+        "api:src/include/apps/shell_job.h:shell_job_kind_name",
+        "api:src/include/apps/shell_job.h:shell_job_note_stale_event",
+        "api:src/include/apps/shell_job.h:shell_job_poll",
+        "api:src/include/apps/shell_job.h:shell_job_pump_events",
+        "api:src/include/apps/shell_job.h:shell_job_request_cancel",
+        "api:src/include/apps/shell_job.h:shell_job_reset",
+        "api:src/include/apps/shell_job.h:shell_job_set_deadline",
+        "api:src/include/apps/shell_job.h:shell_job_set_next_wake",
+        "api:src/include/apps/shell_job.h:shell_job_set_phase",
+        "api:src/include/apps/shell_job.h:shell_job_set_progress",
+        "api:src/include/apps/shell_job.h:shell_job_set_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_start",
+        "api:src/include/apps/shell_job.h:shell_job_state_name",
+        "api:src/include/apps/shell_runtime.h:shell_hosted_open",
+        "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
+        "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
+        "api:src/include/core/app_loader.h:app_loader_build_launch_info",
+        "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
+        "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
+        "api:src/include/core/app_loader.h:app_loader_init",
+        "api:src/include/core/app_loader.h:app_loader_is_foreground_active",
+        "api:src/include/core/app_loader.h:app_loader_is_ready",
+        "api:src/include/core/app_loader.h:app_loader_reap_finished",
+        "api:src/include/core/app_loader.h:app_loader_run_file",
+        "api:src/include/core/app_loader.h:app_loader_run_file_with_launch",
+        "api:src/include/core/app_loader.h:app_loader_run_image",
+        "api:src/include/core/app_loader.h:app_loader_set_operation_generation",
+        "api:src/include/core/app_loader.h:app_loader_take_finished_result",
+        "api:src/include/core/app_loader.h:app_loader_validate_image",
+        "api:src/include/core/app_package.h:app_package_action_reason_name",
+        "api:src/include/core/app_package.h:app_package_apply_plan_confirmed",
+        "api:src/include/core/app_package.h:app_package_apply_plan_from_directory_confirmed",
+        "api:src/include/core/app_package.h:app_package_compare_versions",
+        "api:src/include/core/app_package.h:app_package_get_history_count",
+        "api:src/include/core/app_package.h:app_package_get_history_entry",
+        "api:src/include/core/app_package.h:app_package_get_installed_count",
+        "api:src/include/core/app_package.h:app_package_get_installed_info",
+        "api:src/include/core/app_package.h:app_package_get_installed_info_by_id",
+        "api:src/include/core/app_package.h:app_package_get_status",
+        "api:src/include/core/app_package.h:app_package_history_operation_name",
+        "api:src/include/core/app_package.h:app_package_history_outcome_name",
+        "api:src/include/core/app_package.h:app_package_init",
+        "api:src/include/core/app_package.h:app_package_install_confirmed",
+        "api:src/include/core/app_package.h:app_package_install_file",
+        "api:src/include/core/app_package.h:app_package_is_mutation_active",
+        "api:src/include/core/app_package.h:app_package_is_ready",
+        "api:src/include/core/app_package.h:app_package_plan_action_name",
+        "api:src/include/core/app_package.h:app_package_preflight_install",
+        "api:src/include/core/app_package.h:app_package_preflight_plan",
+        "api:src/include/core/app_package.h:app_package_preflight_plan_from_directory",
+        "api:src/include/core/app_package.h:app_package_preflight_remove",
+        "api:src/include/core/app_package.h:app_package_preflight_rollback",
+        "api:src/include/core/app_package.h:app_package_remove",
+        "api:src/include/core/app_package.h:app_package_remove_confirmed",
+        "api:src/include/core/app_package.h:app_package_rollback_confirmed",
+        "api:src/include/core/app_package.h:app_package_run_diagnostics",
+        "api:src/include/core/app_package.h:app_package_run_installed",
+        "api:src/include/core/app_package.h:app_package_test_fail_after",
+        "api:src/include/core/app_package.h:app_package_trust_name",
+        "api:src/include/core/app_package.h:app_package_verify_file",
+        "api:src/include/core/app_package.h:app_package_verify_installed",
+        "api:src/include/ui/appstore.h:appstore_close",
+        "api:src/include/ui/appstore.h:appstore_draw",
+        "api:src/include/ui/appstore.h:appstore_get_mode",
+        "api:src/include/ui/appstore.h:appstore_handle_key",
+        "api:src/include/ui/appstore.h:appstore_handle_mouse",
+        "api:src/include/ui/appstore.h:appstore_init",
+        "api:src/include/ui/appstore.h:appstore_is_open",
+        "api:src/include/ui/appstore.h:appstore_open",
+        "api:src/include/ui/appstore_test.h:appstore_host_test_contracts",
+        "c:src/appstore/appstore.c:appstore_is_open",
+        "c:src/core/app_loader.c:app_loader_is_busy",
+        "c:src/core/app_loader.c:app_loader_is_foreground_active",
+        "c:src/core/app_loader.c:app_loader_reap_active",
+        "c:src/core/app_loader.c:app_loader_reap_finished",
+        "c:src/core/app_loader.c:app_loader_start_pending",
+        "c:src/core/app_loader.c:app_loader_take_finished_result",
+        "c:src/core/app_package.c:app_package_action_fail",
+        "c:src/core/app_package.c:app_package_action_reset",
+        "c:src/core/app_package.c:app_package_evaluate_space",
+        "c:src/core/app_package.c:app_package_get_installed_count",
+        "c:src/core/app_package.c:app_package_get_status",
+        "c:src/core/app_package.c:app_package_header_is_valid",
+        "c:src/core/app_package.c:app_package_is_mutation_active",
+        "c:src/core/app_package.c:app_package_is_ready",
+        "c:src/core/app_package.c:app_package_mutation_begin",
+        "c:src/core/app_package.c:app_package_mutation_end",
+        "c:src/core/app_package.c:app_package_run_diagnostics",
+        "c:src/core/app_package.c:app_package_test_fail_after",
+        "c:src/shell/shell.c:shell_report_app_loader_result",
+        "c:src/shell/shell.c:shell_runtime_handle_terminal_key",
+        "c:src/shell/shell.c:shell_runtime_prepare_filemanager",
+        "c:src/shell/shell.c:shell_runtime_reset_input",
+        "c:src/shell/shell.c:shell_runtime_resume_terminal",
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene",
+        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_explorer",
+        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_settings",
+        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_taskmgr",
+        "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+        "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
+        "c:src/shell/shell_input.c:shell_input_cancel_extended",
+        "c:src/shell/shell_input.c:shell_input_handle_key",
+        "c:src/shell/shell_input.c:shell_input_history_copy",
+        "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
+        "c:src/shell/shell_input.c:shell_input_history_record",
+        "c:src/shell/shell_input.c:shell_input_history_reset_navigation",
+        "c:src/shell/shell_input.c:shell_input_print_prompt",
+        "c:src/shell/shell_input.c:shell_input_reset",
+        "c:src/shell/shell_input.c:shell_input_reset_modifiers",
+        "c:src/shell/shell_input.c:shell_input_resume_terminal",
+        "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail",
+        "c:src/shell/shell_job.c:shell_job_get_wait_timeout",
+        "c:src/shell/shell_job.c:shell_job_input_blocked",
+        "c:src/shell/shell_job.c:shell_job_is_active",
+        "c:src/shell/shell_job.c:shell_job_poll"
+      ],
+      "tags": [
+        "qemu",
+        "shell",
+        "shell4",
+        "apps",
+        "packages",
+        "appstore",
+        "trust",
+        "rollback",
+        "negative",
+        "prompt",
+        "reentry",
+        "tst5"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "pkg verify VALID.ZPK"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "pkg info VALID.ZPK"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "pkg install VALID.ZPK"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "pkg list"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "pkg remove VALID"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "store list"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store info VALID"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store install VALID"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store install VALID --confirm"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "store update VALID"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store run VALID shell4"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "f12"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "app run APPS/VALID/APP.ZAP shell4"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "f12"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "store remove VALID"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store remove VALID --confirm"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "store rollback VALID"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store history VALID"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store remote status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store remote list"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store remote check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "app outputtest fail"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "store"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "pkg verify BADCRC.ZPK"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "store install NEEDSDEP"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo shell4-apps-packages"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:shell5:system-update",
+      "scenario": "Atualizacao ZSYS, recuperacao e retorno deterministico ao Shell",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:shell5-system-update",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 360,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered",
+        "mutation": "snapshot-discarded",
+        "remote": "authenticated-fixture-offline-fallback"
+      },
+      "preconditions": "imagem de teste pronta, fixture ZSYS autenticada e teclado virtual disponivel",
+      "action": "consultar estado, verificar, buscar, cancelar e abrir o Updater com retorno ao prompt",
+      "expected": "somente artefatos autenticados avancam e a versao ativa permanece preservada",
+      "errors": "assinatura, hash, rede, espaco, cancelamento, rollback, prompt ou QEMU",
+      "effects": "mutacoes ficam restritas ao snapshot descartavel",
+      "cleanup": "encerrar jobs, descartar snapshot e preservar artefatos de diagnostico",
+      "surface_ids": [
+        "c:src/settings/settings.c:settings_draw_update_simple",
+        "c:src/settings/settings.c:settings_gui_draw_update_status",
+        "c:src/settings/settings.c:settings_gui_draw_update_version",
+        "c:src/settings/settings.c:settings_update_phase",
+        "c:src/settings/settings.c:settings_update_slot_valid",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_phase",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_slot_valid",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_summary",
+        "c:src/updater/updater.c:updater_simple_draw_system",
+        "c:src/updater/updater.c:updater_simple_print_num",
+        "c:src/updater/updater.c:updater_system_phase",
+        "c:src/updater/updater.c:updater_system_slot_valid"
+      ],
+      "status": "AUTOMATED",
+      "tags": [
+        "qemu",
+        "shell",
+        "shell5",
+        "update",
+        "recovery",
+        "slots",
+        "prompt",
+        "reentry",
+        "tst5"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "update status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "update system status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "update system slots"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "update system check --tag stable"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "update system verify --cached"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "update system fetch --tag stable"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "text",
+            "text": "update system stage ZSC0.ZSY"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "text",
+            "text": "update system apply"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "text",
+            "text": "update system cancel"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "text",
+            "text": "updater"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "text",
+            "text": "echo shell5-system-update"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
       "id": "qemu:tst2:boot-ready",
       "scenario": "Inicializacao do guest e handshake do protocolo ZTEST",
       "owner": "quality",
@@ -190784,7 +191650,8 @@
         "lifecycle",
         "hw2",
         "hw5",
-        "hw6"
+        "hw6",
+        "shell5"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -192581,7 +193448,8 @@
         "tst5",
         "update",
         "recovery",
-        "sto6"
+        "sto6",
+        "shell5"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -193024,7 +193892,8 @@
         "tst6",
         "fault",
         "recovery",
-        "hw2"
+        "hw2",
+        "shell5"
       ]
     },
     {
@@ -193151,7 +194020,8 @@
         "qemu",
         "tst6",
         "fault",
-        "update"
+        "update",
+        "shell5"
       ]
     },
     {
@@ -196451,487 +197321,6 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
-    },
-    {
-      "id": "qemu:shell4:apps-packages",
-      "scenario": "Aplicativos, pacotes, App Store e retorno deterministico ao Shell",
-      "owner": "quality",
-      "layer": "qemu",
-      "executor": "qemu",
-      "profile": "smoke",
-      "guest_case": "qemu:tst5:shell4-apps-packages",
-      "qemu_profile": "baseline",
-      "required_capabilities": [],
-      "timeout_seconds": 360,
-      "heartbeat_timeout_seconds": 20,
-      "isolation": "snapshot",
-      "parameters": {
-        "protocol": "ZTEST/1",
-        "input": "qmp-keyboard",
-        "postcondition": "prompt-recovered",
-        "mutation": "snapshot-discarded",
-        "trust": "ZPKG v2 required for install, update and run; v1 inspection/removal only",
-        "remote": "App Store unavailable and offline fallback are observable"
-      },
-      "preconditions": "imagem pronta, fixtures locais de pacotes e teclado virtual disponivel",
-      "action": "executar verificacao, instalacao, execucao, atualizacao, remocao, rollback, historico e fallback da App Store",
-      "expected": "pacotes validos funcionam, pacotes invalidos sao bloqueados sem mutacao persistente e cada operacao retorna ao prompt",
-      "errors": "assinatura, hash, dependencia, caminho, limite, catalogo, rede, cancelamento, falha ring3, prompt ausente ou QEMU",
-      "effects": "todas as mutacoes ficam restritas ao snapshot descartavel; a imagem base e preservada",
-      "cleanup": "encerrar aplicativos, jobs e QEMU; descartar o snapshot e preservar serial, QMP e artefatos",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/apps/shell.h:shell_handle_app_request",
-        "api:src/include/apps/shell.h:shell_handle_key",
-        "api:src/include/apps/shell.h:shell_handle_mouse",
-        "api:src/include/apps/shell.h:shell_init",
-        "api:src/include/apps/shell.h:shell_print_prompt",
-        "api:src/include/apps/shell.h:shell_process_command",
-        "api:src/include/apps/shell.h:shell_report_app_loader_result",
-        "api:src/include/apps/shell.h:shell_report_user_test_result",
-        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
-        "api:src/include/apps/shell_dispatch.h:shell_dispatch_execute",
-        "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
-        "api:src/include/apps/shell_input.h:shell_input_get_buffer",
-        "api:src/include/apps/shell_input.h:shell_input_handle_key",
-        "api:src/include/apps/shell_input.h:shell_input_init",
-        "api:src/include/apps/shell_input.h:shell_input_print_prompt",
-        "api:src/include/apps/shell_input.h:shell_input_reset",
-        "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
-        "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
-        "api:src/include/apps/shell_job.h:shell_dispatch_cmd_job",
-        "api:src/include/apps/shell_job.h:shell_job_cancel_requested",
-        "api:src/include/apps/shell_job.h:shell_job_clear_next_wake",
-        "api:src/include/apps/shell_job.h:shell_job_clear_timeout",
-        "api:src/include/apps/shell_job.h:shell_job_generation_matches",
-        "api:src/include/apps/shell_job.h:shell_job_get_generation",
-        "api:src/include/apps/shell_job.h:shell_job_get_status",
-        "api:src/include/apps/shell_job.h:shell_job_get_wait_timeout",
-        "api:src/include/apps/shell_job.h:shell_job_handle_key",
-        "api:src/include/apps/shell_job.h:shell_job_input_blocked",
-        "api:src/include/apps/shell_job.h:shell_job_is_active",
-        "api:src/include/apps/shell_job.h:shell_job_kind_name",
-        "api:src/include/apps/shell_job.h:shell_job_note_stale_event",
-        "api:src/include/apps/shell_job.h:shell_job_poll",
-        "api:src/include/apps/shell_job.h:shell_job_pump_events",
-        "api:src/include/apps/shell_job.h:shell_job_request_cancel",
-        "api:src/include/apps/shell_job.h:shell_job_reset",
-        "api:src/include/apps/shell_job.h:shell_job_set_deadline",
-        "api:src/include/apps/shell_job.h:shell_job_set_next_wake",
-        "api:src/include/apps/shell_job.h:shell_job_set_phase",
-        "api:src/include/apps/shell_job.h:shell_job_set_progress",
-        "api:src/include/apps/shell_job.h:shell_job_set_timeout",
-        "api:src/include/apps/shell_job.h:shell_job_start",
-        "api:src/include/apps/shell_job.h:shell_job_state_name",
-        "api:src/include/apps/shell_runtime.h:shell_hosted_open",
-        "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
-        "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
-        "api:src/include/core/app_loader.h:app_loader_build_launch_info",
-        "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
-        "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
-        "api:src/include/core/app_loader.h:app_loader_init",
-        "api:src/include/core/app_loader.h:app_loader_is_foreground_active",
-        "api:src/include/core/app_loader.h:app_loader_is_ready",
-        "api:src/include/core/app_loader.h:app_loader_reap_finished",
-        "api:src/include/core/app_loader.h:app_loader_run_file",
-        "api:src/include/core/app_loader.h:app_loader_run_file_with_launch",
-        "api:src/include/core/app_loader.h:app_loader_run_image",
-        "api:src/include/core/app_loader.h:app_loader_set_operation_generation",
-        "api:src/include/core/app_loader.h:app_loader_take_finished_result",
-        "api:src/include/core/app_loader.h:app_loader_validate_image",
-        "api:src/include/core/app_package.h:app_package_action_reason_name",
-        "api:src/include/core/app_package.h:app_package_apply_plan_confirmed",
-        "api:src/include/core/app_package.h:app_package_apply_plan_from_directory_confirmed",
-        "api:src/include/core/app_package.h:app_package_compare_versions",
-        "api:src/include/core/app_package.h:app_package_get_history_count",
-        "api:src/include/core/app_package.h:app_package_get_history_entry",
-        "api:src/include/core/app_package.h:app_package_get_installed_count",
-        "api:src/include/core/app_package.h:app_package_get_installed_info",
-        "api:src/include/core/app_package.h:app_package_get_installed_info_by_id",
-        "api:src/include/core/app_package.h:app_package_get_status",
-        "api:src/include/core/app_package.h:app_package_history_operation_name",
-        "api:src/include/core/app_package.h:app_package_history_outcome_name",
-        "api:src/include/core/app_package.h:app_package_init",
-        "api:src/include/core/app_package.h:app_package_install_confirmed",
-        "api:src/include/core/app_package.h:app_package_install_file",
-        "api:src/include/core/app_package.h:app_package_is_mutation_active",
-        "api:src/include/core/app_package.h:app_package_is_ready",
-        "api:src/include/core/app_package.h:app_package_plan_action_name",
-        "api:src/include/core/app_package.h:app_package_preflight_install",
-        "api:src/include/core/app_package.h:app_package_preflight_plan",
-        "api:src/include/core/app_package.h:app_package_preflight_plan_from_directory",
-        "api:src/include/core/app_package.h:app_package_preflight_remove",
-        "api:src/include/core/app_package.h:app_package_preflight_rollback",
-        "api:src/include/core/app_package.h:app_package_remove",
-        "api:src/include/core/app_package.h:app_package_remove_confirmed",
-        "api:src/include/core/app_package.h:app_package_rollback_confirmed",
-        "api:src/include/core/app_package.h:app_package_run_diagnostics",
-        "api:src/include/core/app_package.h:app_package_run_installed",
-        "api:src/include/core/app_package.h:app_package_test_fail_after",
-        "api:src/include/core/app_package.h:app_package_trust_name",
-        "api:src/include/core/app_package.h:app_package_verify_file",
-        "api:src/include/core/app_package.h:app_package_verify_installed",
-        "api:src/include/ui/appstore.h:appstore_close",
-        "api:src/include/ui/appstore.h:appstore_draw",
-        "api:src/include/ui/appstore.h:appstore_get_mode",
-        "api:src/include/ui/appstore.h:appstore_handle_key",
-        "api:src/include/ui/appstore.h:appstore_handle_mouse",
-        "api:src/include/ui/appstore.h:appstore_init",
-        "api:src/include/ui/appstore.h:appstore_is_open",
-        "api:src/include/ui/appstore.h:appstore_open",
-        "api:src/include/ui/appstore_test.h:appstore_host_test_contracts",
-        "c:src/appstore/appstore.c:appstore_is_open",
-        "c:src/core/app_loader.c:app_loader_is_busy",
-        "c:src/core/app_loader.c:app_loader_is_foreground_active",
-        "c:src/core/app_loader.c:app_loader_reap_active",
-        "c:src/core/app_loader.c:app_loader_reap_finished",
-        "c:src/core/app_loader.c:app_loader_start_pending",
-        "c:src/core/app_loader.c:app_loader_take_finished_result",
-        "c:src/core/app_package.c:app_package_action_fail",
-        "c:src/core/app_package.c:app_package_action_reset",
-        "c:src/core/app_package.c:app_package_evaluate_space",
-        "c:src/core/app_package.c:app_package_get_installed_count",
-        "c:src/core/app_package.c:app_package_get_status",
-        "c:src/core/app_package.c:app_package_header_is_valid",
-        "c:src/core/app_package.c:app_package_is_mutation_active",
-        "c:src/core/app_package.c:app_package_is_ready",
-        "c:src/core/app_package.c:app_package_mutation_begin",
-        "c:src/core/app_package.c:app_package_mutation_end",
-        "c:src/core/app_package.c:app_package_run_diagnostics",
-        "c:src/core/app_package.c:app_package_test_fail_after",
-        "c:src/shell/shell.c:shell_report_app_loader_result",
-        "c:src/shell/shell.c:shell_runtime_handle_terminal_key",
-        "c:src/shell/shell.c:shell_runtime_prepare_filemanager",
-        "c:src/shell/shell.c:shell_runtime_reset_input",
-        "c:src/shell/shell.c:shell_runtime_resume_terminal",
-        "c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene",
-        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_explorer",
-        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_settings",
-        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_taskmgr",
-        "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
-        "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
-        "c:src/shell/shell_input.c:shell_input_cancel_extended",
-        "c:src/shell/shell_input.c:shell_input_handle_key",
-        "c:src/shell/shell_input.c:shell_input_history_copy",
-        "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
-        "c:src/shell/shell_input.c:shell_input_history_record",
-        "c:src/shell/shell_input.c:shell_input_history_reset_navigation",
-        "c:src/shell/shell_input.c:shell_input_print_prompt",
-        "c:src/shell/shell_input.c:shell_input_reset",
-        "c:src/shell/shell_input.c:shell_input_reset_modifiers",
-        "c:src/shell/shell_input.c:shell_input_resume_terminal",
-        "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail",
-        "c:src/shell/shell_job.c:shell_job_get_wait_timeout",
-        "c:src/shell/shell_job.c:shell_job_input_blocked",
-        "c:src/shell/shell_job.c:shell_job_is_active",
-        "c:src/shell/shell_job.c:shell_job_poll"
-      ],
-      "tags": [
-        "qemu",
-        "shell",
-        "shell4",
-        "apps",
-        "packages",
-        "appstore",
-        "trust",
-        "rollback",
-        "negative",
-        "prompt",
-        "reentry",
-        "tst5"
-      ],
-      "interaction": {
-        "mode": "qmp-keyboard",
-        "steps": [
-          {
-            "op": "key",
-            "key": "meta_l"
-          },
-          {
-            "op": "key",
-            "key": "down"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "pkg verify VALID.ZPK"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "pkg info VALID.ZPK"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "pkg install VALID.ZPK"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 3
-          },
-          {
-            "op": "text",
-            "text": "pkg list"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "pkg remove VALID"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 3
-          },
-          {
-            "op": "text",
-            "text": "store list"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store status"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store info VALID"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store install VALID"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store install VALID --confirm"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 3
-          },
-          {
-            "op": "text",
-            "text": "store update VALID"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store run VALID shell4"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 3
-          },
-          {
-            "op": "keys",
-            "keys": [
-              "f12"
-            ]
-          },
-          {
-            "op": "wait",
-            "seconds": 2
-          },
-          {
-            "op": "text",
-            "text": "app run APPS/VALID/APP.ZAP shell4"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 3
-          },
-          {
-            "op": "keys",
-            "keys": [
-              "f12"
-            ]
-          },
-          {
-            "op": "wait",
-            "seconds": 2
-          },
-          {
-            "op": "text",
-            "text": "store remove VALID"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store remove VALID --confirm"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 3
-          },
-          {
-            "op": "text",
-            "text": "store rollback VALID"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store history VALID"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store remote status"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store remote list"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store remote check"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "app outputtest fail"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 3
-          },
-          {
-            "op": "text",
-            "text": "store"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 2
-          },
-          {
-            "op": "keys",
-            "keys": [
-              "alt",
-              "f4"
-            ]
-          },
-          {
-            "op": "wait",
-            "seconds": 2
-          },
-          {
-            "op": "text",
-            "text": "pkg verify BADCRC.ZPK"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "store install NEEDSDEP"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "text",
-            "text": "echo shell4-apps-packages"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          }
-        ],
-        "post_action": {
-          "type": "none",
-          "steps": []
-        }
-      }
     }
   ],
   "retired": [

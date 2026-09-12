@@ -469,6 +469,112 @@ static void cmd_update_print_capability(const char* label, int ready) {
                 ready ? 0x0A : 0x08);
 }
 
+static const char* cmd_update_system_phase(
+    const update_remote_system_status_t* remote,
+    const update_system_slots_status_t* slots) {
+    if (slots && (slots->recovery_pending ||
+                  slots->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_FAILED)) {
+        return "ROLLBACK";
+    }
+    if (remote && remote->busy) {
+        return remote->state == UPDATE_REMOTE_SYSTEM_STATE_DOWNLOADING ?
+            "DOWNLOAD" : "CHECK";
+    }
+    if (slots && (slots->journal_phase ==
+                      UPDATE_SYSTEM_SLOTS_JOURNAL_PREPARED ||
+                  slots->journal_phase ==
+                      UPDATE_SYSTEM_SLOTS_JOURNAL_STAGING)) {
+        return "STAGE";
+    }
+    if (slots && slots->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED) {
+        return "REBOOT";
+    }
+    if (slots && (slots->pending_slot != UPDATE_SYSTEM_SLOT_NONE ||
+                  slots->journal_phase ==
+                      UPDATE_SYSTEM_SLOTS_JOURNAL_VERIFIED ||
+                  slots->journal_phase ==
+                      UPDATE_SYSTEM_SLOTS_JOURNAL_COMMITTED)) {
+        return "PENDING";
+    }
+    return slots && slots->state == UPDATE_SYSTEM_SLOTS_STATE_READY ?
+        "GOOD" : "CHECK";
+}
+
+static int cmd_update_system_slot_valid(
+    const update_system_slots_status_t* slots, uint8_t index) {
+    return slots && index < UPDATE_SYSTEM_SLOT_COUNT &&
+           slots->slots[index].state == UPDATE_SYSTEM_SLOT_FILE_VALID;
+}
+
+static void cmd_update_system_summary(void) {
+    update_remote_system_status_t remote;
+    update_system_slots_status_t slots;
+    int remote_result = update_remote_system_get_status(&remote);
+    int slots_result = update_system_slots_get_status(&slots);
+    uint8_t active_slot = slots_result == OK ? slots.active_slot :
+                           UPDATE_SYSTEM_SLOT_NONE;
+    uint8_t pending_slot = slots_result == OK ? slots.pending_slot :
+                            UPDATE_SYSTEM_SLOT_NONE;
+    const char* reason = "NONE";
+    int healthy = slots_result == OK && slots.active_slot <
+                  UPDATE_SYSTEM_SLOT_COUNT && !slots.recovery_pending &&
+                  slots.boot_state != UPDATE_SYSTEM_SLOTS_BOOT_FAILED &&
+                  cmd_update_system_slot_valid(&slots, slots.active_slot);
+
+    if (slots_result == OK && slots.last_boot_reason !=
+            UPDATE_SYSTEM_SLOTS_REASON_NONE) {
+        reason = update_system_slots_reason_name(slots.last_boot_reason);
+    } else if (remote_result == OK) {
+        reason = update_remote_system_reason_name(remote.reason);
+    }
+    video_print("Sistema ZSYS: ", 0x0B);
+    if (remote_result != OK && slots_result != OK) {
+        video_print("UNAVAILABLE\n", 0x0C);
+        return;
+    }
+    video_print("fase=", 0x07);
+    video_print(cmd_update_system_phase(
+                    remote_result == OK ? &remote : 0,
+                    slots_result == OK ? &slots : 0), 0x0A);
+    video_print(" atual=", 0x08);
+    if (cmd_update_system_slot_valid(&slots, active_slot)) {
+        cmd_update_print_version_inline(&slots.slots[active_slot].version,
+                                        slots.slots[active_slot].epoch);
+    } else {
+        video_print("NONE", 0x08);
+    }
+    video_print(" candidata=", 0x08);
+    if (cmd_update_system_slot_valid(&slots, pending_slot)) {
+        cmd_update_print_version_inline(&slots.slots[pending_slot].version,
+                                        slots.slots[pending_slot].epoch);
+    } else if (remote_result == OK && remote.package_valid) {
+        cmd_update_print_version_inline(&remote.version, remote.epoch);
+    } else {
+        video_print("NONE", 0x08);
+    }
+    if (remote_result == OK) {
+        video_print(" progresso=", 0x08);
+        shell_command_print_num(remote.bytes_received);
+        video_print("/", 0x08);
+        shell_command_print_num(remote.total_bytes);
+    }
+    video_print(" motivo=", 0x08);
+    video_print(reason, reason[0] == 'N' ? 0x07 : 0x0E);
+    video_print(" tentativa=", 0x08);
+    if (slots_result == OK) {
+        shell_command_print_num(slots.boot_attempt_sequence);
+        video_print("/", 0x08);
+        shell_command_print_num(UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT);
+    } else {
+        video_print("NONE", 0x08);
+    }
+    video_print(" confirmacao=", 0x08);
+    video_print(healthy ? "GOOD" : "PENDING", healthy ? 0x0A : 0x0E);
+    video_print(" recovery=", 0x08);
+    video_print(slots_result == OK && slots.recovery_pending ?
+                "PENDING\n" : "CLEAN\n", healthy ? 0x0A : 0x0E);
+}
+
 static void cmd_update_status(void) {
     update_status_t status;
     update_remote_status_t remote;
@@ -533,6 +639,7 @@ static void cmd_update_status(void) {
         video_print("  Ultima operacao:\n", 0x07);
         cmd_update_print_history_entry(&status.last_event);
     }
+    cmd_update_system_summary();
 }
 
 static void cmd_update_history(void) {
@@ -1141,6 +1248,7 @@ static void cmd_update_system_status(void) {
         &shell_update_workspace.system_remote_status;
     int result = update_remote_system_get_status(status);
 
+    cmd_update_system_summary();
     video_print("Cache ZSYS: ", 0x07);
     if (result != OK) {
         video_print("UNAVAILABLE\n", 0x0C);

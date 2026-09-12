@@ -4,6 +4,8 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/recovery.h"
+#include "core/update_remote_system.h"
+#include "core/update_system_slots.h"
 #include "core/video.h"
 #include "drivers/vesa.h"
 #include "drivers/mouse.h"
@@ -45,6 +47,8 @@ static uint8_t host_backbuffer_available;
 static storage_status_t host_storage_status = {0};
 static storage_disk_t host_storage_disk = {0};
 static storage_volume_t host_storage_volume = {0};
+static update_remote_system_status_t host_update_remote_status = {0};
+static update_system_slots_status_t host_update_slots_status = {0};
 static icon_registry_t host_icon_registry = {
     {{'S', 7U, 15U}, {'E', 7U, 15U}, {'T', 7U, 15U}},
     {{'X', 7U, 15U}, {'_', 7U, 15U}, {'^', 7U, 15U}},
@@ -84,6 +88,33 @@ void settings_host_fixture_storage(void) {
     host_storage_volume.id[2] = '\0';
     host_storage_volume.fs_type = STORAGE_FS_FAT32;
     host_storage_volume.boot = 1U;
+}
+
+int update_remote_system_get_status(update_remote_system_status_t* status_out) {
+    if (!status_out) return ERR_NULL;
+    *status_out = host_update_remote_status;
+    return OK;
+}
+
+const char* update_remote_system_state_name(update_remote_system_state_t state) {
+    (void)state;
+    return "READY";
+}
+
+const char* update_remote_system_reason_name(update_remote_system_reason_t reason) {
+    (void)reason;
+    return "NONE";
+}
+
+int update_system_slots_get_status(update_system_slots_status_t* status_out) {
+    if (!status_out) return ERR_NULL;
+    *status_out = host_update_slots_status;
+    return OK;
+}
+
+const char* update_system_slots_reason_name(update_system_slots_reason_t reason) {
+    (void)reason;
+    return "NONE";
 }
 
 static void __attribute__((no_instrument_function)) coverage_record(

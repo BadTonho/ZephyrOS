@@ -715,6 +715,19 @@ APPS/<ID>/APP.ZAP`, confianca ZPKG v2, rollback, falha de aplicativo e
 retorno ao prompt. Fixtures remotas que dependem de chave privada externa
 continuam limitadas por `DT100-003`.
 
+## SHELL5 - atualizacao do sistema
+
+```text
+make test-shell5-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make test-shell5-qemu SHELL5_QEMU_WORKERS=4 SHELL5_QEMU_SEED=2205
+```
+
+Os resultados ficam em `build/test-results/shell5/`. O caso dedicado usa a
+tag `shell5`, snapshot descartavel e valida status, slots, preflight,
+download autenticado, verificacao em cache, staging, aplicacao no slot
+inativo, cancelamento, rollback e retorno ao prompt. Fixtures remotas que
+dependem de chave privada externa continuam limitadas por `DT100-003`.
+
 O caso `test-usb-transport-host` exercita o despachante de transporte USB com
 backends EHCI e UHCI falsos. A fixture cobre argumentos nulos, controlador
 desconhecido, encaminhamento de controle, Bulk, toggles e Interrupt, sem

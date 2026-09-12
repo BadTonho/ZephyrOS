@@ -18,6 +18,8 @@
 #include "core/recovery.h"
 #include "core/errors.h"
 #include "core/version.h"
+#include "core/update_remote_system.h"
+#include "core/update_system_slots.h"
 #include "fs/storage.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
@@ -45,12 +47,14 @@
 #define SETTINGS_CLASSIC_DIALOG_WIDTH SETTINGS_CLASSIC_PX(480)
 #define SETTINGS_CLASSIC_DIALOG_HEIGHT SETTINGS_CLASSIC_PX(300)
 #define SETTINGS_SIMPLE_LIST_ARROW_OFFSET 10
+#define SETTINGS_GUI_COLOR_ERROR 0x00D65A5AU
 
 typedef enum {
     SETTINGS_DIALOG_NONE = 0,
     SETTINGS_DIALOG_SYSTEM_INFO,
     SETTINGS_DIALOG_MEMORY,
     SETTINGS_DIALOG_PROCESSES,
+    SETTINGS_DIALOG_UPDATE,
     SETTINGS_DIALOG_VERSION,
     SETTINGS_DIALOG_CREDITS
 } settings_dialog_t;
@@ -107,6 +111,7 @@ static int settings_hosted_mouse(mouse_event_t* event, int x, int y,
                                  int width, int height);
 static void settings_hosted_close(void);
 static void settings_gui_draw_storage_status(int x, int y, int width);
+static void settings_gui_draw_update_status(int x, int y, int width);
 
 static const wm_hosted_app_t settings_hosted_app = {
     WM_APP_SETTINGS, "Configuracoes do ZephyrOS", "Settings",
@@ -121,7 +126,7 @@ static const wm_hosted_app_t settings_hosted_app = {
 
 static void init_system_categories(void) {
     categories[SETTINGS_CAT_SYSTEM].name = "Sistema";
-    categories[SETTINGS_CAT_SYSTEM].option_count = 4;
+    categories[SETTINGS_CAT_SYSTEM].option_count = 5;
     categories[SETTINGS_CAT_SYSTEM].options[0] = (settings_option_t){
         "Nome do PC", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
     };
@@ -132,6 +137,9 @@ static void init_system_categories(void) {
         "Processos", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
     };
     categories[SETTINGS_CAT_SYSTEM].options[3] = (settings_option_t){
+        "Atualizacao", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+    categories[SETTINGS_CAT_SYSTEM].options[4] = (settings_option_t){
         "Reiniciar", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
     };
 
@@ -693,12 +701,90 @@ static void execute_icons_action(int option) {
     }
 }
 
+static const char* settings_update_phase(
+        const update_remote_system_status_t* remote,
+        const update_system_slots_status_t* slots) {
+    if (!remote || !slots) return "CHECK";
+    if (slots->recovery_pending ||
+        slots->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_FAILED) {
+        return "ROLLBACK";
+    }
+    if (remote->busy ||
+        remote->state == UPDATE_REMOTE_SYSTEM_STATE_DOWNLOADING) {
+        return "DOWNLOAD";
+    }
+    if (slots->journal_phase == UPDATE_SYSTEM_SLOTS_JOURNAL_PREPARED ||
+        slots->journal_phase == UPDATE_SYSTEM_SLOTS_JOURNAL_STAGING) {
+        return "STAGE";
+    }
+    if (slots->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED) {
+        return "REBOOT";
+    }
+    if (slots->pending_slot != UPDATE_SYSTEM_SLOT_NONE ||
+        slots->journal_phase == UPDATE_SYSTEM_SLOTS_JOURNAL_VERIFIED ||
+        slots->journal_phase == UPDATE_SYSTEM_SLOTS_JOURNAL_COMMITTED) {
+        return "PENDING";
+    }
+    if (slots->state == UPDATE_SYSTEM_SLOTS_STATE_READY) return "GOOD";
+    return "CHECK";
+}
+
+static int settings_update_slot_valid(
+        const update_system_slots_status_t* slots, uint8_t slot) {
+    return slots && slot < UPDATE_SYSTEM_SLOT_COUNT &&
+           slots->slots[slot].state == UPDATE_SYSTEM_SLOT_FILE_VALID;
+}
+
+static void settings_draw_update_simple(void) {
+    update_remote_system_status_t remote;
+    update_system_slots_status_t slots;
+    int remote_ok = update_remote_system_get_status(&remote) == OK;
+    int slots_ok = update_system_slots_get_status(&slots) == OK;
+    char value[16];
+
+    video_clear();
+    video_print_at(10, 6, "Atualizacao do sistema", 0x0F);
+    if (!remote_ok || !slots_ok) {
+        video_print_at(10, 8, "Estado indisponivel", 0x0C);
+        video_print_at(10, 10, "Consulte update status", 0x07);
+        video_print_at(10, 22, "Pressione Esc para voltar", 0x08);
+        return;
+    }
+    video_print_at(10, 8, "Fase: ", 0x07);
+    video_print(settings_update_phase(&remote, &slots), 0x0B);
+    video_print_at(10, 10, "Slot ativo: ", 0x07);
+    int_to_str(slots.active_slot, value);
+    video_print(value, 0x0B);
+    video_print_at(10, 12, "Slot candidato: ", 0x07);
+    if (slots.pending_slot == UPDATE_SYSTEM_SLOT_NONE) {
+        video_print("nenhum", 0x08);
+    } else {
+        int_to_str(slots.pending_slot, value);
+        video_print(value, 0x0B);
+    }
+    video_print_at(10, 14, "Progresso: ", 0x07);
+    int_to_str(remote.bytes_received, value);
+    video_print(value, 0x0B);
+    video_print("/", 0x07);
+    int_to_str(remote.total_bytes, value);
+    video_print(value, 0x0B);
+    video_print_at(10, 16, "Tentativa: ", 0x07);
+    int_to_str(slots.boot_attempt_sequence, value);
+    video_print(value, 0x0B);
+    video_print("/2", 0x07);
+    video_print_at(10, 18, "Recuperacao: ", 0x07);
+    video_print(slots.recovery_pending ? "pendente" : "limpa",
+                slots.recovery_pending ? 0x0C : 0x0A);
+    video_print_at(10, 22, "Pressione Esc para voltar", 0x08);
+}
+
 static void execute_system_action(int option) {
     if (settings_mode == SETTINGS_MODE_CLASSIC) {
         if (option == 0) settings_dialog = SETTINGS_DIALOG_SYSTEM_INFO;
         if (option == 1) settings_dialog = SETTINGS_DIALOG_MEMORY;
         if (option == 2) settings_dialog = SETTINGS_DIALOG_PROCESSES;
-        if (option == 3) {
+        if (option == 3) settings_dialog = SETTINGS_DIALOG_UPDATE;
+        if (option == 4) {
             vesa_color_t background;
             background.raw = GUI_COLOR_BG;
             vesa_clear(background);
@@ -753,6 +839,9 @@ static void execute_system_action(int option) {
             break;
         }
         case 3:
+            settings_draw_update_simple();
+            break;
+        case 4:
             video_clear();
             video_print_at(25, 11, "Reiniciando...", 0x0E);
             power_reboot();
@@ -1113,6 +1202,97 @@ static void settings_gui_draw_process_list(int x, int y, int width) {
     }
 }
 
+static void settings_gui_draw_update_version(
+        int x, int y, const char* label, const update_version_t* version,
+        uint32_t color) {
+    if (!version) return;
+    gui_draw_text((uint32_t)x, (uint32_t)y, label, color);
+    settings_gui_draw_num(x + 120, y, version->major, color);
+    gui_draw_text((uint32_t)(x + 144), (uint32_t)y, ".", color);
+    settings_gui_draw_num(x + 156, y, version->minor, color);
+    gui_draw_text((uint32_t)(x + 180), (uint32_t)y, ".", color);
+    settings_gui_draw_num(x + 192, y, version->patch, color);
+}
+
+static void settings_gui_draw_update_status(int x, int y, int width) {
+    update_remote_system_status_t remote;
+    update_system_slots_status_t slots;
+    int remote_ok = update_remote_system_get_status(&remote) == OK;
+    int slots_ok = update_system_slots_get_status(&slots) == OK;
+    const char* phase;
+    const char* reason;
+    uint32_t status_color;
+
+    (void)width;
+    if (!remote_ok || !slots_ok) {
+        gui_draw_text((uint32_t)x, (uint32_t)y,
+                      "Estado de atualizacao indisponivel", SETTINGS_GUI_COLOR_ERROR);
+        gui_draw_text((uint32_t)x, (uint32_t)(y + 34),
+                      "Use update status para diagnostico detalhado",
+                      GUI_MODERN_COLOR_TEXT);
+        return;
+    }
+    phase = settings_update_phase(&remote, &slots);
+    status_color = slots.recovery_pending ||
+                   slots.boot_state == UPDATE_SYSTEM_SLOTS_BOOT_FAILED
+                       ? SETTINGS_GUI_COLOR_ERROR : GUI_MODERN_COLOR_TEXT;
+    reason = slots.last_boot_reason != UPDATE_SYSTEM_SLOTS_REASON_NONE
+                 ? update_system_slots_reason_name(slots.last_boot_reason)
+                 : update_remote_system_reason_name(remote.reason);
+    gui_draw_text((uint32_t)x, (uint32_t)y, "Fase:", GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 120), (uint32_t)y, phase, status_color);
+    gui_draw_text((uint32_t)x, (uint32_t)(y + 34), "Motivo:", GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 34), reason,
+                  status_color);
+    settings_gui_draw_update_version(x, y + 68, "Atual:",
+                                     settings_update_slot_valid(
+                                         &slots, slots.active_slot)
+                                         ? &slots.slots[slots.active_slot].version
+                                         : 0,
+                                     GUI_MODERN_COLOR_TEXT);
+    if (settings_update_slot_valid(&slots, slots.pending_slot)) {
+        settings_gui_draw_update_version(
+            x, y + 102, "Candidata:",
+            &slots.slots[slots.pending_slot].version,
+            GUI_MODERN_COLOR_TEXT);
+    } else if (remote.package_valid) {
+        settings_gui_draw_update_version(x, y + 102, "Candidata:",
+                                         &remote.version,
+                                         GUI_MODERN_COLOR_TEXT);
+    } else {
+        gui_draw_text((uint32_t)x, (uint32_t)(y + 102),
+                      "Candidata: nenhuma", GUI_MODERN_COLOR_TEXT);
+    }
+    gui_draw_text((uint32_t)x, (uint32_t)(y + 136), "Progresso:",
+                  GUI_MODERN_COLOR_TEXT);
+    settings_gui_draw_num(x + 120, y + 136, remote.bytes_received,
+                          GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 180), (uint32_t)(y + 136), "/",
+                  GUI_MODERN_COLOR_TEXT);
+    settings_gui_draw_num(x + 194, y + 136, remote.total_bytes,
+                          GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)x, (uint32_t)(y + 170), "Tentativa:",
+                  GUI_MODERN_COLOR_TEXT);
+    settings_gui_draw_num(x + 120, y + 170, slots.boot_attempt_sequence,
+                          GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 174), (uint32_t)(y + 170), "/2",
+                  GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)x, (uint32_t)(y + 204), "Confirmacao:",
+                  GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 204),
+                  slots.pending_slot == UPDATE_SYSTEM_SLOT_NONE &&
+                          !slots.recovery_pending &&
+                          slots.boot_state != UPDATE_SYSTEM_SLOTS_BOOT_FAILED
+                      ? "GOOD" : "PENDING",
+                  status_color);
+    gui_draw_text((uint32_t)x, (uint32_t)(y + 238), "Recuperacao:",
+                  GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 238),
+                  slots.recovery_pending ? "PENDENTE" : "LIMPA",
+                  slots.recovery_pending ? SETTINGS_GUI_COLOR_ERROR
+                                         : GUI_MODERN_COLOR_TEXT);
+}
+
 static void settings_gui_draw_dialog_content(int x, int y, int width) {
     uint32_t total;
     uint32_t free_memory;
@@ -1146,6 +1326,9 @@ static void settings_gui_draw_dialog_content(int x, int y, int width) {
             gui_draw_text((uint32_t)x, (uint32_t)y, "Processos ativos", GUI_MODERN_COLOR_TEXT);
             settings_gui_draw_process_list(x, y + 34, width);
             break;
+        case SETTINGS_DIALOG_UPDATE:
+            settings_gui_draw_update_status(x, y, width);
+            break;
         case SETTINGS_DIALOG_VERSION:
             gui_draw_text((uint32_t)x, (uint32_t)y,
                           ZEPHYROS_DISPLAY_NAME, GUI_MODERN_COLOR_TEXT);
@@ -1176,6 +1359,7 @@ static void settings_draw_classic_dialog(void) {
     int y = settings_gui_y + (settings_gui_height - height) / 2;
 
     if (settings_dialog == SETTINGS_DIALOG_PROCESSES) title = "Processos";
+    if (settings_dialog == SETTINGS_DIALOG_UPDATE) title = "Atualizacao";
     if (settings_dialog == SETTINGS_DIALOG_VERSION) title = "Versao";
     if (settings_dialog == SETTINGS_DIALOG_CREDITS) title = "Creditos";
     settings_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_WINDOW,
@@ -1654,6 +1838,7 @@ int settings_host_test_contracts(void) {
     execute_system_action(0);
     execute_system_action(1);
     execute_system_action(2);
+    execute_system_action(3);
     execute_about_action(0);
     execute_about_action(1);
 
@@ -1728,6 +1913,8 @@ int settings_host_test_contracts(void) {
     for (selected_option = 0; selected_option < 3; selected_option++) {
         settings_execute_selected_action();
     }
+    selected_option = 3;
+    settings_execute_selected_action();
     selected_category = SETTINGS_CAT_ABOUT;
     for (selected_option = 0; selected_option < 2; selected_option++) {
         settings_execute_selected_action();

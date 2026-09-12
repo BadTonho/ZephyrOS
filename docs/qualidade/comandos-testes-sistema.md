@@ -595,3 +595,20 @@ independentes e resultados em `build/test-results/shell4/`. O caso dedicado
 confirmacao, rollback, falha controlada de aplicativo, fallback da App Store
 e retorno ao prompt. A limitacao de fixtures remotas que exige chave privada
 externa permanece visivel como `DT100-003`.
+
+## SHELL5 - atualizacao do sistema
+
+```text
+make test-shell5-host
+make test-shell5-qemu SHELL5_QEMU_WORKERS=4 SHELL5_QEMU_SEED=2205
+make test-shell5
+```
+
+O agregado host combina comandos de update, Updater, Settings, jobs, slots,
+recovery, black-box e `test_shell5_matrix.py`. A matriz paralela usa a tag
+`shell5`, snapshots independentes e resultados em
+`build/test-results/shell5/`. O caso dedicado
+`qemu:shell5:system-update` valida status, preflight, download autenticado,
+verificacao em cache, staging, aplicacao no slot inativo, cancelamento,
+rollback, reboot necessario e retorno ao prompt. A validacao remota continua
+dependente das fixtures e chaves externas ja registradas em `DT100-003`.

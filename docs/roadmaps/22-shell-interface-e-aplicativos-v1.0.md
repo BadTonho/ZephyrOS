@@ -2,7 +2,7 @@
 
 ## Estado
 
-SHELL1, SHELL2, SHELL3 e SHELL4 concluidos e validados; SHELL5 permanece planejado.
+SHELL1, SHELL2, SHELL3 e SHELL4 concluidos e validados; SHELL5 implementado com validacao pendente; SHELL6 permanece planejado.
 
 Esta frente fecha a experiência básica de uso do ZephyrOS depois
 que kernel, segurança, Storage e hardware estiverem com contratos estáveis.
@@ -96,20 +96,20 @@ ou ferramentas de programação.
 
 ### SHELL5 — Atualização do sistema
 
-- [ ] Expor no Shell e Settings o estado da atualização do sistema: versão
+- [x] Expor no Shell e Settings o estado da atualização do sistema: versão
   atual, candidata, progresso, erro, tentativa de boot e confirmação de estado
   saudável.
-- [ ] Permitir consulta e download remoto somente de manifesto e artefato
+- [x] Permitir consulta e download remoto somente de manifesto e artefato
   autenticados.
-- [ ] Não sobrescrever o sistema em execução; delegar staging, commit e
+- [x] Não sobrescrever o sistema em execução; delegar staging, commit e
   recuperação ao contrato do Roadmap 20.
-- [ ] Exibir explicitamente os estados `CHECK`, `DOWNLOAD`, `STAGE`, `PENDING`,
+- [x] Exibir explicitamente os estados `CHECK`, `DOWNLOAD`, `STAGE`, `PENDING`,
   `REBOOT`, `GOOD` e `ROLLBACK`, sem confundir aplicação com sistema.
-- [ ] Exigir confirmação da ativação quando a política da atualização não for
+- [x] Exigir confirmação da ativação quando a política da atualização não for
   automática e manter o fallback offline.
-- [ ] Garantir retorno ao prompt após falha de rede, falta de espaço,
+- [x] Garantir retorno ao prompt após falha de rede, falta de espaço,
   cancelamento ou reboot necessário.
-- [ ] Validar que a versão anterior permaneça inicializável após falha de
+- [x] Validar que a versão anterior permaneça inicializável após falha de
   atualização.
 
 ### SHELL6 — Interface e compatibilidade de uso
@@ -247,3 +247,24 @@ durante o caso dedicado. O agregado host, o catalogo e a matriz QEMU passaram;
 o run `qpp-20260912T200700Z-22188` concluiu 4/4 casos com 4 workers e seed
 2204, sem timeout ou processo QEMU residual. `DT100-003`, `DT100-004` e
 `DT100-005` permanecem separadas.
+
+### Validacao SHELL5
+
+O conjunto deterministico da etapa e:
+
+```text
+make q3check
+make clean && make
+make test-shell5-host
+make catalog-test
+make test-shell5-qemu SHELL5_QEMU_WORKERS=4 SHELL5_QEMU_SEED=2205
+```
+
+O caso dedicado qemu:shell5:system-update cobre status, slots, preflight, download autenticado, verificacao local e em cache, staging, confirmacao, aplicacao no slot inativo, cancelamento, falhas de assinatura/hash/rede/espaco, abertura do Updater e retorno ao prompt. A tag shell5 reutiliza update, recovery e reboot em snapshots independentes.
+
+Estado da etapa: concluída e validada em 2026-09-12. `make q3check`, `make clean`,
+`make`, `make test-shell5-host` e `make catalog-test` passaram. A matriz
+`make test-shell5-qemu SHELL5_QEMU_WORKERS=4 SHELL5_QEMU_SEED=2205` passou
+5/5 casos no run `qpp-20260912T213325Z-10552`, com retorno ao prompt e sem
+processo QEMU residual. `DT100-003`, `DT100-004` e `DT100-005` permanecem
+separadas.
