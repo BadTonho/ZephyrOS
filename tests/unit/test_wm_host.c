@@ -586,6 +586,18 @@ static void test_gui_windows(void) {
     EXPECT(wm_close_hosted_app(WM_APP_SHELL) == ERR_NOT_FOUND);
     wm_set_active(0);
     EXPECT(wm_is_active() == 0);
+
+    reset_fixture();
+    fake_mode.initialized = 1U;
+    fake_backbuffer = 1;
+    fake_desktop_active = 0;
+    fake_desktop_mode = DESKTOP_MODE_CLASSIC;
+    wm_init();
+    wm_set_active(1);
+    EXPECT(wm_register_hosted_app(&explorer) == OK);
+    wm_handle_key(0x38U);
+    EXPECT(wm_handle_key(0x3EU) == WM_RESULT_EXIT);
+    EXPECT(wm_is_active() == 0);
 }
 
 int main(void) {

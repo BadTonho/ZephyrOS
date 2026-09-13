@@ -85,6 +85,7 @@ static int fm_hosted_x = 0;
 static int fm_hosted_y = 0;
 static int fm_hosted_width = 0;
 static int fm_hosted_height = 0;
+static int fm_restore_desktop = 0;
 /* Resultados globais ficam em BSS; a pilha dos processos tem 4 KiB. */
 static file_index_result_t fm_search_results[FILE_INDEX_MAX_RESULTS];
 static file_index_search_status_t fm_search_status;
@@ -2422,6 +2423,8 @@ void fm_open(void) {
         return;
     }
 
+    fm_restore_desktop = desktop_is_active();
+
     if (desktop_get_mode() == DESKTOP_MODE_CLASSIC && fm_hosted) {
         wm_set_active(1);
         wm_register_hosted_app(&fm_hosted_app);
@@ -2455,15 +2458,19 @@ void fm_open(void) {
 }
 
 void fm_close(void) {
+    int restore_desktop;
+
     if (fm_hosted) {
         wm_close_hosted_app(WM_APP_EXPLORER);
         return;
     }
+    restore_desktop = fm_restore_desktop;
+    fm_restore_desktop = 0;
     fm_search_close();
     state.running = 0;
     taskbar_remove_app(TB_APP_EXPLORER);
-    desktop_set_active(1);
-    desktop_draw();
+    desktop_set_active(restore_desktop);
+    if (restore_desktop) desktop_draw();
 }
 
 int fm_is_running(void) {
@@ -2530,6 +2537,7 @@ int fm_host_test_contracts(void) {
     extern void filemanager_host_set_rename_result(int result);
     extern void filemanager_host_set_delete_result(int result);
     extern void filemanager_host_set_desktop_mode(desktop_mode_t mode);
+    extern void filemanager_host_set_desktop_active(int active);
     file_index_status_t index_status;
     file_index_entry_t index_entry;
     mouse_event_t mouse_event;
@@ -3051,6 +3059,18 @@ int fm_host_test_contracts(void) {
     state.mode = FM_MODE_CLASSIC;
     if (!fm_block_read_only_mutation(0x3CU)) failures++;
     fm_hosted = 0;
+
+    filemanager_host_set_desktop_mode(DESKTOP_MODE_SIMPLE);
+    filemanager_host_set_desktop_active(0);
+    fm_open();
+    if (!fm_is_running()) failures++;
+    fm_close();
+    if (fm_is_running() || desktop_is_active()) failures++;
+    filemanager_host_set_desktop_active(1);
+    fm_open();
+    if (!fm_is_running()) failures++;
+    fm_close();
+    if (fm_is_running() || !desktop_is_active()) failures++;
     return failures;
 }
 #endif

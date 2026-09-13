@@ -612,3 +612,19 @@ recovery, black-box e `test_shell5_matrix.py`. A matriz paralela usa a tag
 verificacao em cache, staging, aplicacao no slot inativo, cancelamento,
 rollback, reboot necessario e retorno ao prompt. A validacao remota continua
 dependente das fixtures e chaves externas ja registradas em `DT100-003`.
+
+## SHELL6 - interface e compatibilidade
+
+```text
+make test-shell6-host
+make test-shell6-qemu SHELL6_QEMU_WORKERS=4 SHELL6_QEMU_SEED=2206
+make test-shell6
+```
+
+O agregado host combina Shell, entrada, cenas, Explorer, Task Manager,
+Settings, Desktop, Window Manager, Taskbar, GUI Test, black-box e
+`test_shell6_matrix.py`. A matriz paralela usa a tag `shell6`, snapshots
+independentes e resultados em `build/test-results/shell6/`. O caso dedicado
+`qemu:shell6:interface-compatibility` valida Simple/Classic, fallback textual,
+reentrada e retorno ao prompt; os demais casos reutilizam os perfis sem
+hardware opcional já catalogados.

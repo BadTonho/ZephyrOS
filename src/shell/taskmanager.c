@@ -119,6 +119,7 @@ typedef struct {
 } taskmgr_cpu_sample_t;
 
 static int is_open = 0;
+static int taskmgr_restore_desktop = 0;
 static int selected_tab = 0;
 static int selected_row = 0;
 static int scroll_offset = 0;
@@ -690,6 +691,7 @@ static void taskmgr_gui_draw_history_graph(int x, int y, int width, int height,
 
 void taskmgr_init(void) {
     is_open = 0;
+    taskmgr_restore_desktop = 0;
     gui_open = 0;
     gui_minimized = 0;
     gui_maximized = 0;
@@ -722,6 +724,7 @@ void taskmgr_open(void) {
     }
 
     is_open = 1;
+    taskmgr_restore_desktop = desktop_is_active();
     selected_tab = 0;
     selected_row = 0;
     scroll_offset = 0;
@@ -733,11 +736,13 @@ void taskmgr_open(void) {
 
 void taskmgr_close(void) {
     int was_open = is_open || gui_open;
+    int restore_desktop = taskmgr_restore_desktop;
 
     if (taskmgr_hosted) {
         wm_close_hosted_app(WM_APP_TASKMGR);
         return;
     }
+    taskmgr_restore_desktop = 0;
     is_open = 0;
     gui_open = 0;
     gui_minimized = 0;
@@ -747,8 +752,9 @@ void taskmgr_close(void) {
     taskbar_remove_app(TB_APP_TASKMGR);
     if (!was_open) return;
 
-    desktop_set_active(1);
-    desktop_draw();
+    desktop_set_active(restore_desktop);
+    if (restore_desktop) desktop_draw();
+    else video_terminal_begin();
 }
 
 static void draw_hline(int x, int y, int w, uint8_t color) {
@@ -3188,6 +3194,7 @@ void taskmgr_run(void) {
             if (current_tick - last_tick >= TSKMGR_METRICS_TICKS) {
                 taskmgr_refresh();
                 last_tick = current_tick;
+                process_yield();
             } else {
                 wait_reason_t reason = WAIT_REASON_NONE;
                 uint32_t remaining = TSKMGR_METRICS_TICKS - elapsed;

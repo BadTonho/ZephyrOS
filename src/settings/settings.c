@@ -60,6 +60,7 @@ typedef enum {
 } settings_dialog_t;
 
 static int settings_active = 0;
+static int settings_restore_desktop = 0;
 static int selected_category = 0;
 static int selected_option = 0;
 static int editing_option = 0;
@@ -345,6 +346,7 @@ static void settings_select_mode(void) {
 void settings_init(void) {
     LOG_INFO("SETTINGS", "Inicializando configuracoes");
     settings_active = 0;
+    settings_restore_desktop = 0;
     selected_category = 0;
     selected_option = 0;
     editing_option = 0;
@@ -373,6 +375,7 @@ void settings_open(void) {
     }
 
     settings_active = 1;
+    settings_restore_desktop = desktop_is_active();
     icon_editor_active = 0;
     icon_editor_entries = 0;
     icon_editor_names = 0;
@@ -401,14 +404,19 @@ void settings_open(void) {
 }
 
 void settings_close(void) {
+    int restore_desktop;
+
     if (settings_hosted) {
         wm_close_hosted_app(WM_APP_SETTINGS);
         return;
     }
+    restore_desktop = settings_restore_desktop;
+    settings_restore_desktop = 0;
     settings_active = 0;
     settings_clear_overlay();
-    desktop_set_active(1);
-    desktop_draw();
+    desktop_set_active(restore_desktop);
+    if (restore_desktop) desktop_draw();
+    else video_terminal_begin();
 }
 
 static int settings_visible_category_count(void) {

@@ -643,6 +643,10 @@ int desktop_handle_key(uint8_t scancode) {
 
     if (scancode & 0x80) return 0;
 
+    if (scancode == 0x01) {
+        return -1;
+    }
+
     columns = (desktop_mode == DESKTOP_MODE_CLASSIC) ? classic_columns : 5;
     if (columns < 1) columns = 1;
 

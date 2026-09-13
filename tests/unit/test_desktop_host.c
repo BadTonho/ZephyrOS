@@ -311,6 +311,7 @@ static void test_simple_mode(void) {
 
     desktop_set_active(1);
     EXPECT(desktop_is_active() == 1);
+    EXPECT(desktop_handle_key(0x01U) == -1);
     desktop_add_icon(0, DESKTOP_APP_FILE);
     for (int index = 0; index < DESKTOP_MAX_ICONS + 2; index++) {
         desktop_add_icon("Extra", DESKTOP_APP_FILE);

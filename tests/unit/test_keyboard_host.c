@@ -30,6 +30,8 @@ static uint32_t work_init_count;
 static uint32_t key_sink_count;
 static uint32_t handler_count;
 static uint32_t unmask_count;
+static uint32_t published_key_count;
+static uint16_t published_key_usage;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -95,7 +97,10 @@ int input_register_key_sink(input_key_sink_t sink) {
 }
 
 int input_publish_key(const input_key_event_t* event) {
-    (void)event;
+    if (event) {
+        published_key_count++;
+        published_key_usage = event->usage;
+    }
     return OK;
 }
 
@@ -204,6 +209,19 @@ static int check_initialization(void) {
     return 0;
 }
 
+static int check_stale_extended_prefix(void) {
+    published_key_count = 0U;
+    published_key_usage = 0U;
+    keyboard_ports[KEYBOARD_DATA_PORT] = 0xE0U;
+    keyboard_handler(0);
+    keyboard_process_events();
+    keyboard_ports[KEYBOARD_DATA_PORT] = 0x01U;
+    keyboard_handler(0);
+    keyboard_process_events();
+    return published_key_count == 1U &&
+           published_key_usage == INPUT_USAGE_ESCAPE ? 0 : 50;
+}
+
 static int check_controller_reset(void) {
     output_count = 0U;
     keyboard_ports[KEYBOARD_STATUS_PORT] = 0U;
@@ -249,6 +267,7 @@ int main(void) {
     if (!result) result = check_initialization();
     if (!result) result = check_controller_reset();
     if (!result) result = check_failed_initialization();
+    if (!result) result = check_stale_extended_prefix();
     coverage_active = 0U;
     coverage_emit(result);
     return result;

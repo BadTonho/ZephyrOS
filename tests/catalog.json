@@ -3606,6 +3606,29 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/apps/shell_runtime.h:shell_runtime_close_hosted",
+      "kind": "api_function",
+      "source": "src/include/apps/shell_runtime.h",
+      "symbol": "shell_runtime_close_hosted",
+      "linkage": "public",
+      "owner": "apps",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:apps",
+        "qemu:tst5:shell",
+        "qemu:tst5:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
       "kind": "api_function",
       "source": "src/include/apps/shell_runtime.h",
@@ -3678,14 +3701,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
@@ -63221,7 +63243,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63266,7 +63287,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63288,12 +63308,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete",
@@ -63309,12 +63326,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
@@ -63332,7 +63346,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -63354,7 +63367,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -63374,12 +63386,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_length",
@@ -63397,7 +63406,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63419,12 +63427,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed",
@@ -63440,12 +63445,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report",
@@ -63463,7 +63465,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63503,12 +63504,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
@@ -63524,12 +63522,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
@@ -63547,7 +63542,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -63589,12 +63583,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
@@ -63612,7 +63603,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63636,7 +63626,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -63658,7 +63647,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -63678,12 +63666,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
@@ -63701,7 +63686,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63725,7 +63709,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -93707,7 +93690,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:desktop"
+        "host:ui:desktop",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -94099,6 +94083,7 @@
       "case_ids": [
         "host:ui:desktop",
         "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
@@ -94122,7 +94107,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:desktop",
-        "qemu:shell3:files-admin"
+        "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -94273,7 +94259,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:desktop"
+        "host:ui:desktop",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -110889,7 +110876,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:filemanager",
-        "qemu:shell3:files-admin"
+        "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111040,7 +111028,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111575,6 +111564,7 @@
       "status": "COVERED",
       "case_ids": [
         "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -111617,6 +111607,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -111638,6 +111629,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -111660,7 +111652,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:filemanager",
-        "qemu:shell3:files-admin"
+        "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111808,11 +111801,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_record_history",
@@ -130046,7 +130041,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:gui:display"
+        "host:gui:display",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130132,7 +130128,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:gui:display"
+        "host:gui:display",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -140595,7 +140592,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:settings-icons",
-        "qemu:shell3:files-admin"
+        "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -140616,7 +140614,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:settings-icons"
+        "host:ui:settings-icons",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -140701,10 +140700,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:settings-icons",
         "qemu:shell5:system-update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_execute_selected_action",
@@ -141022,10 +141022,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:settings-icons",
         "qemu:shell5:system-update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_gui_draw_update_version",
@@ -141043,10 +141044,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:settings-icons",
         "qemu:shell5:system-update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_gui_handle_dialog_mouse",
@@ -141368,6 +141370,7 @@
       "case_ids": [
         "host:ui:settings-icons",
         "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -141454,10 +141457,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:settings-icons",
         "qemu:shell5:system-update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_update_slot_valid",
@@ -141475,10 +141479,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:settings-icons",
         "qemu:shell5:system-update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_update_taskbar_position_options",
@@ -142339,7 +142344,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:guitest"
+        "host:ui:guitest",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -142698,7 +142704,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:guitest"
+        "host:ui:guitest",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146370,7 +146377,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-apps"
+        "host:shell:commands-apps",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146433,7 +146441,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-apps"
+        "host:shell:commands-apps",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -156665,10 +156674,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:commands-packages",
         "qemu:shell5:system-update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_print_result",
@@ -156707,10 +156717,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:commands-packages",
         "qemu:shell5:system-update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_slots",
@@ -156812,10 +156823,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:commands-packages",
         "qemu:shell5:system-update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_update_system_verify",
@@ -159138,7 +159150,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted"
+        "host:shell:hosted",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -159160,6 +159173,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:hosted",
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
@@ -159261,6 +159275,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/shell/shell_hosted.c:shell_hosted_release",
+      "kind": "c_function",
+      "source": "src/shell/shell_hosted.c",
+      "symbol": "shell_hosted_release",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_reset",
       "kind": "c_function",
       "source": "src/shell/shell_hosted.c",
@@ -159280,6 +159312,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_hosted.c:shell_runtime_close_hosted",
+      "kind": "c_function",
+      "source": "src/shell/shell_hosted.c",
+      "symbol": "shell_runtime_close_hosted",
+      "linkage": "external",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
@@ -162693,6 +162743,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:taskmanager",
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -162883,7 +162934,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:taskmanager"
+        "host:shell:taskmanager",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -163206,6 +163258,7 @@
       "case_ids": [
         "host:ui:taskbar",
         "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
@@ -168050,6 +168103,7 @@
       "case_ids": [
         "host:ui:wm",
         "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
@@ -168073,7 +168127,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:wm",
-        "qemu:shell3:files-admin"
+        "qemu:shell3:files-admin",
+        "qemu:shell6:interface-compatibility"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -180068,11 +180123,14 @@
         "c:src/shell/shell_commands_packages.c:cmd_update_system_cancel",
         "c:src/shell/shell_commands_packages.c:cmd_update_system_check",
         "c:src/shell/shell_commands_packages.c:cmd_update_system_fetch",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_phase",
         "c:src/shell/shell_commands_packages.c:cmd_update_system_print_result",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_slot_valid",
         "c:src/shell/shell_commands_packages.c:cmd_update_system_slots",
         "c:src/shell/shell_commands_packages.c:cmd_update_system_slots_print_slot",
         "c:src/shell/shell_commands_packages.c:cmd_update_system_stage",
         "c:src/shell/shell_commands_packages.c:cmd_update_system_status",
+        "c:src/shell/shell_commands_packages.c:cmd_update_system_summary",
         "c:src/shell/shell_commands_packages.c:cmd_update_system_verify",
         "c:src/shell/shell_commands_packages.c:cmd_update_test_fail_after",
         "c:src/shell/shell_commands_packages.c:cmd_update_verify",
@@ -180822,7 +180880,6 @@
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
         "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
         "c:src/shell/shell_hosted.c:shell_hosted_close",
         "c:src/shell/shell_hosted.c:shell_hosted_draw",
         "c:src/shell/shell_hosted.c:shell_hosted_key",
@@ -183423,29 +183480,8 @@
       "cleanup": "processo host encerrado e relatorio de cobertura preservado",
       "status": "AUTOMATED",
       "surface_ids": [
-        "c:src/core/kernel_tests_blackbox.c:blackbox_contains",
         "c:src/core/kernel_tests_blackbox.c:blackbox_contains_prompt",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_equals",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_find",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_length",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_marker",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_report",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
-        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox"
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation"
       ]
     },
     {
@@ -183766,6 +183802,7 @@
         "c:src/filemanager/filemanager.c:fm_mouse_select_item",
         "c:src/filemanager/filemanager.c:fm_navigate_address_value",
         "c:src/filemanager/filemanager.c:fm_navigate_to",
+        "c:src/filemanager/filemanager.c:fm_open",
         "c:src/filemanager/filemanager.c:fm_record_history",
         "c:src/filemanager/filemanager.c:fm_redraw_file_view",
         "c:src/filemanager/filemanager.c:fm_refresh_files",
@@ -183986,6 +184023,7 @@
         "c:src/settings/settings.c:settings_draw_classic_dialog",
         "c:src/settings/settings.c:settings_draw_classic_main",
         "c:src/settings/settings.c:settings_draw_simple",
+        "c:src/settings/settings.c:settings_draw_update_simple",
         "c:src/settings/settings.c:settings_execute_selected_action",
         "c:src/settings/settings.c:settings_get_mode",
         "c:src/settings/settings.c:settings_gui_category_row_height",
@@ -184000,6 +184038,8 @@
         "c:src/settings/settings.c:settings_gui_draw_process_list",
         "c:src/settings/settings.c:settings_gui_draw_storage_status",
         "c:src/settings/settings.c:settings_gui_draw_surface",
+        "c:src/settings/settings.c:settings_gui_draw_update_status",
+        "c:src/settings/settings.c:settings_gui_draw_update_version",
         "c:src/settings/settings.c:settings_gui_handle_dialog_mouse",
         "c:src/settings/settings.c:settings_gui_handle_icon_mouse",
         "c:src/settings/settings.c:settings_gui_hit",
@@ -184018,6 +184058,8 @@
         "c:src/settings/settings.c:settings_select_mode",
         "c:src/settings/settings.c:settings_sync_display_scale",
         "c:src/settings/settings.c:settings_sync_mouse_preferences",
+        "c:src/settings/settings.c:settings_update_phase",
+        "c:src/settings/settings.c:settings_update_slot_valid",
         "c:src/settings/settings.c:settings_update_taskbar_position_options",
         "c:src/settings/settings.c:settings_update_window_order_values",
         "c:src/settings/settings.c:settings_visible_category_count"
@@ -184455,7 +184497,8 @@
         "hw2",
         "hw5",
         "hw6",
-        "shell2"
+        "shell2",
+        "shell6"
       ]
     },
     {
@@ -184496,7 +184539,8 @@
         "hw2",
         "hw3",
         "hw6",
-        "shell2"
+        "shell2",
+        "shell6"
       ]
     },
     {
@@ -184537,7 +184581,8 @@
         "hw2",
         "hw5",
         "hw6",
-        "shell2"
+        "shell2",
+        "shell6"
       ]
     },
     {
@@ -184579,7 +184624,8 @@
         "hw4",
         "hw6",
         "shell2",
-        "shell3"
+        "shell3",
+        "shell6"
       ]
     },
     {
@@ -184622,7 +184668,8 @@
         "hw4",
         "hw6",
         "shell2",
-        "shell3"
+        "shell3",
+        "shell6"
       ]
     },
     {
@@ -184760,7 +184807,8 @@
         "diagnostics",
         "repeat",
         "lifecycle",
-        "shell2"
+        "shell2",
+        "shell6"
       ],
       "surface_ids": [
         "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
@@ -186509,6 +186557,397 @@
           {
             "op": "text",
             "text": "echo shell5-system-update"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:shell6:interface-compatibility",
+      "scenario": "Compatibilidade Simple/Classic e retorno deterministico ao Shell",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:shell6-interface-compatibility",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 360,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered",
+        "mutation": "snapshot-discarded",
+        "profiles_reused": [
+          "minimal",
+          "no-vesa",
+          "no-usb",
+          "no-audio",
+          "no-nic",
+          "no-acpi",
+          "no-storage"
+        ]
+      },
+      "preconditions": "imagem de teste pronta, teclado virtual e recursos opcionais conforme o perfil",
+      "action": "alternar modos, consultar display, abrir e fechar aplicativos nativos, cancelar cenas e retornar ao prompt",
+      "expected": "Simple, Classic e fallback textual permanecem utilizaveis sem prompt perdido, duplicado ou recurso residual",
+      "errors": "modo indisponivel, VESA ausente, entrada, foco, cancelamento, reentrada, prompt ou QEMU",
+      "effects": "mutacoes ficam restritas ao snapshot descartavel",
+      "cleanup": "encerrar cenas, jobs, callbacks e QEMU; descartar snapshot e preservar diagnosticos",
+      "surface_ids": [
+        "c:src/desktop/desktop.c:desktop_draw",
+        "c:src/desktop/desktop.c:desktop_handle_key",
+        "c:src/desktop/desktop.c:desktop_handle_mouse",
+        "c:src/desktop/desktop.c:desktop_set_mode",
+        "c:src/filemanager/filemanager.c:fm_close",
+        "c:src/filemanager/filemanager.c:fm_draw",
+        "c:src/filemanager/filemanager.c:fm_handle_key",
+        "c:src/filemanager/filemanager.c:fm_hosted_close",
+        "c:src/filemanager/filemanager.c:fm_hosted_draw",
+        "c:src/filemanager/filemanager.c:fm_hosted_mouse",
+        "c:src/filemanager/filemanager.c:fm_open",
+        "c:src/gui/display.c:display_apply_scale",
+        "c:src/gui/display.c:display_parse_scale",
+        "c:src/settings/settings.c:settings_close",
+        "c:src/settings/settings.c:settings_draw",
+        "c:src/settings/settings.c:settings_open",
+        "c:src/shell/guitest_app.c:guitest_close",
+        "c:src/shell/guitest_app.c:guitest_open",
+        "c:src/shell/shell_commands_apps.c:cmd_display",
+        "c:src/shell/shell_commands_apps.c:cmd_guimode",
+        "c:src/shell/shell_hosted.c:shell_hosted_close",
+        "c:src/shell/shell_hosted.c:shell_hosted_draw",
+        "c:src/shell/taskmanager.c:taskmgr_open_gui",
+        "c:src/shell/taskmanager.c:taskmgr_run",
+        "c:src/taskbar/taskbar.c:taskbar_draw",
+        "c:src/wm/wm.c:wm_handle_key",
+        "c:src/wm/wm.c:wm_handle_mouse"
+      ],
+      "status": "AUTOMATED",
+      "tags": [
+        "qemu",
+        "shell",
+        "shell6",
+        "interface",
+        "simple",
+        "classic",
+        "input",
+        "fallback",
+        "reentry",
+        "prompt",
+        "tst5"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "display status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "display scale normal"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "desktop"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3.0
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "taskmgr"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "settings"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "updater"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "guimode classic"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "display status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "desktop"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3.0
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "explorer"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 4.0
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "taskmgr"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "settings"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "updater"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "guitest"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "echo shell6-interface-compatibility"
           },
           {
             "op": "key",
@@ -188898,6 +189337,7 @@
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
         "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_close_hosted",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
         "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
         "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
@@ -190252,7 +190692,8 @@
         "shell1",
         "shell2",
         "shell3",
-        "shell4"
+        "shell4",
+        "shell6"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -190554,7 +190995,8 @@
         "hw3",
         "shell1",
         "shell2",
-        "shell3"
+        "shell3",
+        "shell6"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -191067,7 +191509,8 @@
         "tst5",
         "network",
         "offline",
-        "hw5"
+        "hw5",
+        "shell6"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -191731,7 +192174,8 @@
         "hw3",
         "shell1",
         "shell2",
-        "shell3"
+        "shell3",
+        "shell6"
       ],
       "status": "AUTOMATED",
       "interaction": {
@@ -191976,7 +192420,8 @@
         "hw3",
         "shell1",
         "shell2",
-        "shell3"
+        "shell3",
+        "shell6"
       ],
       "status": "AUTOMATED",
       "interaction": {
@@ -192113,6 +192558,7 @@
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
         "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_close_hosted",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
         "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
         "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
@@ -192768,7 +193214,8 @@
         "hw3",
         "shell1",
         "shell2",
-        "shell3"
+        "shell3",
+        "shell6"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -192911,6 +193358,7 @@
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
         "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_close_hosted",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
         "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
         "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
@@ -194062,7 +194510,8 @@
         "hw1",
         "hw2",
         "hw3",
-        "hw6"
+        "hw6",
+        "shell6"
       ]
     },
     {
@@ -194748,7 +195197,8 @@
         "hw2",
         "hw3",
         "hw5",
-        "hw6"
+        "hw6",
+        "shell6"
       ]
     },
     {
@@ -194789,7 +195239,8 @@
         "hw1",
         "hw2",
         "hw3",
-        "hw6"
+        "hw6",
+        "shell6"
       ]
     },
     {
@@ -194828,7 +195279,8 @@
         "hw2",
         "hw3",
         "hw6",
-        "shell3"
+        "shell3",
+        "shell6"
       ]
     },
     {
@@ -194869,7 +195321,8 @@
         "offline",
         "hw2",
         "hw5",
-        "hw6"
+        "hw6",
+        "shell6"
       ]
     },
     {
@@ -195011,7 +195464,8 @@
         "hw1",
         "hw2",
         "hw3",
-        "hw6"
+        "hw6",
+        "shell6"
       ]
     },
     {
@@ -195098,7 +195552,8 @@
         "hw3",
         "hw6",
         "shell2",
-        "shell3"
+        "shell3",
+        "shell6"
       ],
       "status": "AUTOMATED"
     },

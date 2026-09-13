@@ -129,6 +129,7 @@ static int updater_package_overflow = 0;
 static int updater_selected = 0;
 static int updater_scroll = 0;
 static int updater_active = 0;
+static int updater_restore_desktop = 0;
 static int updater_hosted = 0;
 static int updater_initialized = 0;
 static updater_mode_t updater_mode = UPDATER_MODE_SIMPLE;
@@ -2351,6 +2352,7 @@ int updater_open(void) {
         return wm_register_hosted_app(&updater_hosted_app);
     }
     updater_active = 1;
+    updater_restore_desktop = desktop_is_active();
     updater_tab = UPDATER_TAB_PACKAGES;
     updater_confirm = UPDATER_CONFIRM_NONE;
     updater_result_kind = UPDATER_RESULT_NONE;
@@ -2379,6 +2381,8 @@ int updater_open(void) {
 }
 
 void updater_close(void) {
+    int restore_desktop;
+
     if (!updater_active) return;
     if (updater_remote_job_busy) {
         updater_remote_cancel_requested = 1U;
@@ -2388,10 +2392,13 @@ void updater_close(void) {
         (void)wm_close_hosted_app(WM_APP_UPDATER);
         return;
     }
+    restore_desktop = updater_restore_desktop;
+    updater_restore_desktop = 0;
     updater_active = 0;
     updater_confirm = UPDATER_CONFIRM_NONE;
-    desktop_set_active(1);
-    desktop_draw();
+    desktop_set_active(restore_desktop);
+    if (restore_desktop) desktop_draw();
+    else video_terminal_begin();
     LOG_INFO("UPDATER", "System Updater fechado");
 }
 

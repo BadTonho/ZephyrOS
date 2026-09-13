@@ -186,9 +186,6 @@ void shell_handle_app_request(uint32_t request) {
         case IPC_APP_OPEN_EXPLORER:
             if (shell_runtime_prepare_filemanager() == OK) {
                 shell_runtime_suspend_terminal_for_scene();
-                if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
-                    desktop_set_active(0);
-                }
                 fm_run();
             } else {
                 video_print("Erro: File Manager indisponivel.\n", 0x0C);

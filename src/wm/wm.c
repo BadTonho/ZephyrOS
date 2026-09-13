@@ -172,13 +172,13 @@ static int wm_gui_has_live_windows(void) {
 }
 
 static int wm_gui_return_to_desktop_if_empty(void) {
-    if (!wm_active || !desktop_is_active() || wm_gui_has_live_windows()) {
+    if (!wm_active || wm_gui_has_live_windows()) {
         return 0;
     }
 
     wm_active = 0;
     wm_gui_reset();
-    desktop_draw();
+    if (desktop_is_active()) desktop_draw();
     return 1;
 }
 
@@ -1550,8 +1550,14 @@ static int wm_gui_handle_key(uint8_t scancode) {
             return WM_RESULT_NONE;
         }
         if (scancode == WM_SCANCODE_F4 && wm_gui_focused >= 0) {
+            int had_desktop = desktop_is_active();
+
             wm_gui_close(wm_gui_focused, 1);
-            if (!wm_gui_return_to_desktop_if_empty()) wm_gui_draw_all();
+            if (!wm_gui_return_to_desktop_if_empty()) {
+                wm_gui_draw_all();
+            } else if (!had_desktop) {
+                return WM_RESULT_EXIT;
+            }
             return WM_RESULT_NONE;
         }
         if (scancode == WM_SCANCODE_F9 && wm_gui_focused >= 0) {

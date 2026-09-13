@@ -495,6 +495,7 @@ static int keyboard_process_raw_byte(uint8_t scancode) {
     uint8_t released;
     uint16_t usage;
     input_key_event_t event;
+    uint8_t extended = keyboard_ps2_extended;
 
     if (scancode == 0xE0U) {
         keyboard_ps2_extended = 1U;
@@ -505,7 +506,10 @@ static int keyboard_process_raw_byte(uint8_t scancode) {
         return 0;
     }
     released = (scancode & 0x80U) ? 1U : 0U;
-    usage = keyboard_ps2_usage(scancode & 0x7FU, keyboard_ps2_extended);
+    usage = keyboard_ps2_usage(scancode & 0x7FU, extended);
+    if (!usage && extended) {
+        usage = keyboard_ps2_usage(scancode & 0x7FU, 0U);
+    }
     keyboard_ps2_extended = 0U;
     if (!usage) return 0;
     event.usage = usage;

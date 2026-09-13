@@ -302,9 +302,11 @@ void wm_set_active(int active) {
 }
 
 static uint8_t fixture_ipc_exit_sent;
+static uint32_t fixture_ipc_waits;
+static uint32_t fixture_yield_count;
 
 int ipc_receive(ipc_msg_t* message) {
-    if (!message || fixture_ipc_exit_sent) return 0;
+    if (!message || fixture_ipc_exit_sent || fixture_ipc_waits < 6U) return 0;
     message->type = IPC_MSG_KEYBOARD;
     message->data1 = 0x01U;
     message->data2 = 0U;
@@ -315,10 +317,12 @@ int ipc_receive(ipc_msg_t* message) {
 int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
     (void)timeout_ticks;
     if (out_reason) *out_reason = WAIT_REASON_NONE;
+    fixture_ipc_waits++;
     return OK;
 }
 
 void process_yield(void) {
+    fixture_yield_count++;
 }
 
 void taskbar_remove_app(tb_app_type_t app) {
@@ -329,7 +333,14 @@ void desktop_set_active(int active) {
     (void)active;
 }
 
+int desktop_is_active(void) {
+    return 0;
+}
+
 void desktop_draw(void) {
+}
+
+void video_terminal_begin(void) {
 }
 
 int wm_close_hosted_app(wm_app_type_t app_type) {
@@ -375,7 +386,7 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
 }
 
 uint32_t timer_get_ticks(void) {
-    return 1U;
+    return fixture_ipc_waits + 1U;
 }
 
 void vesa_draw_hline(uint32_t x, uint32_t y, uint32_t width,
@@ -455,6 +466,9 @@ int main(void) {
     coverage_active = 1U;
     result = taskmgr_host_test_contracts();
     coverage_active = 0U;
+    if (result == 0 && fixture_yield_count == 0U) {
+        result = 51;
+    }
     if (result != 0) printf("TASKMANAGER_HOST_FAIL:%d\n", result);
     coverage_emit(result);
     return result == 0 ? 0 : 1;

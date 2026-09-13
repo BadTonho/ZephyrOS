@@ -2,7 +2,7 @@
 
 ## Estado
 
-SHELL1, SHELL2, SHELL3 e SHELL4 concluidos e validados; SHELL5 implementado com validacao pendente; SHELL6 permanece planejado.
+SHELL1, SHELL2, SHELL3, SHELL4, SHELL5 e SHELL6 concluidos e validados.
 
 Esta frente fecha a experiência básica de uso do ZephyrOS depois
 que kernel, segurança, Storage e hardware estiverem com contratos estáveis.
@@ -114,14 +114,14 @@ ou ferramentas de programação.
 
 ### SHELL6 — Interface e compatibilidade de uso
 
-- [ ] Validar Classic com VESA/backbuffer e Simple com VGA textual.
-- [ ] Confirmar foco, teclado, mouse, USB HID, escalas, cores, mensagens e
+- [x] Validar Classic com VESA/backbuffer e Simple com VGA textual.
+- [x] Confirmar foco, teclado, mouse, USB HID, escalas, cores, mensagens e
   acessibilidade básica.
-- [ ] Repetir abertura e fechamento dos aplicativos nativos sem vazamentos ou
+- [x] Repetir abertura e fechamento dos aplicativos nativos sem vazamentos ou
   prompt ausente.
-- [ ] Validar cenários sem VESA, mouse, áudio, USB, NIC, ACPI e Storage
+- [x] Validar cenários sem VESA, mouse, áudio, USB, NIC, ACPI e Storage
   adicional.
-- [ ] Registrar diferenças legítimas entre Simple e Classic sem duplicar a
+- [x] Registrar diferenças legítimas entre Simple e Classic sem duplicar a
   política de domínio.
 
 ## Contratos
@@ -267,4 +267,34 @@ Estado da etapa: concluída e validada em 2026-09-12. `make q3check`, `make clea
 `make test-shell5-qemu SHELL5_QEMU_WORKERS=4 SHELL5_QEMU_SEED=2205` passou
 5/5 casos no run `qpp-20260912T213325Z-10552`, com retorno ao prompt e sem
 processo QEMU residual. `DT100-003`, `DT100-004` e `DT100-005` permanecem
+separadas.
+
+### Validacao SHELL6
+
+O conjunto deterministico da etapa e:
+
+```text
+make q3check
+make clean && make
+make test-shell6-host
+make catalog-test
+make test-shell6-qemu SHELL6_QEMU_WORKERS=4 SHELL6_QEMU_SEED=2206
+```
+
+O caso dedicado `qemu:shell6:interface-compatibility` valida a alternancia
+Simple/Classic, display, escala, Desktop, Explorer, Task Manager, Settings,
+Updater, GUI Test, cancelamento, reentrada e retorno ao prompt. A tag shell6
+reutiliza os casos de entrada, aplicativos, Simple/Classic e perfis sem
+hardware opcional em snapshots independentes.
+
+Estado da etapa: concluida e validada em 2026-09-13. `make q3check`,
+`make clean && make`, `make test-shell6-host` e `make catalog-test` passaram.
+A matriz `make test-shell6-qemu SHELL6_QEMU_WORKERS=4
+SHELL6_QEMU_SEED=2206` passou 20/20 casos no run
+`qpp-20260913T001533Z-29228`, incluindo o caso dedicado, os perfis sem
+hardware opcional e os diagnósticos repetidos. Os artefatos estão em
+`build/test-results/shell6/qpp-20260913T001533Z-29228/`; não houve timeout,
+falha nova ou processo QEMU residual. A matriz reproduziu e cobriu a
+necessidade de ceder CPU durante a atualização periódica do Task Manager.
+`DT100-003`, `DT100-004`, `DT100-005` e a dívida física do PS/2 permanecem
 separadas.

@@ -585,3 +585,14 @@ usa nearest-neighbor durante o desenho, sem nova alocação, para produzir
 
 O comando Shell `icons` mostra o estado do filesystem e se cada um dos três
 ícones de Desktop está em modo `BMP` ou `FALLBACK`.
+## Compatibilidade SHELL6
+
+A validacao final da interface usa os dois modos existentes. Classic exige
+VESA e backbuffer validos; Simple continua operacional pela VGA textual e
+serial quando o caminho grafico estiver ausente. A alternancia, a escala e o
+foco nao criam uma segunda politica de dominio.
+
+Explorer, Task Manager, Settings, Updater, Desktop, Window Manager, Taskbar e
+GUI Test devem abrir e fechar repetidamente, descartando entradas de geracoes
+antigas e devolvendo o controle ao Shell. Perfis sem hardware opcional devem
+manter o fallback sem panic, espera infinita ou tela vazia.

@@ -533,6 +533,7 @@ static void cmd_guimode(const char* args) {
     if (kstrcmp(mode_name, "simple") == 0) {
         result = desktop_set_mode(DESKTOP_MODE_SIMPLE);
         if (result == OK) {
+            shell_runtime_close_hosted();
             if (wm_is_active()) wm_set_active(0);
             desktop_set_active(0);
             shell_runtime_resume_terminal();

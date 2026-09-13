@@ -234,12 +234,26 @@ static int test_registration_failure(void) {
     return 0;
 }
 
+static int test_runtime_close_releases_terminal(void) {
+    reset_fixture();
+    fake_desktop_mode = DESKTOP_MODE_CLASSIC;
+    fake_wm_focused = 1;
+    if (shell_hosted_open() != OK || !fake_terminal_hosted) return 20;
+    shell_runtime_close_hosted();
+    if (fake_terminal_hosted || shell_runtime_is_hosted_visible() ||
+        fake_reset_modifiers_calls != 1U) return 21;
+    shell_runtime_close_hosted();
+    if (fake_terminal_hosted || fake_reset_modifiers_calls != 1U) return 22;
+    return 0;
+}
+
 int main(void) {
     int result = 0;
 
     coverage_active = 1U;
     if (!result) result = test_unavailable_mode();
     if (!result) result = test_callbacks_and_close();
+    if (!result) result = test_runtime_close_releases_terminal();
     if (!result) result = test_registration_failure();
     coverage_active = 0U;
     coverage_emit(result);

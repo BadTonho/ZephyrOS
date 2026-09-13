@@ -180,6 +180,10 @@ void shell_runtime_resume_terminal(void) {
     fixture_calls_runtime++;
 }
 
+void shell_runtime_close_hosted(void) {
+    fixture_calls_runtime++;
+}
+
 void shell_runtime_suspend_terminal(void) {
     fixture_calls_runtime++;
 }

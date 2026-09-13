@@ -16,3 +16,8 @@ make test-sto2-host
 git pull
 git ls-files --error-unmatch tools/tst7_continuous_runner.py
 make test-tst7-continuous-parallel QEMU_PARALLEL_WORKERS=6
+
+# SHELL6 - interface e compatibilidade
+make test-shell6-host
+make test-shell6-qemu SHELL6_QEMU_WORKERS=4 SHELL6_QEMU_SEED=2206
+make test-shell6

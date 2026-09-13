@@ -65,6 +65,7 @@ int shell_packages_host_test_contracts(void);
 #endif
 
 void shell_hosted_reset(void);
+void shell_runtime_close_hosted(void);
 int shell_hosted_open(void);
 void shell_hosted_present_progress(void);
 

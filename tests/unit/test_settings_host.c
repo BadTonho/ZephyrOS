@@ -247,8 +247,10 @@ void wm_set_show_title(int show) { (void)show; }
 void wm_set_border_style(int style) { (void)style; }
 
 desktop_mode_t desktop_get_mode(void) { return host_desktop_mode; }
+int desktop_is_active(void) { return 0; }
 void desktop_set_active(int active) { (void)active; }
 void desktop_draw(void) {}
+void video_terminal_begin(void) {}
 
 int recovery_is_enabled(recovery_component_id_t component) {
     (void)component;

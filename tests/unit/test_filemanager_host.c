@@ -3,6 +3,7 @@
 
 #include "core/log.h"
 #include "core/errors.h"
+#include "core/recovery.h"
 #include "core/string.h"
 #include "drivers/vesa.h"
 #include "fs/file_index.h"
@@ -28,6 +29,7 @@ static int fixture_storage_ready;
 static int fixture_data_present;
 static int fixture_data_mounted;
 static desktop_mode_t fixture_desktop_mode;
+static int fixture_desktop_active;
 static icon_entry_t fixture_icons[ICON_FM_COUNT] = {
     {'D', 0x0BU, 0x70U},
     {'F', 0x07U, 0x70U}
@@ -71,6 +73,7 @@ static void fixture_reset(void) {
     fixture_data_present = 1;
     fixture_data_mounted = 1;
     fixture_desktop_mode = DESKTOP_MODE_SIMPLE;
+    fixture_desktop_active = 0;
     kmemset(&fixture_vesa_mode, 0, sizeof(fixture_vesa_mode));
     fixture_vesa_mode.width = VESA_WIDTH_1024;
     fixture_vesa_mode.height = VESA_HEIGHT_768;
@@ -457,8 +460,27 @@ void taskbar_remove_app(tb_app_type_t type) {
     (void)type;
 }
 
+void taskbar_add_app(tb_app_type_t type, const char* name) {
+    (void)type;
+    (void)name;
+}
+
+int taskbar_handle_config_key(uint8_t scancode) {
+    (void)scancode;
+    return 0;
+}
+
+int taskbar_handle_key(uint8_t scancode) {
+    (void)scancode;
+    return 0;
+}
+
 void desktop_set_active(int active) {
-    (void)active;
+    fixture_desktop_active = active;
+}
+
+int desktop_is_active(void) {
+    return fixture_desktop_active;
 }
 
 void desktop_draw(void) {}
@@ -478,6 +500,39 @@ int display_get_metrics(display_metrics_t* metrics) {
 
 int wm_close_hosted_app(wm_app_type_t app_type) {
     (void)app_type;
+    return OK;
+}
+
+void wm_set_active(int active) {
+    (void)active;
+}
+
+int wm_register_hosted_app(const wm_hosted_app_t* app) {
+    (void)app;
+    return OK;
+}
+
+int recovery_is_enabled(recovery_component_id_t component) {
+    (void)component;
+    return 1;
+}
+
+void shell_handle_app_request(uint32_t request) {
+    (void)request;
+}
+
+int fs_write_file_in_dir(const char* dir_path, const char* filename,
+                         const uint8_t* data, uint32_t size) {
+    (void)dir_path;
+    (void)filename;
+    (void)data;
+    (void)size;
+    return OK;
+}
+
+int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
+    (void)dir_path;
+    (void)filename;
     return OK;
 }
 
@@ -515,6 +570,10 @@ void filemanager_host_set_delete_result(int result) {
 
 void filemanager_host_set_desktop_mode(desktop_mode_t mode) {
     fixture_desktop_mode = mode;
+}
+
+void filemanager_host_set_desktop_active(int active) {
+    fixture_desktop_active = active;
 }
 
 int main(void) {

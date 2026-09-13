@@ -534,11 +534,18 @@ desktop_mode_t desktop_get_mode(void) {
     return fixture_desktop_mode;
 }
 
+int desktop_is_active(void) {
+    return 0;
+}
+
 void desktop_set_active(int active) {
     (void)active;
 }
 
 void desktop_draw(void) {
+}
+
+void video_terminal_begin(void) {
 }
 
 void wm_set_active(int active) {

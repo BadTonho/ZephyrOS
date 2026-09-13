@@ -75,9 +75,19 @@ static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
     return 1;
 }
 
-static void shell_hosted_close(void) {
+static void shell_hosted_release(void) {
     shell_hosted_visible = 0;
     shell_input_reset_modifiers();
+    video_terminal_set_hosted(0);
+}
+
+static void shell_hosted_close(void) {
+    shell_hosted_release();
+}
+
+void shell_runtime_close_hosted(void) {
+    if (!shell_hosted_visible && !video_terminal_is_hosted()) return;
+    shell_hosted_release();
 }
 
 int shell_hosted_open(void) {

@@ -540,3 +540,13 @@ Simple como fallback, preservam o contexto da cena e retornam ao prompt pelo
 ciclo central de SHELL1. As mutacoes do caso QEMU ocorrem apenas em snapshot
 descartavel. A matriz dedicada `qemu:shell3:files-admin` usa a tag `shell3`,
 confirma retorno ao prompt e preserva os artefatos de cada worker.
+## Validacao de compatibilidade SHELL6
+
+O Shell preserva Simple como fallback textual e usa Classic somente quando
+VESA e backbuffer estao prontos. A matriz SHELL6 repete a entrada por teclado,
+mouse e USB HID, alterna `guimode`, exercita cenas nativas e exige retorno ao
+prompt apos fechamento, cancelamento ou indisponibilidade de hardware.
+
+Os perfis sem VESA, USB, audio, NIC, ACPI e Storage adicional nao alteram a
+politica de dominio: publicam fallback ou degradacao esperada e nao deixam
+callbacks, filas, locks, jobs ou handles residuais.

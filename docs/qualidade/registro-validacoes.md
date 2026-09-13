@@ -7490,3 +7490,27 @@ dívida.
   `build/test-results/shell5/qpp-20260912T213325Z-10552/`; não houve processo
   QEMU residual. Estado: SHELL5 `PASS`. `DT100-003`, `DT100-004` e `DT100-005`
   continuam separadas.
+
+- SHELL6 - interface e compatibilidade de uso - implementacao e validacao
+  registradas em 2026-09-13 (America/Sao_Paulo). A matriz adicionou o caso
+  dedicado `qemu:shell6:interface-compatibility`, o mapeamento black-box, a
+  matriz host-only e os agregados Windows/Linux. A cobertura reutiliza Shell,
+  entrada, aplicativos, Simple/Classic, VESA, USB HID, diagnosticos e perfis
+  sem hardware opcional em snapshots independentes.
+
+  A matriz reproduziu que a atualizacao periodica do Task Manager podia
+  monopolizar a CPU do guest e impedir heartbeat, entrada e retorno ao prompt.
+  O caminho passou a ceder CPU pelo mecanismo existente, com teste host-only
+  direto para a saida cooperativa. Nenhum perfil QEMU ou contrato publico foi
+  alterado.
+
+  Passaram `make q3check`, `make clean`, `make`, `make test-shell6-host`
+  e `make catalog-test`. O catalogo terminou valido com 7.690 superficies e
+  195 casos. A matriz `make test-shell6-qemu SHELL6_QEMU_WORKERS=4
+  SHELL6_QEMU_SEED=2206` passou 20/20 casos no run
+  `qpp-20260913T001533Z-29228`, com artefatos em
+  `build/test-results/shell6/qpp-20260913T001533Z-29228/`; nao houve timeout,
+  falha nova ou processo QEMU residual. `DT100-003`, `DT100-004`,
+  `DT100-005` e a divida fisica do PS/2 permanecem separadas.
+
+  Estado: SHELL6 `PASS`.
