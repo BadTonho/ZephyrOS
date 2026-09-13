@@ -8913,6 +8913,32 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/core/input.h:input_get_flow_metrics",
+      "kind": "api_function",
+      "source": "src/include/core/input.h",
+      "symbol": "input_get_flow_metrics",
+      "linkage": "public",
+      "owner": "core",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:input",
+        "qemu:tst4:platform",
+        "qemu:tst5:apps",
+        "qemu:tst5:input",
+        "qemu:tst5:shell",
+        "qemu:tst6:matrix:baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/core/input.h:input_get_metrics",
       "kind": "api_function",
       "source": "src/include/core/input.h",
@@ -9629,6 +9655,30 @@
       "kind": "api_function",
       "source": "src/include/core/keyboard.h",
       "symbol": "keyboard_controller_reset_available",
+      "linkage": "public",
+      "owner": "core",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard",
+        "qemu:tst5:apps",
+        "qemu:tst5:input",
+        "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/core/keyboard.h:keyboard_get_flow_metrics",
+      "kind": "api_function",
+      "source": "src/include/core/keyboard.h",
+      "symbol": "keyboard_get_flow_metrics",
       "linkage": "public",
       "owner": "core",
       "layer": "public-header",
@@ -22393,6 +22443,30 @@
       "kind": "api_function",
       "source": "src/include/drivers/mouse.h",
       "symbol": "mouse_get_config",
+      "linkage": "public",
+      "owner": "drivers",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse",
+        "qemu:tst5:apps",
+        "qemu:tst5:input",
+        "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
+      "kind": "api_function",
+      "source": "src/include/drivers/mouse.h",
+      "symbol": "mouse_get_flow_metrics",
       "linkage": "public",
       "owner": "drivers",
       "layer": "public-header",
@@ -61560,6 +61634,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/input.c:input_get_flow_metrics",
+      "kind": "c_function",
+      "source": "src/core/input.c",
+      "symbol": "input_get_flow_metrics",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/core/input.c:input_get_metrics",
       "kind": "c_function",
       "source": "src/core/input.c",
@@ -65219,7 +65311,6 @@
         "host:core:contracts",
         "host:core:crypto",
         "host:core:device-manager",
-        "host:core:input",
         "host:core:network-manager",
         "host:core:power",
         "host:core:scheduling",
@@ -65495,7 +65586,6 @@
         "host:core:contracts",
         "host:core:crypto",
         "host:core:device-manager",
-        "host:core:input",
         "host:core:network-manager",
         "host:core:power",
         "host:core:scheduling",
@@ -100104,12 +100194,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_controller_reset",
@@ -100175,6 +100266,24 @@
       ],
       "tags": [],
       "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/drivers/keyboard.c:keyboard_get_flow_metrics",
+      "kind": "c_function",
+      "source": "src/drivers/keyboard.c",
+      "symbol": "keyboard_get_flow_metrics",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_get_metrics",
@@ -100281,12 +100390,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_irq_save",
@@ -100304,12 +100414,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_process_events",
@@ -100351,12 +100462,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_ps2_usage",
@@ -100374,12 +100486,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_raw_enqueue",
@@ -100397,12 +100510,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_scancode_to_ascii",
@@ -100861,6 +100975,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/drivers/mouse.c:mouse_get_flow_metrics",
+      "kind": "c_function",
+      "source": "src/drivers/mouse.c",
+      "symbol": "mouse_get_flow_metrics",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/drivers/mouse.c:mouse_get_status",
       "kind": "c_function",
       "source": "src/drivers/mouse.c",
@@ -101098,6 +101230,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/drivers/mouse.c:mouse_prepare_event_batch",
+      "kind": "c_function",
+      "source": "src/drivers/mouse.c",
+      "symbol": "mouse_prepare_event_batch",
+      "linkage": "static",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/drivers/mouse.c:mouse_present_cursor",
       "kind": "c_function",
       "source": "src/drivers/mouse.c",
@@ -101189,6 +101339,60 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/drivers/mouse.c:mouse_queue_count",
+      "kind": "c_function",
+      "source": "src/drivers/mouse.c",
+      "symbol": "mouse_queue_count",
+      "linkage": "static",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/drivers/mouse.c:mouse_raw_queue_count",
+      "kind": "c_function",
+      "source": "src/drivers/mouse.c",
+      "symbol": "mouse_raw_queue_count",
+      "linkage": "static",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/drivers/mouse.c:mouse_raw_queue_pending",
+      "kind": "c_function",
+      "source": "src/drivers/mouse.c",
+      "symbol": "mouse_raw_queue_pending",
+      "linkage": "static",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_read",
@@ -173388,6 +173592,7 @@
       "status": "AUTOMATED",
       "surface_ids": [
         "api:src/include/core/input.h:input_dispatch",
+        "api:src/include/core/input.h:input_get_flow_metrics",
         "api:src/include/core/input.h:input_get_metrics",
         "api:src/include/core/input.h:input_init",
         "api:src/include/core/input.h:input_publish_key",
@@ -173432,10 +173637,8 @@
         "c:src/core/input.c:input_register_pointer_sink",
         "c:src/core/input.c:input_source_valid",
         "c:src/core/input.c:input_validate_state",
-        "c:src/core/log.c:log_console_print_number",
         "c:src/core/log.c:log_copy_text",
         "c:src/core/log.c:log_init",
-        "c:src/core/log.c:log_is_power_of_two",
         "c:src/core/log.c:log_level_is_valid",
         "c:src/core/log.c:log_print",
         "c:src/core/log.c:log_print_colored",
@@ -176418,6 +176621,7 @@
       "surface_ids": [
         "api:src/include/core/keyboard.h:keyboard_controller_reset",
         "api:src/include/core/keyboard.h:keyboard_controller_reset_available",
+        "api:src/include/core/keyboard.h:keyboard_get_flow_metrics",
         "api:src/include/core/keyboard.h:keyboard_get_metrics",
         "api:src/include/core/keyboard.h:keyboard_handler",
         "api:src/include/core/keyboard.h:keyboard_init",
@@ -176426,12 +176630,18 @@
         "api:src/include/core/keyboard.h:keyboard_scancode_to_ascii_shifted",
         "api:src/include/core/keyboard.h:keyboard_set_focus_cancel_filter",
         "c:src/drivers/keyboard.c:inb",
+        "c:src/drivers/keyboard.c:keyboard_bottom_half",
         "c:src/drivers/keyboard.c:keyboard_controller_reset",
         "c:src/drivers/keyboard.c:keyboard_controller_reset_available",
         "c:src/drivers/keyboard.c:keyboard_get_metrics",
         "c:src/drivers/keyboard.c:keyboard_handler",
         "c:src/drivers/keyboard.c:keyboard_init",
+        "c:src/drivers/keyboard.c:keyboard_irq_restore",
+        "c:src/drivers/keyboard.c:keyboard_irq_save",
         "c:src/drivers/keyboard.c:keyboard_process_events",
+        "c:src/drivers/keyboard.c:keyboard_process_raw_byte",
+        "c:src/drivers/keyboard.c:keyboard_ps2_usage",
+        "c:src/drivers/keyboard.c:keyboard_raw_enqueue",
         "c:src/drivers/keyboard.c:keyboard_scancode_to_ascii",
         "c:src/drivers/keyboard.c:keyboard_scancode_to_ascii_shifted",
         "c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter",
@@ -176534,6 +176744,7 @@
       "surface_ids": [
         "api:src/include/drivers/mouse.h:mouse_get_buttons",
         "api:src/include/drivers/mouse.h:mouse_get_config",
+        "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
         "api:src/include/drivers/mouse.h:mouse_get_status",
         "api:src/include/drivers/mouse.h:mouse_get_x",
         "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -188818,6 +189029,7 @@
         "api:src/include/core/device_manager.h:device_manager_refresh",
         "api:src/include/core/device_manager.h:device_manager_status_name",
         "api:src/include/core/input.h:input_dispatch",
+        "api:src/include/core/input.h:input_get_flow_metrics",
         "api:src/include/core/input.h:input_get_metrics",
         "api:src/include/core/input.h:input_init",
         "api:src/include/core/input.h:input_publish_key",
@@ -190005,6 +190217,7 @@
         "api:src/include/core/app_loader.h:app_loader_take_finished_result",
         "api:src/include/core/app_loader.h:app_loader_validate_image",
         "api:src/include/core/input.h:input_dispatch",
+        "api:src/include/core/input.h:input_get_flow_metrics",
         "api:src/include/core/input.h:input_get_metrics",
         "api:src/include/core/input.h:input_init",
         "api:src/include/core/input.h:input_publish_key",
@@ -190014,6 +190227,7 @@
         "api:src/include/core/input.h:input_validate_state",
         "api:src/include/core/keyboard.h:keyboard_controller_reset",
         "api:src/include/core/keyboard.h:keyboard_controller_reset_available",
+        "api:src/include/core/keyboard.h:keyboard_get_flow_metrics",
         "api:src/include/core/keyboard.h:keyboard_get_metrics",
         "api:src/include/core/keyboard.h:keyboard_handler",
         "api:src/include/core/keyboard.h:keyboard_init",
@@ -190114,6 +190328,7 @@
         "api:src/include/drivers/font.h:font_init",
         "api:src/include/drivers/mouse.h:mouse_get_buttons",
         "api:src/include/drivers/mouse.h:mouse_get_config",
+        "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
         "api:src/include/drivers/mouse.h:mouse_get_status",
         "api:src/include/drivers/mouse.h:mouse_get_x",
         "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -191473,6 +191688,7 @@
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
         "api:src/include/core/input.h:input_dispatch",
+        "api:src/include/core/input.h:input_get_flow_metrics",
         "api:src/include/core/input.h:input_get_metrics",
         "api:src/include/core/input.h:input_init",
         "api:src/include/core/input.h:input_publish_key",
@@ -191482,6 +191698,7 @@
         "api:src/include/core/input.h:input_validate_state",
         "api:src/include/core/keyboard.h:keyboard_controller_reset",
         "api:src/include/core/keyboard.h:keyboard_controller_reset_available",
+        "api:src/include/core/keyboard.h:keyboard_get_flow_metrics",
         "api:src/include/core/keyboard.h:keyboard_get_metrics",
         "api:src/include/core/keyboard.h:keyboard_handler",
         "api:src/include/core/keyboard.h:keyboard_init",
@@ -191491,6 +191708,7 @@
         "api:src/include/core/keyboard.h:keyboard_set_focus_cancel_filter",
         "api:src/include/drivers/mouse.h:mouse_get_buttons",
         "api:src/include/drivers/mouse.h:mouse_get_config",
+        "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
         "api:src/include/drivers/mouse.h:mouse_get_status",
         "api:src/include/drivers/mouse.h:mouse_get_x",
         "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -192478,6 +192696,260 @@
           {
             "op": "text",
             "text": "echo tst5-perf1-baseline"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:perf2-input-responsiveness",
+      "scenario": "Responsividade de entrada PS/2 sob carga temporizada no guest e no QEMU",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:perf2-input-responsiveness",
+      "qemu_profile": "baseline",
+      "timeout_seconds": 240,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1 + ZMETRIC/1",
+        "input": "qmp-input",
+        "profiles": "baseline,baseline,no-vesa",
+        "modes": "simple,classic,simple-fallback",
+        "iterations": 3,
+        "stress_seconds": 10,
+        "cycle_ms": 100,
+        "host_sample_interval_seconds": 0.25,
+        "diagnostics": "irqstat check,irqstat list,mouse,regcheck full,job status,proccheck,kmetrics machine"
+      },
+      "preconditions": "imagem pronta, QEMU com input-send-event, serial, QMP e dispositivo PS/2 disponiveis",
+      "action": "selecionar o Shell, capturar baseline, executar diagnosticos somente leitura durante carga QMP de teclado e mouse, cancelar regcheck com F11 e capturar amostra final",
+      "expected": "cada sessao retorna o prompt e o marcador TST5; o envelope guest tem tres amostras completas; press, release e roda preservam a contagem enviada; descartes e rejeicoes permanecem zero; o relatorio registra host e input.log",
+      "errors": "QMP sem suporte a input-send-event, envelope ausente ou truncado, chave duplicada, metricas guest ND, descarte, overflow, rejeicao deferred, timeout, prompt preso ou diagnostico negativo",
+      "effects": "somente eventos QMP, snapshots de metricas e diagnosticos observacionais; o estresse nao existe como comando produtivo e update/recovery permanecem sem mutacao",
+      "cleanup": "encerrar cada QEMU isolado e preservar serial, QMP, input.log, amostras host e relatorio JSON",
+      "status": "AUTOMATED",
+      "tags": [
+        "qemu",
+        "tst5",
+        "perf2",
+        "input",
+        "keyboard",
+        "mouse",
+        "ps2",
+        "simple",
+        "classic",
+        "fallback"
+      ],
+      "surface_ids": [],
+      "interaction": {
+        "mode": "qmp-input",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "irqstat check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "irqstat list"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "mouse"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "stress",
+            "seconds": 10,
+            "cycle_ms": 100
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 5.0
+          },
+          {
+            "op": "text",
+            "text": "irqstat check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "irqstat list"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "mouse"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "job status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-perf2-input"
           },
           {
             "op": "key",
@@ -193520,6 +193992,7 @@
         "api:src/include/core/app_loader.h:app_loader_take_finished_result",
         "api:src/include/core/app_loader.h:app_loader_validate_image",
         "api:src/include/core/input.h:input_dispatch",
+        "api:src/include/core/input.h:input_get_flow_metrics",
         "api:src/include/core/input.h:input_get_metrics",
         "api:src/include/core/input.h:input_init",
         "api:src/include/core/input.h:input_publish_key",
@@ -193529,6 +194002,7 @@
         "api:src/include/core/input.h:input_validate_state",
         "api:src/include/core/keyboard.h:keyboard_controller_reset",
         "api:src/include/core/keyboard.h:keyboard_controller_reset_available",
+        "api:src/include/core/keyboard.h:keyboard_get_flow_metrics",
         "api:src/include/core/keyboard.h:keyboard_get_metrics",
         "api:src/include/core/keyboard.h:keyboard_handler",
         "api:src/include/core/keyboard.h:keyboard_init",
@@ -193578,6 +194052,7 @@
         "api:src/include/drivers/font.h:font_init",
         "api:src/include/drivers/mouse.h:mouse_get_buttons",
         "api:src/include/drivers/mouse.h:mouse_get_config",
+        "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
         "api:src/include/drivers/mouse.h:mouse_get_status",
         "api:src/include/drivers/mouse.h:mouse_get_x",
         "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -195483,6 +195958,7 @@
         "api:src/include/core/device_manager.h:device_manager_refresh",
         "api:src/include/core/device_manager.h:device_manager_status_name",
         "api:src/include/core/input.h:input_dispatch",
+        "api:src/include/core/input.h:input_get_flow_metrics",
         "api:src/include/core/input.h:input_get_metrics",
         "api:src/include/core/input.h:input_init",
         "api:src/include/core/input.h:input_publish_key",

@@ -325,6 +325,9 @@ static block_cache_stats_t fixture_block_cache_stats;
 static block_durability_status_t fixture_block_durability;
 static process_signal_stats_t fixture_signal_stats;
 static input_metrics_t fixture_input_metrics;
+static input_flow_metrics_t fixture_input_flow_metrics;
+static keyboard_flow_metrics_t fixture_keyboard_flow_metrics;
+static mouse_flow_metrics_t fixture_mouse_flow_metrics;
 static shell_job_status_t fixture_shell_job_status;
 static int fixture_shell_job_result;
 static block_queue_stats_t fixture_block_stats;
@@ -1555,6 +1558,12 @@ static void fixture_reset(void) {
     fixture_input_metrics.initialized = 1U;
     fixture_input_metrics.key_capacity = INPUT_KEY_QUEUE_CAPACITY;
     fixture_input_metrics.pointer_capacity = INPUT_POINTER_QUEUE_CAPACITY;
+    kmemset(&fixture_input_flow_metrics, 0,
+            sizeof(fixture_input_flow_metrics));
+    kmemset(&fixture_keyboard_flow_metrics, 0,
+            sizeof(fixture_keyboard_flow_metrics));
+    kmemset(&fixture_mouse_flow_metrics, 0,
+            sizeof(fixture_mouse_flow_metrics));
     kmemset(&fixture_user_fault, 0, sizeof(fixture_user_fault));
     kmemset(processes, 0, sizeof(processes));
     processes[0] = &fixture_user_process;
@@ -2006,6 +2015,12 @@ uint32_t serial_flush(uint32_t budget) {
 
 void keyboard_get_metrics(keyboard_metrics_t* metrics) {
     if (metrics) *metrics = fixture_keyboard_metrics;
+}
+
+int keyboard_get_flow_metrics(keyboard_flow_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_keyboard_flow_metrics;
+    return OK;
 }
 
 void ipc_get_stats(ipc_stats_t* stats) {
@@ -2798,6 +2813,12 @@ int input_get_metrics(input_metrics_t* metrics) {
     return OK;
 }
 
+int input_get_flow_metrics(input_flow_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_input_flow_metrics;
+    return OK;
+}
+
 uint32_t memory_get_total(void) {
     return 1024U * 1024U;
 }
@@ -3239,6 +3260,12 @@ int mouse_get_status(mouse_status_t* status) {
     if (!status) return ERR_NULL;
     if (fixture_mouse_status_result != OK) return fixture_mouse_status_result;
     *status = fixture_mouse_status;
+    return OK;
+}
+
+int mouse_get_flow_metrics(mouse_flow_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_mouse_flow_metrics;
     return OK;
 }
 

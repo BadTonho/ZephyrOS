@@ -46,6 +46,13 @@ typedef struct {
     int last_error;
 } input_metrics_t;
 
+typedef struct {
+    uint32_t key_coalesced;
+    uint32_t pointer_coalesced;
+    uint32_t key_rejected;
+    uint32_t pointer_rejected;
+} input_flow_metrics_t;
+
 /* HID Usage IDs usados pelo contrato de entrada do ZephyrOS. */
 #define INPUT_USAGE_A 0x04U
 #define INPUT_USAGE_B (INPUT_USAGE_A + 1U)
@@ -144,6 +151,7 @@ int input_publish_key(const input_key_event_t* event);
 int input_publish_pointer(const input_pointer_event_t* event);
 int input_dispatch(uint32_t budget, uint32_t* out_processed);
 int input_get_metrics(input_metrics_t* out_metrics);
+int input_get_flow_metrics(input_flow_metrics_t* out_metrics);
 int input_validate_state(void);
 
 #endif

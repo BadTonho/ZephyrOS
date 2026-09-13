@@ -5,6 +5,7 @@
 #include "apps/shell_job.h"
 #include "core/ethernet.h"
 #include "core/input.h"
+#include "core/irq_deferred.h"
 #include "core/keyboard.h"
 #include "core/network_manager.h"
 #include "core/recovery.h"
@@ -13,6 +14,7 @@
 #include "core/update_system_slots.h"
 #include "core/workqueue.h"
 #include "drivers/idt.h"
+#include "drivers/mouse.h"
 #include "drivers/vesa.h"
 #include "fs/block.h"
 #include "fs/block_cache.h"
@@ -54,11 +56,18 @@ typedef struct {
     uint32_t process_count;
     uint32_t user_process_count;
     keyboard_metrics_t keyboard;
+    keyboard_flow_metrics_t keyboard_flow;
     input_metrics_t input;
+    input_flow_metrics_t input_flow;
+    mouse_flow_metrics_t mouse_flow;
+    mouse_status_t mouse_status;
     ipc_stats_t ipc;
     scheduler_stats_t scheduler;
     idt_irq_status_t irq[IDT_IRQ_LINE_COUNT];
     uint8_t irq_valid[IDT_IRQ_LINE_COUNT];
+    irq_deferred_status_t deferred;
+    irq_deferred_irq_status_t deferred_irq[IRQ_DEFERRED_IRQ_COUNT];
+    uint8_t deferred_irq_valid[IRQ_DEFERRED_IRQ_COUNT];
     workqueue_stats_t workqueue;
     shell_job_status_t job;
     vesa_metrics_t vesa;
@@ -91,6 +100,11 @@ typedef struct {
     uint8_t recovery_valid[RECOVERY_COMPONENT_COUNT];
     uint32_t recovery_count;
     int input_result;
+    int deferred_result;
+    int input_flow_result;
+    int keyboard_flow_result;
+    int mouse_flow_result;
+    int mouse_status_result;
     int workqueue_result;
     int job_result;
     int vfs_result;

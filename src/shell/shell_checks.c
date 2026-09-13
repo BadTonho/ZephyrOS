@@ -2559,6 +2559,7 @@ static void shell_regcheck_run_full_checks(void) {
     }
     log_set_level(LOG_LEVEL_ERROR);
     shell_regcheck.device_scan_result = shell_diagnostics_run_device_scan(&scan);
+    process_yield();
     log_set_buffer_level(previous_buffer_level);
     log_set_console_level(previous_console_level);
 
@@ -2582,15 +2583,18 @@ static void shell_regcheck_run_full_checks(void) {
     } else {
         shell_regcheck.devices_result = OK;
     }
+    process_yield();
     shell_regcheck.block_result = block_validate_state();
     if (shell_regcheck.block_result == OK) {
         shell_regcheck.block_result = block_self_test();
     }
+    process_yield();
     if (scan.wifi_result == OK || scan.wifi_result == ERR_OVERFLOW) {
         shell_regcheck.wifi_result = wifi_manager_validate_state();
     } else {
         shell_regcheck.wifi_result = scan.wifi_result;
     }
+    process_yield();
     if (!usb_idempotent) {
         shell_regcheck.usb_result = ERR_STATE;
     } else if (scan.usb_result == OK || scan.usb_result == ERR_OVERFLOW) {
@@ -2598,6 +2602,7 @@ static void shell_regcheck_run_full_checks(void) {
     } else {
         shell_regcheck.usb_result = scan.usb_result;
     }
+    process_yield();
     if (!network_idempotent) {
         shell_regcheck.network_result = ERR_STATE;
     } else if (scan.network_result == OK) {
@@ -2609,12 +2614,16 @@ static void shell_regcheck_run_full_checks(void) {
     } else {
         shell_regcheck.network_result = scan.network_result;
     }
+    process_yield();
     shell_regcheck.acpi_result = shell_regcheck_validate_acpi();
+    process_yield();
     shell_regcheck.power_result = shell_regcheck_validate_power();
+    process_yield();
     shell_regcheck.index_result = file_index_validate_state();
     if (shell_regcheck.index_result == OK) {
         shell_regcheck.index_result = file_index_self_test();
     }
+    process_yield();
 }
 
 static int shell_regcheck_validate_packages(void) {
@@ -3718,7 +3727,17 @@ int shell_checks_should_cancel_focused_user(uint8_t scancode) {
 int shell_checks_handle_job_key(uint8_t scancode) {
     int result;
 
-    if (!shell_checks_should_cancel_focused_user(scancode)) return 0;
+    if (scancode != SHELL_REGCHECK_SCANCODE_F11 ||
+        !shell_job_is_active() ||
+        shell_regcheck.state == SHELL_REGCHECK_IDLE) {
+        return 0;
+    }
+
+    if (shell_regcheck.state != SHELL_REGCHECK_WAIT_CANCEL ||
+        !app_loader_is_foreground_active()) {
+        shell_job_request_cancel();
+        return 1;
+    }
 
     result = app_loader_cancel_foreground(PROCESS_EXIT_CANCELLED);
     if (result != OK) {
@@ -4268,6 +4287,16 @@ int shell_checks_host_test_contracts(void) {
         failures++;
     }
     shell_checks_host_set_foreground_fixture(0);
+    shell_checks_host_set_job_fixture(0, OK, 1U);
+    shell_regcheck_reset();
+
+    shell_checks_host_set_job_fixture(1, OK, 1U);
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_BASE;
+    shell_checks_host_set_cancel_fixture(OK, 0U);
+    if (!shell_checks_handle_job_key(SHELL_REGCHECK_SCANCODE_F11) ||
+        !shell_checks_host_cancel_requested()) {
+        failures++;
+    }
     shell_checks_host_set_job_fixture(0, OK, 1U);
     shell_regcheck_reset();
 

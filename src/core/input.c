@@ -15,6 +15,7 @@ typedef struct {
     input_pointer_sink_t pointer_sink;
     uint8_t dispatch_turn;
     input_metrics_t metrics;
+    input_flow_metrics_t flow_metrics;
 } input_service_t;
 
 static input_service_t input_service;
@@ -94,6 +95,10 @@ int input_init(void) {
     input_service.metrics.key_peak_queued = 0U;
     input_service.metrics.pointer_peak_queued = 0U;
     input_service.metrics.last_error = OK;
+    input_service.flow_metrics.key_coalesced = 0U;
+    input_service.flow_metrics.pointer_coalesced = 0U;
+    input_service.flow_metrics.key_rejected = 0U;
+    input_service.flow_metrics.pointer_rejected = 0U;
     LOG_INFO("KBD", "Nucleo de entrada inicializado com sucesso");
     return OK;
 }
@@ -138,6 +143,7 @@ int input_publish_key(const input_key_event_t* event) {
 
     if (!event) return ERR_NULL;
     if (!input_source_valid(event->source)) {
+        input_service.flow_metrics.key_rejected++;
         input_service.metrics.last_error = ERR_INVALID;
         return ERR_INVALID;
     }
@@ -167,6 +173,7 @@ int input_publish_pointer(const input_pointer_event_t* event) {
 
     if (!event) return ERR_NULL;
     if (!input_source_valid(event->source)) {
+        input_service.flow_metrics.pointer_rejected++;
         input_service.metrics.last_error = ERR_INVALID;
         return ERR_INVALID;
     }
@@ -186,6 +193,7 @@ int input_publish_pointer(const input_pointer_event_t* event) {
             queued->dy = input_pointer_accumulate_delta(queued->dy,
                                                         event->dy);
             input_service.metrics.pointer_published++;
+            input_service.flow_metrics.pointer_coalesced++;
             input_irq_restore(flags);
             return OK;
         }
@@ -225,7 +233,10 @@ static int input_dispatch_key(void) {
     event = input_service.key_queue[input_service.key_tail];
     input_irq_restore(flags);
     result = input_service.key_sink(&event);
-    if (result != OK) return result;
+    if (result != OK) {
+        input_service.flow_metrics.key_rejected++;
+        return result;
+    }
     flags = input_irq_save();
     input_service.key_tail = input_next(input_service.key_tail,
                                         INPUT_KEY_QUEUE_CAPACITY);
@@ -249,7 +260,10 @@ static int input_dispatch_pointer(void) {
     event = input_service.pointer_queue[input_service.pointer_tail];
     input_irq_restore(flags);
     result = input_service.pointer_sink(&event);
-    if (result != OK) return result;
+    if (result != OK) {
+        input_service.flow_metrics.pointer_rejected++;
+        return result;
+    }
     flags = input_irq_save();
     input_service.pointer_tail = input_next(input_service.pointer_tail,
                                             INPUT_POINTER_QUEUE_CAPACITY);
@@ -312,6 +326,23 @@ int input_get_metrics(input_metrics_t* out_metrics) {
     input_service.metrics.key_queued = input_key_count();
     input_service.metrics.pointer_queued = input_pointer_count();
     *out_metrics = input_service.metrics;
+    input_irq_restore(flags);
+    return OK;
+}
+
+int input_get_flow_metrics(input_flow_metrics_t* out_metrics) {
+    uint32_t flags;
+
+    if (!out_metrics) {
+        LOG_ERROR("KBD", "Destino nulo no fluxo de entrada");
+        return ERR_NULL;
+    }
+    if (!input_service.metrics.initialized) {
+        LOG_ERROR("KBD", "Fluxo de entrada antes da inicializacao");
+        return ERR_STATE;
+    }
+    flags = input_irq_save();
+    *out_metrics = input_service.flow_metrics;
     input_irq_restore(flags);
     return OK;
 }

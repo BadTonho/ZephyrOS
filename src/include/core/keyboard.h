@@ -15,6 +15,14 @@ typedef struct {
     uint32_t peak_queued;
 } keyboard_metrics_t;
 
+typedef struct {
+    uint32_t raw_queued;
+    uint32_t raw_capacity;
+    uint32_t raw_dropped;
+    uint32_t raw_processed;
+    uint32_t raw_peak_queued;
+} keyboard_flow_metrics_t;
+
 void keyboard_init(void);
 void keyboard_handler(registers_t* regs);
 void keyboard_process_events(void);
@@ -24,5 +32,6 @@ int keyboard_controller_reset(void);
 char keyboard_scancode_to_ascii(uint8_t scancode);
 char keyboard_scancode_to_ascii_shifted(uint8_t scancode, uint8_t shifted);
 void keyboard_get_metrics(keyboard_metrics_t* metrics);
+int keyboard_get_flow_metrics(keyboard_flow_metrics_t* metrics);
 
 #endif

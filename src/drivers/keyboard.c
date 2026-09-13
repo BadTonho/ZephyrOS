@@ -12,6 +12,7 @@
 #define KEYBOARD_RAW_QUEUE_SIZE 256U
 #define KEYBOARD_BOTTOM_HALF_RAW_BUDGET 8U
 #define KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
+#define KEYBOARD_INPUT_DISPATCH_BUDGET 64U
 #define KEYBOARD_SCANCODE_F12 0x58U
 #define KEYBOARD_SCANCODE_ABNT2_SEMICOLON 0x35U
 #define KEYBOARD_SCANCODE_ISO_EXTRA 0x56U
@@ -29,6 +30,9 @@ static volatile uint32_t dropped_events;
 static volatile uint32_t dropped_total;
 static volatile uint32_t processed_total;
 static volatile uint32_t peak_queued;
+static volatile uint32_t raw_dropped_total;
+static volatile uint32_t raw_processed_total;
+static volatile uint32_t raw_peak_queued;
 static uint8_t drop_warning_active;
 static uint8_t forward_warning_active;
 static uint8_t input_warning_active;
@@ -125,10 +129,18 @@ static int keyboard_raw_enqueue(uint8_t scancode) {
     if (next == keyboard_raw_tail) {
         dropped_events++;
         dropped_total++;
+        raw_dropped_total++;
         return ERR_OVERFLOW;
     }
     keyboard_raw_queue[keyboard_raw_head] = scancode;
     keyboard_raw_head = next;
+    {
+        uint32_t queued = keyboard_raw_head >= keyboard_raw_tail ?
+                          (uint32_t)(keyboard_raw_head - keyboard_raw_tail) :
+                          KEYBOARD_RAW_QUEUE_SIZE - keyboard_raw_tail +
+                          keyboard_raw_head;
+        if (queued > raw_peak_queued) raw_peak_queued = queued;
+    }
     return OK;
 }
 
@@ -407,6 +419,9 @@ void keyboard_init(void) {
     dropped_total = 0;
     processed_total = 0;
     peak_queued = 0;
+    raw_dropped_total = 0U;
+    raw_processed_total = 0U;
+    raw_peak_queued = 0U;
     drop_warning_active = 0;
     forward_warning_active = 0;
     input_warning_active = 0;
@@ -546,6 +561,7 @@ static void keyboard_bottom_half(void* context) {
         scancode = keyboard_raw_queue[keyboard_raw_tail];
         keyboard_raw_tail =
             (uint8_t)((keyboard_raw_tail + 1U) % KEYBOARD_RAW_QUEUE_SIZE);
+        raw_processed_total++;
         keyboard_irq_restore(flags);
         result = keyboard_process_raw_byte(scancode);
         if (result > 0) {
@@ -568,11 +584,11 @@ void keyboard_process_events(void) {
     uint32_t input_processed = 0U;
 
     if (!keyboard_initialized) return;
-    if (input_dispatch(KEYBOARD_DISPATCH_BUDGET, &input_processed) != OK) {
+    if (input_dispatch(KEYBOARD_INPUT_DISPATCH_BUDGET, &input_processed) != OK) {
         LOG_WARN("KBD", "Despacho do nucleo de entrada indisponivel");
     }
     keyboard_bottom_half(0);
-    if (input_dispatch(KEYBOARD_DISPATCH_BUDGET, &input_processed) != OK) {
+    if (input_dispatch(KEYBOARD_INPUT_DISPATCH_BUDGET, &input_processed) != OK) {
         LOG_WARN("KBD", "Despacho do nucleo de entrada indisponivel");
     }
 
@@ -690,6 +706,32 @@ void keyboard_get_metrics(keyboard_metrics_t* metrics) {
     metrics->dropped = dropped_total;
     metrics->processed = processed_total;
     metrics->peak_queued = peak_queued;
+}
+
+int keyboard_get_flow_metrics(keyboard_flow_metrics_t* metrics) {
+    uint32_t flags;
+    uint32_t head;
+    uint32_t tail;
+
+    if (!metrics) {
+        LOG_ERROR("KBD", "Destino nulo no fluxo do teclado");
+        return ERR_NULL;
+    }
+    if (!keyboard_initialized) {
+        LOG_WARN("KBD", "Fluxo do teclado antes da inicializacao");
+        return ERR_STATE;
+    }
+    flags = keyboard_irq_save();
+    head = keyboard_raw_head;
+    tail = keyboard_raw_tail;
+    metrics->raw_queued = head >= tail ? head - tail :
+                          KEYBOARD_RAW_QUEUE_SIZE - tail + head;
+    metrics->raw_capacity = KEYBOARD_RAW_QUEUE_SIZE - 1U;
+    metrics->raw_dropped = raw_dropped_total;
+    metrics->raw_processed = raw_processed_total;
+    metrics->raw_peak_queued = raw_peak_queued;
+    keyboard_irq_restore(flags);
+    return OK;
 }
 
 

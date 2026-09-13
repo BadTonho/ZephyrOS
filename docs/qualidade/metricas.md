@@ -92,9 +92,54 @@ make test-perf1-qemu
 make perf1-baseline
 ```
 
-Os gates `make q3check` e `make clean && make` devem ser executados antes da
-matriz QEMU. A implementacao esta registrada como `PENDING` ate a validacao
-do usuario; nenhum valor de desempenho e inferido nesta etapa.
+Os gates `make q3check` e `make clean && make` foram executados antes da
+matriz QEMU. A validacao da PERF1 foi registrada como concluida, com o
+relatorio automatizado em `build/test-results/perf1-baseline/perf1-baseline.json`;
+nenhum valor de desempenho e inferido fora dessa evidencia.
+
+## PERF2 - Fluxo de entrada e responsividade
+
+O PERF2 estende o mesmo `kmetrics machine` sem emitir dados em IRQ, por tick
+ou por evento. Os getters `input_get_flow_metrics`,
+`keyboard_get_flow_metrics` e `mouse_get_flow_metrics` sao append-only e
+publicam contadores de coalescencia, rejeicao, filas brutas, bytes
+processados, pacotes decodificados, descartes, eventos de movimento,
+press/release e roda. O snapshot tambem inclui estado dos botoes, suporte a
+roda, ultimo erro e os contadores por IRQ do processamento diferido.
+
+Filas e picos sao gauges em `count`; eventos, pacotes, bytes e rejeicoes sao
+contadores com `overflow=wrap_u32`; estados usam `kind=state` e `overflow=none`.
+Valores nao disponiveis continuam como `value=ND status=unavailable`. A
+coalescencia so agrega movimento sem roda e sem transicao de botoes. Press,
+release e roda permanecem eventos individuais e sao comparados com o
+`input.log` enviado pelo QMP.
+
+O relatorio de sessao usa `zephyros-perf2-responsiveness-v1`. A matriz fixa
+possui nove sessoes: `baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, tres iteracoes por faixa. Cada sessao preserva
+`serial.log`, `input.log`, QMP, tres amostras guest, amostras do processo QEMU
+a cada 250 ms durante os 10 segundos de carga e o manifesto
+`zephyros-perf2-responsiveness-manifest-v1`. CPU, RSS, pico de RSS e campos
+sem coletor disponivel sao `ND` individualmente; suporte QMP ausente bloqueia
+o caso e nunca pode produzir `PASS`.
+
+Comandos da etapa:
+
+```text
+make test-perf2-host
+make test-perf2-qemu
+make perf2-responsiveness
+```
+
+A validacao operacional foi concluida em 2026-09-13. As nove sessoes passaram
+sem descarte, `ERR_OVERFLOW`, rejeicao deferred ou perda de transicoes; os
+eventos de press/release/roda coincidiram com o `input.log`, os botoes
+terminaram soltos e o observer confirmou prompt e foco recuperados. O relatorio
+agregado esta em
+`build/test-results/perf2-responsiveness/perf2-responsiveness.json`, com SHA-256
+da imagem `f5ad9ed2e3cd807fb98635f8afbfc8038b7bcb7f3efe014995fe58c64f6bd156`.
+DT100-001 foi marcada `QUITADA` no registro de dividas; nenhuma divida foi
+quitada por inferencia fora dessa matriz.
 
 ## Registros
 

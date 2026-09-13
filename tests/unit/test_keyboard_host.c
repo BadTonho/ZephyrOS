@@ -167,6 +167,7 @@ static int cancel_filter(uint8_t scancode) {
 
 static int check_before_init(void) {
     keyboard_metrics_t metrics;
+    keyboard_flow_metrics_t flow_metrics;
 
     keyboard_get_metrics(&metrics);
     if (metrics.capacity != KEYBOARD_QUEUE_CAPACITY || metrics.queued != 0U) {
@@ -174,6 +175,8 @@ static int check_before_init(void) {
     }
     if (keyboard_controller_reset_available() != 0U ||
         keyboard_controller_reset() != ERR_UNAVAILABLE) return 11;
+    if (keyboard_get_flow_metrics(NULL) != ERR_NULL ||
+        keyboard_get_flow_metrics(&flow_metrics) != ERR_STATE) return 12;
     keyboard_set_focus_cancel_filter(cancel_filter);
     keyboard_handler(0);
     keyboard_process_events();
@@ -189,6 +192,7 @@ static int check_before_init(void) {
 
 static int check_initialization(void) {
     keyboard_metrics_t metrics;
+    keyboard_flow_metrics_t flow_metrics;
 
     fake_work_result = OK;
     fake_key_sink_result = OK;
@@ -204,12 +208,18 @@ static int check_initialization(void) {
         handler_count != 1U || unmask_count != 1U) return 20;
     keyboard_set_focus_cancel_filter(cancel_filter);
     keyboard_get_metrics(&metrics);
+    if (keyboard_get_flow_metrics(&flow_metrics) != OK ||
+        flow_metrics.raw_queued != 0U ||
+        flow_metrics.raw_capacity != 255U ||
+        flow_metrics.raw_dropped != 0U ||
+        flow_metrics.raw_processed != 0U) return 22;
     if (metrics.capacity != KEYBOARD_QUEUE_CAPACITY || metrics.queued != 0U ||
         metrics.dropped != 0U || metrics.processed != 0U) return 21;
     return 0;
 }
 
 static int check_stale_extended_prefix(void) {
+    keyboard_flow_metrics_t flow_metrics;
     published_key_count = 0U;
     published_key_usage = 0U;
     keyboard_ports[KEYBOARD_DATA_PORT] = 0xE0U;
@@ -218,8 +228,10 @@ static int check_stale_extended_prefix(void) {
     keyboard_ports[KEYBOARD_DATA_PORT] = 0x01U;
     keyboard_handler(0);
     keyboard_process_events();
+    if (keyboard_get_flow_metrics(&flow_metrics) != OK ||
+        flow_metrics.raw_processed < 2U) return 50;
     return published_key_count == 1U &&
-           published_key_usage == INPUT_USAGE_ESCAPE ? 0 : 50;
+           published_key_usage == INPUT_USAGE_ESCAPE ? 0 : 51;
 }
 
 static int check_controller_reset(void) {

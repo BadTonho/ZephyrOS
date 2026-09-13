@@ -171,6 +171,13 @@ int input_get_metrics(input_metrics_t* metrics) {
     return OK;
 }
 
+int input_dispatch(uint32_t budget, uint32_t* processed) {
+    (void)budget;
+    if (!processed) return ERR_NULL;
+    *processed = 0U;
+    return OK;
+}
+
 int irq_deferred_work_init(irq_deferred_work_t* work, const char* owner,
                            uint8_t irq_line, irq_deferred_callback_t callback,
                            void* context) {
@@ -313,6 +320,7 @@ static void mouse_callback(mouse_event_t* event) {
 static int check_before_init(void) {
     mouse_config_t config;
     mouse_status_t status;
+    mouse_flow_metrics_t flow_metrics;
 
     host_reset_fixture();
     if (mouse_has_wheel() != 0) return 1;
@@ -321,14 +329,16 @@ static int check_before_init(void) {
     if (mouse_set_primary_button(MOUSE_PRIMARY_RIGHT) != ERR_UNAVAILABLE) {
         return 4;
     }
-    if (mouse_get_config(0) != ERR_NULL || mouse_get_status(0) != ERR_NULL) {
+    if (mouse_get_config(0) != ERR_NULL || mouse_get_status(0) != ERR_NULL ||
+        mouse_get_flow_metrics(0) != ERR_NULL) {
         return 5;
     }
     if (mouse_get_config(&config) != OK ||
         config.speed != MOUSE_SPEED_DEFAULT ||
         config.primary_button != MOUSE_PRIMARY_LEFT) return 6;
     if (mouse_get_status(&status) != OK || status.initialized != 0U ||
-        status.last_error != ERR_UNAVAILABLE) return 7;
+        status.last_error != ERR_UNAVAILABLE ||
+        mouse_get_flow_metrics(&flow_metrics) != ERR_UNAVAILABLE) return 7;
     if (mouse_get_x() != 0 || mouse_get_y() != 0 ||
         mouse_get_buttons() != 0U) return 8;
     mouse_process_events();
@@ -340,6 +350,7 @@ static int check_initialization_and_events(void) {
     mouse_callback_t old_callback;
     mouse_config_t config;
     mouse_status_t status;
+    mouse_flow_metrics_t flow_metrics;
     uint32_t initial_x;
     uint32_t initial_y;
 
@@ -350,6 +361,11 @@ static int check_initialization_and_events(void) {
     if (mouse_get_config(&config) != OK || config.speed != 3U ||
         config.acceleration_enabled != 0U ||
         config.primary_button != MOUSE_PRIMARY_LEFT) return 23;
+    if (mouse_get_flow_metrics(&flow_metrics) != OK ||
+        flow_metrics.raw_capacity != 511U ||
+        flow_metrics.queue_capacity != 255U ||
+        flow_metrics.raw_dropped != 0U ||
+        flow_metrics.packets_dropped != 0U) return 24;
     if (mouse_set_speed(0U) != ERR_INVALID ||
         mouse_set_speed(11U) != ERR_INVALID || mouse_set_speed(5U) != OK) {
         return 24;
@@ -385,6 +401,7 @@ static int check_initialization_and_events(void) {
     }
     host_inject_packet(HOST_MOUSE_PACKET_STATUS, 0U, 0U, 0U);
     mouse_process_events();
+    mouse_process_events();
     if (mouse_get_buttons() != 0U || callback_count < 4U ||
         callback_events[callback_count - 1U].event != MOUSE_EVENT_RELEASE) {
         return 30;
@@ -392,6 +409,12 @@ static int check_initialization_and_events(void) {
     if (mouse_get_status(&status) != OK || status.initialized != 1U ||
         status.raw_buttons != 0U || status.effective_buttons != 0U ||
         status.wheel_supported != 1U || status.last_error != ERR_INVALID) return 31;
+    if (mouse_get_flow_metrics(&flow_metrics) != OK ||
+        flow_metrics.packets_decoded < 4U ||
+        flow_metrics.press_events == 0U ||
+        flow_metrics.release_events == 0U ||
+        flow_metrics.wheel_events == 0U ||
+        flow_metrics.move_events == 0U) return 33;
     mouse_invalidate_cursor();
     if (host_flip_count == 0U || host_frame_count == 0U ||
         host_pixel_writes == 0U || host_schedule_count == 0U ||
@@ -420,6 +443,7 @@ static int check_fallback_and_failures(void) {
 
 static int check_input_failure_and_bounds(void) {
     mouse_status_t status;
+    mouse_flow_metrics_t flow_metrics;
 
     host_reset_fixture();
     if (mouse_init() != OK) return 50;
@@ -435,10 +459,21 @@ static int check_input_failure_and_bounds(void) {
     if (mouse_set_speed(MOUSE_SPEED_MAX) != OK ||
         mouse_set_acceleration(0) != OK ||
         mouse_set_primary_button(MOUSE_PRIMARY_LEFT) != OK) return 52;
+    mouse_set_callback(mouse_callback);
+    callback_count = 0U;
+    host_inject_packet(HOST_MOUSE_PACKET_STATUS | MOUSE_BTN_LEFT, 1U, 1U, 1U);
     host_mode.initialized = 0U;
     mouse_process_events();
     host_mode.initialized = 1U;
-    if (mouse_get_status(&status) != OK || status.initialized != 1U) return 53;
+    if (mouse_get_status(&status) != OK || status.initialized != 1U ||
+        status.effective_buttons != MOUSE_BTN_LEFT || callback_count < 3U) {
+        return 53;
+    }
+    if (mouse_get_flow_metrics(&flow_metrics) != OK ||
+        flow_metrics.queue_queued != 0U || flow_metrics.press_events == 0U ||
+        flow_metrics.wheel_events == 0U || flow_metrics.move_events == 0U) {
+        return 54;
+    }
     return 0;
 }
 

@@ -28,7 +28,7 @@ uma etapa.
 
 | ID | Estado | Origem | Responsavel | Alvo |
 |---|---|---|---|---|
-| `DT100-001` | ACEITA | SYNC1 | Roadmap 23 / PERF2 | v1.0.0 |
+| `DT100-001` | QUITADA | SYNC1 | Roadmap 23 / PERF2 | v1.0.0 |
 | `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 23 / PERF3 | v1.0.0 |
 | `DT100-003` | ACEITA | SEC4 | Roadmap 19 / SEC4 | v1.0.0 |
 | `DT100-004` | ACEITA | STO6 | Roadmap 20 / STO6 | v1.0.0 |
@@ -154,8 +154,9 @@ O aceite e o bloqueio reproduzível estão registrados em
 
 ## DT100-001 - RegCheck full e entrada PS/2
 
-- **Estado:** `ACEITA`.
+- **Estado:** `QUITADA`.
 - **Aceita em:** 2026-08-27 00:19 (America/Sao_Paulo).
+- **Quitada em:** 2026-09-13 14:30 (America/Sao_Paulo).
 - **Origem:** SYNC1 - Top-Half e Bottom-Half de interrupcoes.
 - **Responsavel:** [Roadmap 23 - PERF2](../roadmaps/23-desempenho-e-dividas-v1.0.md#perf2--entrada-e-responsividade).
 - **Versao limite:** v1.0.0.
@@ -169,26 +170,33 @@ reabrir a SYNC1 nem antecipar a `kworker` da SYNC3.
 
 ### Impacto conhecido
 
-Durante entrada manual extrema enquanto `regcheck full` esta em execucao, o
-pipeline PS/2 pode saturar, interromper temporariamente a atualizacao do cursor
-e descartar pacotes. O mouse recupera o funcionamento ao final do job e os
-diagnosticos estruturais continuam aprovados, mas a perda impede considerar o
-cenario otimizado para a v1.0.0.
+O risco historico era a saturacao do pipeline PS/2 durante `regcheck full`, com
+perda de pacotes e atraso no retorno ao Shell. A PERF2 ajustou somente o
+processamento cooperativo, budgets e coalescencia valida; o cenario reproduzivel
+agora preserva as transicoes e retorna ao prompt sem descarte.
 
 ### Evidencia de referencia
 
-Na ultima execucao registrada, a IRQ12 passou de 305 ocorrencias, 86
-Bottom-Halfs e 230 coalescencias para 25.421 ocorrencias, 397 Bottom-Halfs e
-2.548 coalescencias. Nao houve rejeicao diferida, mas o mouse terminou com
-22.537 pacotes descartados e `ERR_OVERFLOW`.
+Na matriz PERF2 de 2026-09-13, o relatorio
+`build/test-results/perf2-responsiveness/perf2-responsiveness.json` passou as
+9/9 sessoes fixas (`baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, tres iteracoes por faixa). Todas tiveram tres
+amostras guest validas; `input_key_dropped`, `input_pointer_dropped`,
+`keyboard_raw_dropped`, `mouse_raw_dropped`, `mouse_packets_dropped`,
+`mouse_queue_rejected`, `deferred_irq_1_rejected` e
+`deferred_irq_12_rejected` terminaram em zero. Press/release/roda coincidiram
+com os eventos enviados no `input.log`, `mouse_button_state` e
+`mouse_raw_button_state` terminaram em zero, e `mouse_wheel_supported` ficou
+disponivel em todas as sessoes. O processo QEMU foi amostrado no host e cada
+sessao preservou serial, QMP, entrada e manifesto.
 
 ### Observacao apos a SYNC3
 
-A matriz final da SYNC3 manteve teclado, movimento, clique, arraste e roda
-responsivos sob rede, indexacao e `regcheck full`. Essa execucao nao quita a
-divida porque nao substitui o procedimento reproduzivel com contadores antes e
-depois. Qualquer recorrencia nesse cenario continua atribuida a `DT100-001`,
-sem necessidade de criar um identificador duplicado.
+A matriz final da SYNC3 foi substituida pela evidencia automatizada da PERF2
+para este risco. A validacao inclui contadores antes/depois, carga QMP real,
+cancelamento por F11, retorno ao prompt e o fallback `no-vesa`; recorrencias
+fora desses limites continuam sendo novas evidencias de desempenho, sem
+reabrir esta divida quitada sem reproducao do mesmo protocolo.
 
 ### Escopo da quitacao
 
@@ -224,8 +232,8 @@ mouse
 ```
 
 Durante `regcheck full`, mover o ponteiro, clicar, arrastar e usar a roda. A
-validacao final e seu horario devem ser registrados em
-`registro-validacoes.md` antes da mudanca do estado para `QUITADA`.
+validacao final e seu horario estao registrados em
+`registro-validacoes.md`, na entrada PERF2 de 2026-09-13.
 
 ## DT100-002 - kworker como processo ring0
 

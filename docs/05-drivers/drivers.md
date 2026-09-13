@@ -197,6 +197,11 @@ montagem de prefixos e a publicacao ocorrem na `Zephyr kworker`; a chamada
 normal de `keyboard_process_events()` no processo System tambem drena os bytes
 como fallback se a fila diferida estiver cheia.
 
+O getter append-only `keyboard_get_flow_metrics()` publica ocupacao, capacidade,
+processamento, pico e descartes da fila bruta. Ele e somente leitura, usa
+`ERR_NULL` para destino nulo e `ERR_STATE` antes da inicializacao; a consulta
+nao altera o caminho de IRQ nem aloca memoria.
+
 ---
 
 ## Mouse Driver (`mouse.c`)
@@ -252,6 +257,13 @@ direito como principal, esquerda e direita sao trocados antes do callback;
 `mouse_get_buttons()` e `mouse_event_t` continuam expondo a mascara efetiva.
 `mouse_status_t` acrescenta a mascara bruta, disponibilidade, configuracao,
 ultimo erro e total de pacotes descartados para diagnostico.
+
+O getter append-only `mouse_get_flow_metrics()` publica filas brutas e
+normalizadas, picos, bytes processados, pacotes decodificados/descartados,
+coalescencia, rejeicoes e contadores separados de movimento, press, release e
+roda. A API retorna `ERR_NULL` para destino nulo e `ERR_UNAVAILABLE` quando o
+consumidor de entrada ainda nao esta pronto; a consulta e protegida contra
+interrupcao e nao modifica o estado produtivo.
 
 O Top-Half da IRQ12 somente le o byte auxiliar e agenda trabalho coalescido.
 O Bottom-Half monta o pacote completo antes de publicar movimento, botoes e

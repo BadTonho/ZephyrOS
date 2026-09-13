@@ -10,7 +10,7 @@
 #define HOST_COVERAGE_CAPACITY 96U
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_TEXT_CAPACITY 768U
-#define HOST_CASE_COUNT 21U
+#define HOST_CASE_COUNT 22U
 
 typedef enum {
     HOST_TERMINAL_NORMAL,
@@ -225,7 +225,8 @@ static int check_valid_cases(void) {
         {"qemu:tst5:shell5-system-update", "shell5-system-update"},
         {"qemu:tst5:shell6-interface-compatibility",
          "shell6-interface-compatibility"},
-        {"qemu:tst5:perf1-baseline", "tst5-perf1-baseline"}
+        {"qemu:tst5:perf1-baseline", "tst5-perf1-baseline"},
+        {"qemu:tst5:perf2-input-responsiveness", "tst5-perf2-input"}
     };
     kernel_tests_runtime_t runtime;
 

@@ -81,14 +81,30 @@ PERF2/PERF3.
 
 ### PERF2 — Entrada e responsividade
 
-- [ ] Reproduzir `DT100-001` com contadores antes/depois e carga de teclado,
+- [x] Reproduzir `DT100-001` com contadores antes/depois e carga de teclado,
   mouse, roda, clique e arraste durante `regcheck full`.
-- [ ] Ajustar somente orçamento, coalescência, pontos de yield e processamento
+- [x] Ajustar somente orçamento, coalescência, pontos de yield e processamento
   diferido que preservem todos os eventos relevantes.
-- [ ] Confirmar que não haja overflow PS/2, rejeição permanente ou perda de
+- [x] Confirmar que não haja overflow PS/2, rejeição permanente ou perda de
   transições no cenário de saída.
-- [ ] Validar prompt, foco, cancelamento, jobs e retorno de cenas sob carga.
-- [ ] Repetir Simple, Classic e fallback de vídeo.
+- [x] Validar prompt, foco, cancelamento, jobs e retorno de cenas sob carga.
+- [x] Repetir Simple, Classic e fallback de vídeo.
+
+Implementacao registrada em 2026-09-13: `kmetrics machine` recebeu o fluxo
+detalhado de entrada e os estados do mouse; os drivers publicam getters
+append-only para filas brutas, coalescencia, rejeicoes, pacotes e eventos;
+`tools/qemu_test_runner.py` passou a aceitar operacoes QMP declarativas de
+movimento, roda, botoes, arraste e carga temporizada. O caso
+`qemu:tst5:perf2-input-responsiveness`, o relatorio versionado, testes host e
+os alvos Windows/Linux foram adicionados. A validacao essencial passou em
+2026-09-13: `make q3check`, `make clean`, `make`, `make test-perf2-host` e
+`make test-perf2-qemu`. A matriz fixa passou 9/9 sessoes, com tres amostras
+guest validas por sessao, zero descartes/rejeicoes de entrada e sem rejeicao
+deferred nas IRQ1/IRQ12. Press/release/roda foram preservados conforme o
+`input.log`, os botoes terminaram soltos e o observer confirmou o retorno ao
+prompt. O relatorio esta em
+`build/test-results/perf2-responsiveness/perf2-responsiveness.json`.
+DT100-001 foi marcada `QUITADA`; nenhuma outra divida tecnica foi alterada.
 
 ### PERF3 — Scheduler, Idle e kworker
 

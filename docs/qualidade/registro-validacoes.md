@@ -7,6 +7,30 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-13 - PERF2: responsividade de entrada
+
+- Implementação: `kmetrics machine` passou a publicar filas, picos, contadores
+  de entrada, estados de botões, pacotes PS/2 e rejeições deferred por IRQ.
+  O caminho de teclado/mouse recebeu budgets e coalescência limitada a
+  movimento sem roda nem transição de botão. O `F11` agora cancela o
+  `regcheck full` também durante a preparação, evitando que uma entrada de
+  cancelamento antecipada deixe o job aguardando indefinidamente. Nenhum
+  bootloader, scheduler, syscall ou ABI foi alterado.
+- Evidência: `make q3check`, `make clean`, `make`, `make test-perf2-host` e
+  `make test-perf2-qemu` passaram. A matriz fixa `baseline/Simple`,
+  `baseline/Classic` e `no-vesa/Simple fallback`, com três iterações por faixa,
+  passou 9/9 no relatório
+  `build/test-results/perf2-responsiveness/perf2-responsiveness.json`, schema
+  `zephyros-perf2-responsiveness-v1`, imagem SHA-256
+  `f5ad9ed2e3cd807fb98635f8afbfc8038b7bcb7f3efe014995fe58c64f6bd156`.
+- Resultado: cada sessão teve três envelopes guest válidos, zero descartes e
+  rejeições de entrada, zero rejeições deferred em IRQ1/IRQ12, press/release/
+  roda preservados, botões soltos ao final, prompt responsivo e amostras do
+  processo QEMU. O QMP foi suportado e os artefatos serial, entrada, QMP e
+  manifesto foram preservados por sessão.
+- Estado: PERF2 `PASS`; `DT100-001` passou de `ACEITA` para `QUITADA`. Nenhuma
+  outra dívida técnica foi marcada como quitada.
+
 ## 2026-09-11 - STO7: matriz adversarial final
 
 - Implementação: a tag `sto7` foi adicionada a 28 casos QEMU automatizados de
@@ -7542,3 +7566,19 @@ dívida.
   nenhuma decisao produtiva foi alterada.
 
   Estado: PERF1 `PASS`.
+
+- PERF2 - entrada e responsividade - implementacao registrada em 2026-09-13
+  (America/Sao_Paulo). Foram adicionados contadores append-only para input
+  core, teclado, mouse e deferred; o `kmetrics machine` passou a publicar
+  filas, picos, coalescencia, rejeicoes, pacotes, press/release, roda, estados
+  de botoes e erros. O runner recebeu `input-send-event` declarativo,
+  `input.log`, carga fixa de 10 segundos/100 ms e coleta host de 250 ms.
+
+  O caso `qemu:tst5:perf2-input-responsiveness`, o relatorio
+  `zephyros-perf2-responsiveness-v1`, as fixtures host, os testes Python, o
+  catalogo e os alvos `test-perf2-host`, `test-perf2-qemu` e
+  `perf2-responsiveness` foram adicionados. A validacao essencial
+  (`make q3check`, `make clean && make`, `make test-perf2-host`) e a matriz
+  QEMU de nove sessoes ainda devem ser executadas para a mesma imagem antes
+  de alterar DT100-001. Estado: PERF2 `PENDING`; DT100-001 permanece
+  `ACEITA`.

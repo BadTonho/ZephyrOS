@@ -119,6 +119,7 @@ static input_pointer_event_t make_pointer(int32_t dx, int32_t dy,
 
 static int test_uninitialized(void) {
     input_metrics_t metrics;
+    input_flow_metrics_t flow_metrics;
     uint32_t processed = 0U;
 
     if (input_publish_key(NULL) != ERR_NULL ||
@@ -128,7 +129,9 @@ static int test_uninitialized(void) {
         input_dispatch(1U, &processed) != ERR_STATE ||
         input_dispatch(1U, NULL) != ERR_NULL ||
         input_get_metrics(NULL) != ERR_NULL ||
+        input_get_flow_metrics(NULL) != ERR_NULL ||
         input_get_metrics(&metrics) != ERR_STATE ||
+        input_get_flow_metrics(&flow_metrics) != ERR_STATE ||
         input_validate_state() != ERR_STATE) return 1;
     return 0;
 }
@@ -137,6 +140,7 @@ static int test_registration_and_dispatch(void) {
     input_key_event_t key = make_key(INPUT_USAGE_A, 1U);
     input_pointer_event_t pointer = make_pointer(4, -3, 0, 1U);
     input_metrics_t metrics;
+    input_flow_metrics_t flow_metrics;
     uint32_t processed = 0U;
 
     if (input_init() != OK || input_init() != OK ||
@@ -156,7 +160,12 @@ static int test_registration_and_dispatch(void) {
         last_pointer.dy != -3) return 11;
     if (input_get_metrics(&metrics) != OK || metrics.key_queued != 0U ||
         metrics.pointer_queued != 0U || metrics.key_processed != 1U ||
-        metrics.pointer_processed != 1U || input_validate_state() != OK) {
+        metrics.pointer_processed != 1U ||
+        input_get_flow_metrics(&flow_metrics) != OK ||
+        flow_metrics.key_coalesced != 0U ||
+        flow_metrics.pointer_coalesced != 0U ||
+        flow_metrics.key_rejected != 0U ||
+        flow_metrics.pointer_rejected != 0U || input_validate_state() != OK) {
         return 12;
     }
     key_sink_result = ERR_CANCELLED;
@@ -174,12 +183,16 @@ static int test_pointer_coalescing_and_bounds(void) {
     input_pointer_event_t second = make_pointer(20000, -20000, 0, 2U);
     input_pointer_event_t wheel = make_pointer(1, 2, 1, 2U);
     input_metrics_t metrics;
+    input_flow_metrics_t flow_metrics;
     uint32_t processed = 0U;
 
     if (input_publish_pointer(&first) != OK ||
         input_publish_pointer(&second) != OK ||
         input_publish_pointer(&wheel) != OK ||
-        input_get_metrics(&metrics) != OK || metrics.pointer_queued != 2U ||
+        input_get_metrics(&metrics) != OK ||
+        input_get_flow_metrics(&flow_metrics) != OK ||
+        metrics.pointer_queued != 2U ||
+        flow_metrics.pointer_coalesced != 1U ||
         metrics.pointer_published != 4U) return 20;
     if (input_dispatch(1U, &processed) != OK || processed != 1U ||
         last_pointer.dx != 32767 || last_pointer.dy != -32767 ||
@@ -206,12 +219,21 @@ static int test_invalid_sources(void) {
     input_key_event_t key = make_key(INPUT_USAGE_A, 1U);
     input_pointer_event_t pointer = make_pointer(1, 1, 0, 0U);
     input_metrics_t metrics;
+    input_flow_metrics_t flow_metrics;
+    uint32_t key_rejected_before;
+    uint32_t pointer_rejected_before;
 
     key.source = (input_source_t)99;
     pointer.source = (input_source_t)99;
+    if (input_get_flow_metrics(&flow_metrics) != OK) return 26;
+    key_rejected_before = flow_metrics.key_rejected;
+    pointer_rejected_before = flow_metrics.pointer_rejected;
     if (input_publish_key(&key) != ERR_INVALID ||
         input_publish_pointer(&pointer) != ERR_INVALID ||
         input_get_metrics(&metrics) != OK || metrics.last_error != ERR_INVALID ||
+        input_get_flow_metrics(&flow_metrics) != OK ||
+        flow_metrics.key_rejected != key_rejected_before + 1U ||
+        flow_metrics.pointer_rejected != pointer_rejected_before + 1U ||
         metrics.key_queued != 0U || metrics.pointer_queued != 0U) return 26;
     return input_validate_state() == OK ? 0 : 27;
 }

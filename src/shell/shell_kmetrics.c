@@ -238,6 +238,12 @@ static void shell_kmetrics_capture_irq(shell_kmetrics_snapshot_t* snapshot) {
         snapshot->irq_valid[index] =
             idt_get_irq_status((uint8_t)index, &snapshot->irq[index]) == OK;
     }
+    snapshot->deferred_result = irq_deferred_get_status(&snapshot->deferred);
+    for (index = 0U; index < IRQ_DEFERRED_IRQ_COUNT; index++) {
+        snapshot->deferred_irq_valid[index] =
+            irq_deferred_get_irq_status((uint8_t)index,
+                                        &snapshot->deferred_irq[index]) == OK;
+    }
 }
 
 static void shell_kmetrics_capture_process(
@@ -291,10 +297,17 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     snapshot->ticks = start_ticks;
     snapshot->frequency = timer_get_frequency();
     keyboard_get_metrics(&snapshot->keyboard);
+    snapshot->keyboard_flow_result =
+        keyboard_get_flow_metrics(&snapshot->keyboard_flow);
     scheduler_get_stats(&snapshot->scheduler);
     ipc_get_stats(&snapshot->ipc);
     shell_kmetrics_capture_irq(snapshot);
     snapshot->input_result = input_get_metrics(&snapshot->input);
+    snapshot->input_flow_result =
+        input_get_flow_metrics(&snapshot->input_flow);
+    snapshot->mouse_status_result = mouse_get_status(&snapshot->mouse_status);
+    snapshot->mouse_flow_result =
+        mouse_get_flow_metrics(&snapshot->mouse_flow);
     if (snapshot->input_result == OK) {
         snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_INPUT;
     }
@@ -470,6 +483,98 @@ static int shell_kmetrics_emit_scheduler(
             return ERR_OVERFLOW;
         }
     }
+    SHELL_KMETRICS_EMIT_U32("deferred_queued", current->deferred.queued, 0U,
+                            current->deferred_result == OK, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_running", current->deferred.running, 0U,
+                            current->deferred_result == OK, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_capacity", current->deferred.capacity,
+                            0U, current->deferred_result == OK, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_scheduled", current->deferred.scheduled,
+                            baseline ? baseline->deferred.scheduled : 0U,
+                            baseline_valid && current->deferred_result == OK &&
+                                baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER,
+                            "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_dispatched", current->deferred.dispatched,
+                            baseline ? baseline->deferred.dispatched : 0U,
+                            baseline_valid && current->deferred_result == OK &&
+                                baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER,
+                            "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_coalesced", current->deferred.coalesced,
+                            baseline ? baseline->deferred.coalesced : 0U,
+                            baseline_valid && current->deferred_result == OK &&
+                                baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER,
+                            "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_reruns", current->deferred.reruns,
+                            baseline ? baseline->deferred.reruns : 0U,
+                            baseline_valid && current->deferred_result == OK &&
+                                baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER,
+                            "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_cancelled", current->deferred.cancelled,
+                            baseline ? baseline->deferred.cancelled : 0U,
+                            baseline_valid && current->deferred_result == OK &&
+                                baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER,
+                            "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_rejected", current->deferred.rejected,
+                            baseline ? baseline->deferred.rejected : 0U,
+                            baseline_valid && current->deferred_result == OK &&
+                                baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER,
+                            "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_peak_queued",
+                            current->deferred.peak_queued, 0U,
+                            current->deferred_result == OK, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "irq_deferred", "irq");
+    SHELL_KMETRICS_EMIT_U32("deferred_context_errors",
+                            current->deferred.context_errors,
+                            baseline ? baseline->deferred.context_errors : 0U,
+                            baseline_valid && current->deferred_result == OK &&
+                                baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER,
+                            "irq_deferred", "irq");
+    for (index = 0U; index < IRQ_DEFERRED_IRQ_COUNT; index++) {
+        if (shell_kmetrics_emit_indexed_u32(
+                "deferred_irq_", index, "_scheduled",
+                current->deferred_irq[index].scheduled,
+                baseline ? baseline->deferred_irq[index].scheduled : 0U,
+                baseline_valid && current->deferred_irq_valid[index] && baseline &&
+                    baseline->deferred_irq_valid[index],
+                current->deferred_irq_valid[index], "count",
+                SHELL_KMETRICS_KIND_COUNTER, "irq_deferred", "irq") ||
+            shell_kmetrics_emit_indexed_u32(
+                "deferred_irq_", index, "_dispatched",
+                current->deferred_irq[index].dispatched,
+                baseline ? baseline->deferred_irq[index].dispatched : 0U,
+                baseline_valid && current->deferred_irq_valid[index] && baseline &&
+                    baseline->deferred_irq_valid[index],
+                current->deferred_irq_valid[index], "count",
+                SHELL_KMETRICS_KIND_COUNTER, "irq_deferred", "irq") ||
+            shell_kmetrics_emit_indexed_u32(
+                "deferred_irq_", index, "_coalesced",
+                current->deferred_irq[index].coalesced,
+                baseline ? baseline->deferred_irq[index].coalesced : 0U,
+                baseline_valid && current->deferred_irq_valid[index] && baseline &&
+                    baseline->deferred_irq_valid[index],
+                current->deferred_irq_valid[index], "count",
+                SHELL_KMETRICS_KIND_COUNTER, "irq_deferred", "irq") ||
+            shell_kmetrics_emit_indexed_u32(
+                "deferred_irq_", index, "_rejected",
+                current->deferred_irq[index].rejected,
+                baseline ? baseline->deferred_irq[index].rejected : 0U,
+                baseline_valid && current->deferred_irq_valid[index] && baseline &&
+                    baseline->deferred_irq_valid[index],
+                current->deferred_irq_valid[index], "count",
+                SHELL_KMETRICS_KIND_COUNTER, "irq_deferred", "irq")) {
+            return ERR_OVERFLOW;
+        }
+    }
     return OK;
 }
 
@@ -477,6 +582,10 @@ static int shell_kmetrics_emit_input(
     const shell_kmetrics_snapshot_t* current,
     const shell_kmetrics_snapshot_t* baseline, uint8_t baseline_valid) {
     uint8_t available = current->input_result == OK;
+    uint8_t input_flow_available = current->input_flow_result == OK;
+    uint8_t keyboard_flow_available = current->keyboard_flow_result == OK;
+    uint8_t mouse_flow_available = current->mouse_flow_result == OK;
+    uint8_t mouse_status_available = current->mouse_status_result == OK;
 
     SHELL_KMETRICS_EMIT_U32("keyboard_queued", current->keyboard.queued, 0U,
                             1U, "count", SHELL_KMETRICS_KIND_GAUGE, "keyboard",
@@ -501,6 +610,34 @@ static int shell_kmetrics_emit_input(
     SHELL_KMETRICS_EMIT_U32("input_pointer_queued",
                             current->input.pointer_queued, 0U, available, "count",
                             SHELL_KMETRICS_KIND_GAUGE, "input", "input");
+    SHELL_KMETRICS_EMIT_U32("input_key_published",
+                            current->input.key_published,
+                            baseline ? baseline->input.key_published : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "input", "input");
+    SHELL_KMETRICS_EMIT_U32("input_pointer_published",
+                            current->input.pointer_published,
+                            baseline ? baseline->input.pointer_published : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "input", "input");
+    SHELL_KMETRICS_EMIT_U32("input_key_processed",
+                            current->input.key_processed,
+                            baseline ? baseline->input.key_processed : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "input", "input");
+    SHELL_KMETRICS_EMIT_U32("input_pointer_processed",
+                            current->input.pointer_processed,
+                            baseline ? baseline->input.pointer_processed : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "input", "input");
+    SHELL_KMETRICS_EMIT_U32("input_key_peak_queued",
+                            current->input.key_peak_queued, 0U, available,
+                            "count", SHELL_KMETRICS_KIND_GAUGE, "input",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("input_pointer_peak_queued",
+                            current->input.pointer_peak_queued, 0U, available,
+                            "count", SHELL_KMETRICS_KIND_GAUGE, "input",
+                            "input");
     SHELL_KMETRICS_EMIT_U32("input_key_dropped", current->input.key_dropped,
                             baseline ? baseline->input.key_dropped : 0U,
                             baseline_valid && available &&
@@ -514,6 +651,174 @@ static int shell_kmetrics_emit_input(
                                 baseline->input_result == OK,
                             "count", SHELL_KMETRICS_KIND_COUNTER, "input",
                             "input");
+    SHELL_KMETRICS_EMIT_U32("input_key_coalesced",
+                            current->input_flow.key_coalesced,
+                            baseline ? baseline->input_flow.key_coalesced : 0U,
+                            baseline_valid && input_flow_available && baseline &&
+                                baseline->input_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "input",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("input_pointer_coalesced",
+                            current->input_flow.pointer_coalesced,
+                            baseline ? baseline->input_flow.pointer_coalesced : 0U,
+                            baseline_valid && input_flow_available && baseline &&
+                                baseline->input_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "input",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("input_key_rejected",
+                            current->input_flow.key_rejected,
+                            baseline ? baseline->input_flow.key_rejected : 0U,
+                            baseline_valid && input_flow_available && baseline &&
+                                baseline->input_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "input",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("input_pointer_rejected",
+                            current->input_flow.pointer_rejected,
+                            baseline ? baseline->input_flow.pointer_rejected : 0U,
+                            baseline_valid && input_flow_available && baseline &&
+                                baseline->input_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "input",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("keyboard_raw_queued",
+                            current->keyboard_flow.raw_queued, 0U,
+                            keyboard_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "keyboard", "input");
+    SHELL_KMETRICS_EMIT_U32("keyboard_raw_capacity",
+                            current->keyboard_flow.raw_capacity, 0U,
+                            keyboard_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "keyboard", "input");
+    SHELL_KMETRICS_EMIT_U32("keyboard_raw_dropped",
+                            current->keyboard_flow.raw_dropped,
+                            baseline ? baseline->keyboard_flow.raw_dropped : 0U,
+                            baseline_valid && keyboard_flow_available && baseline &&
+                                baseline->keyboard_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "keyboard",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("keyboard_raw_processed",
+                            current->keyboard_flow.raw_processed,
+                            baseline ? baseline->keyboard_flow.raw_processed : 0U,
+                            baseline_valid && keyboard_flow_available && baseline &&
+                                baseline->keyboard_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "keyboard",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("keyboard_raw_peak_queued",
+                            current->keyboard_flow.raw_peak_queued, 0U,
+                            keyboard_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "keyboard", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_raw_queued",
+                            current->mouse_flow.raw_queued, 0U,
+                            mouse_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_raw_capacity",
+                            current->mouse_flow.raw_capacity, 0U,
+                            mouse_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_raw_dropped",
+                            current->mouse_flow.raw_dropped,
+                            baseline ? baseline->mouse_flow.raw_dropped : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_raw_processed",
+                            current->mouse_flow.raw_processed,
+                            baseline ? baseline->mouse_flow.raw_processed : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_raw_peak_queued",
+                            current->mouse_flow.raw_peak_queued, 0U,
+                            mouse_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_packets_decoded",
+                            current->mouse_flow.packets_decoded,
+                            baseline ? baseline->mouse_flow.packets_decoded : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_packets_dropped",
+                            current->mouse_flow.packets_dropped,
+                            baseline ? baseline->mouse_flow.packets_dropped : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_queue_queued",
+                            current->mouse_flow.queue_queued, 0U,
+                            mouse_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_queue_capacity",
+                            current->mouse_flow.queue_capacity, 0U,
+                            mouse_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_queue_peak_queued",
+                            current->mouse_flow.queue_peak_queued, 0U,
+                            mouse_flow_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_queue_coalesced",
+                            current->mouse_flow.queue_coalesced,
+                            baseline ? baseline->mouse_flow.queue_coalesced : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_queue_rejected",
+                            current->mouse_flow.queue_rejected,
+                            baseline ? baseline->mouse_flow.queue_rejected : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_move_events",
+                            current->mouse_flow.move_events,
+                            baseline ? baseline->mouse_flow.move_events : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_press_events",
+                            current->mouse_flow.press_events,
+                            baseline ? baseline->mouse_flow.press_events : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_release_events",
+                            current->mouse_flow.release_events,
+                            baseline ? baseline->mouse_flow.release_events : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_wheel_events",
+                            current->mouse_flow.wheel_events,
+                            baseline ? baseline->mouse_flow.wheel_events : 0U,
+                            baseline_valid && mouse_flow_available && baseline &&
+                                baseline->mouse_flow_result == OK,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "mouse",
+                            "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_initialized",
+                            current->mouse_status.initialized, 0U,
+                            mouse_status_available, "state",
+                            SHELL_KMETRICS_KIND_STATE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_button_state",
+                            current->mouse_status.effective_buttons, 0U,
+                            mouse_status_available, "state",
+                            SHELL_KMETRICS_KIND_STATE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_raw_button_state",
+                            current->mouse_status.raw_buttons, 0U,
+                            mouse_status_available, "state",
+                            SHELL_KMETRICS_KIND_STATE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_wheel_supported",
+                            current->mouse_status.wheel_supported, 0U,
+                            mouse_status_available, "state",
+                            SHELL_KMETRICS_KIND_STATE, "mouse", "input");
+    SHELL_KMETRICS_EMIT_U32("mouse_last_error",
+                            (uint32_t)current->mouse_status.last_error, 0U,
+                            mouse_status_available, "code",
+                            SHELL_KMETRICS_KIND_STATE, "mouse", "input");
     SHELL_KMETRICS_EMIT_U32("ipc_pending", ipc_get_pending_count(), 0U, 1U,
                             "count", SHELL_KMETRICS_KIND_GAUGE, "ipc", "shell");
     SHELL_KMETRICS_EMIT_U32("ipc_capacity", IPC_MSG_QUEUE_SIZE - 1U, 0U, 1U,

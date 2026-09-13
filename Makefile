@@ -2281,6 +2281,15 @@ perf1-baseline: $(OS_IMG) tools\perf1_baseline.py tools\perf1_metrics.py tools\q
 
 test-perf1-qemu: perf1-baseline
 
+test-perf2-host: test-input-host test-keyboard-host test-mouse-host test-shell-checks-host test-shell-diagnostics-host test-blackbox-host tools\perf2_responsiveness.py tests\unit\test_perf2_responsiveness.py tests\unit\test_qemu_test_runner.py
+	python -m unittest tests.unit.test_perf2_responsiveness tests.unit.test_qemu_test_runner
+
+perf2-responsiveness: $(OS_IMG) tools\perf2_responsiveness.py tools\perf1_metrics.py tools\qemu_test_runner.py tests\catalog.json tests\coverage\registry.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\perf2_responsiveness.py --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-perf2-qemu: perf2-responsiveness
+
 test-shell-commands-wifi-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_wifi_host.c tests\catalog.json src\shell\shell_commands_wifi.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\wifi_manager.h src\include\core\usb_manager.h
 	python tools\core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
@@ -2457,7 +2466,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
-.PHONY: test-perf1-host test-perf1-qemu perf1-baseline
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

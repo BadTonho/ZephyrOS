@@ -2448,6 +2448,33 @@ O relatório agregado fica em
 de modo/iteração. Envelopes `ZMETRIC/1` ausentes, incompletos ou truncados,
 falhas de protocolo, timeout e QEMU residual devem reprovar a matriz.
 
+## PERF2: responsividade de entrada
+
+Depois dos gates de build, execute a validacao especifica da entrada:
+
+```text
+make q3check
+make clean && make
+make test-perf2-host
+make test-perf2-qemu
+make perf2-responsiveness
+```
+
+`make test-perf2-host` executa as fixtures C de input, teclado, mouse e
+diagnosticos, alem dos testes Python do parser, das operacoes QMP e do
+relatorio. `make test-perf2-qemu` gera nove sessoes isoladas: tres em
+`baseline/Simple`, tres em `baseline/Classic` e tres em `no-vesa/Simple`.
+Cada sessao envia a carga QMP por 10 segundos, em ciclos de 100 ms, e coleta o
+processo QEMU a cada 250 ms durante o estresse.
+
+O relatorio agregado fica em
+`build/test-results/perf2-responsiveness/perf2-responsiveness.json`. Os
+artefatos de cada sessao preservam `manifest.json`, `serial.log`,
+`input.log`, logs QMP, amostras host e `perf2.json`. QMP sem
+`input-send-event` resulta em `BLOCKED`; envelope guest incompleto, metrica
+obrigatoria `ND`, descarte, overflow, rejeicao deferred, timeout, duplicidade
+ou prompt preso resulta em reprovacao.
+
 ## Traces Assembly de boot e recuperacao
 
 Os traces QEMU de Assembly devem ser executados individualmente, com um ID de

@@ -58,6 +58,25 @@ typedef struct {
     mouse_config_t config;
 } mouse_status_t;
 
+typedef struct {
+    uint32_t raw_queued;
+    uint32_t raw_capacity;
+    uint32_t raw_dropped;
+    uint32_t raw_processed;
+    uint32_t raw_peak_queued;
+    uint32_t packets_decoded;
+    uint32_t packets_dropped;
+    uint32_t queue_queued;
+    uint32_t queue_capacity;
+    uint32_t queue_peak_queued;
+    uint32_t queue_coalesced;
+    uint32_t queue_rejected;
+    uint32_t move_events;
+    uint32_t press_events;
+    uint32_t release_events;
+    uint32_t wheel_events;
+} mouse_flow_metrics_t;
+
 typedef void (*mouse_callback_t)(mouse_event_t*);
 
 int mouse_init(void);
@@ -70,6 +89,7 @@ uint8_t mouse_get_buttons(void);
 int mouse_has_wheel(void);
 int mouse_get_config(mouse_config_t* config);
 int mouse_get_status(mouse_status_t* status);
+int mouse_get_flow_metrics(mouse_flow_metrics_t* metrics);
 int mouse_set_speed(uint8_t speed);
 int mouse_set_acceleration(int enabled);
 int mouse_set_primary_button(mouse_primary_button_t primary_button);

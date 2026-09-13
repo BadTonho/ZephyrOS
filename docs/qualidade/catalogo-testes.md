@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7718**
-- Casos de teste: **196**
+- Superfícies ativas: **7728**
+- Casos de teste: **197**
 - Superfícies aposentadas: **61**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1655 |
+| `api_function` | 1658 |
 | `asm_entry` | 101 |
-| `c_function` | 5842 |
+| `c_function` | 5849 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7631 |
+| `COVERED` | 7634 |
 | `MANUAL` | 0 |
-| `PENDING` | 87 |
+| `PENDING` | 94 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 196 |
+| `AUTOMATED` | 197 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,9 +37,9 @@
 | `apps` | 175 |
 | `appstore` | 98 |
 | `boot` | 146 |
-| `core` | 2897 |
+| `core` | 2900 |
 | `desktop` | 40 |
-| `drivers` | 974 |
+| `drivers` | 981 |
 | `filemanager` | 93 |
 | `fs` | 1054 |
 | `gui` | 30 |
@@ -447,6 +447,7 @@
 | `api:src/include/core/icmp.h:icmp_reset` | `src/include/core/icmp.h` | `icmp_reset` | `core` | `COVERED` | 2 |
 | `api:src/include/core/icmp.h:icmp_validate_state` | `src/include/core/icmp.h` | `icmp_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/input.h:input_dispatch` | `src/include/core/input.h` | `input_dispatch` | `core` | `COVERED` | 6 |
+| `api:src/include/core/input.h:input_get_flow_metrics` | `src/include/core/input.h` | `input_get_flow_metrics` | `core` | `COVERED` | 6 |
 | `api:src/include/core/input.h:input_get_metrics` | `src/include/core/input.h` | `input_get_metrics` | `core` | `COVERED` | 6 |
 | `api:src/include/core/input.h:input_init` | `src/include/core/input.h` | `input_init` | `core` | `COVERED` | 6 |
 | `api:src/include/core/input.h:input_publish_key` | `src/include/core/input.h` | `input_publish_key` | `core` | `COVERED` | 6 |
@@ -477,6 +478,7 @@
 | `api:src/include/core/irq_deferred.h:irq_deferred_work_init` | `src/include/core/irq_deferred.h` | `irq_deferred_work_init` | `core` | `COVERED` | 5 |
 | `api:src/include/core/keyboard.h:keyboard_controller_reset` | `src/include/core/keyboard.h` | `keyboard_controller_reset` | `core` | `COVERED` | 4 |
 | `api:src/include/core/keyboard.h:keyboard_controller_reset_available` | `src/include/core/keyboard.h` | `keyboard_controller_reset_available` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_get_flow_metrics` | `src/include/core/keyboard.h` | `keyboard_get_flow_metrics` | `core` | `COVERED` | 4 |
 | `api:src/include/core/keyboard.h:keyboard_get_metrics` | `src/include/core/keyboard.h` | `keyboard_get_metrics` | `core` | `COVERED` | 4 |
 | `api:src/include/core/keyboard.h:keyboard_handler` | `src/include/core/keyboard.h` | `keyboard_handler` | `core` | `COVERED` | 4 |
 | `api:src/include/core/keyboard.h:keyboard_init` | `src/include/core/keyboard.h` | `keyboard_init` | `core` | `COVERED` | 4 |
@@ -1003,6 +1005,7 @@
 | `api:src/include/drivers/idt.h:idt_validate_irq_state` | `src/include/drivers/idt.h` | `idt_validate_irq_state` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/mouse.h:mouse_get_buttons` | `src/include/drivers/mouse.h` | `mouse_get_buttons` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_config` | `src/include/drivers/mouse.h` | `mouse_get_config` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_get_flow_metrics` | `src/include/drivers/mouse.h` | `mouse_get_flow_metrics` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_status` | `src/include/drivers/mouse.h` | `mouse_get_status` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_x` | `src/include/drivers/mouse.h` | `mouse_get_x` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_y` | `src/include/drivers/mouse.h` | `mouse_get_y` | `drivers` | `COVERED` | 4 |
@@ -2744,6 +2747,7 @@
 | `c:src/core/input.c:input_dispatch` | `src/core/input.c` | `input_dispatch` | `core` | `COVERED` | 4 |
 | `c:src/core/input.c:input_dispatch_key` | `src/core/input.c` | `input_dispatch_key` | `core` | `COVERED` | 4 |
 | `c:src/core/input.c:input_dispatch_pointer` | `src/core/input.c` | `input_dispatch_pointer` | `core` | `COVERED` | 4 |
+| `c:src/core/input.c:input_get_flow_metrics` | `src/core/input.c` | `input_get_flow_metrics` | `core` | `PENDING` | 0 |
 | `c:src/core/input.c:input_get_metrics` | `src/core/input.c` | `input_get_metrics` | `core` | `COVERED` | 6 |
 | `c:src/core/input.c:input_init` | `src/core/input.c` | `input_init` | `core` | `COVERED` | 1 |
 | `c:src/core/input.c:input_irq_restore` | `src/core/input.c` | `input_irq_restore` | `core` | `COVERED` | 6 |
@@ -2909,7 +2913,7 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 30 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
@@ -2918,7 +2922,7 @@
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 25 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 30 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_level_str` | `src/core/log.c` | `log_level_str` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
@@ -4501,20 +4505,21 @@
 | `c:src/drivers/idt.c:outb` | `src/drivers/idt.c` | `outb` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/idt.c:pic_remap` | `src/drivers/idt.c` | `pic_remap` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/keyboard.c:inb` | `src/drivers/keyboard.c` | `inb` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/keyboard.c:keyboard_bottom_half` | `src/drivers/keyboard.c` | `keyboard_bottom_half` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/keyboard.c:keyboard_bottom_half` | `src/drivers/keyboard.c` | `keyboard_bottom_half` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_controller_reset` | `src/drivers/keyboard.c` | `keyboard_controller_reset` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_controller_reset_available` | `src/drivers/keyboard.c` | `keyboard_controller_reset_available` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_enqueue_scancodes` | `src/drivers/keyboard.c` | `keyboard_enqueue_scancodes` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/keyboard.c:keyboard_get_flow_metrics` | `src/drivers/keyboard.c` | `keyboard_get_flow_metrics` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/keyboard.c:keyboard_get_metrics` | `src/drivers/keyboard.c` | `keyboard_get_metrics` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_handler` | `src/drivers/keyboard.c` | `keyboard_handler` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_init` | `src/drivers/keyboard.c` | `keyboard_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_input_sink` | `src/drivers/keyboard.c` | `keyboard_input_sink` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_irq_restore` | `src/drivers/keyboard.c` | `keyboard_irq_restore` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_irq_save` | `src/drivers/keyboard.c` | `keyboard_irq_save` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/keyboard.c:keyboard_irq_restore` | `src/drivers/keyboard.c` | `keyboard_irq_restore` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/keyboard.c:keyboard_irq_save` | `src/drivers/keyboard.c` | `keyboard_irq_save` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_process_events` | `src/drivers/keyboard.c` | `keyboard_process_events` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/keyboard.c:keyboard_process_raw_byte` | `src/drivers/keyboard.c` | `keyboard_process_raw_byte` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_ps2_usage` | `src/drivers/keyboard.c` | `keyboard_ps2_usage` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_raw_enqueue` | `src/drivers/keyboard.c` | `keyboard_raw_enqueue` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/keyboard.c:keyboard_process_raw_byte` | `src/drivers/keyboard.c` | `keyboard_process_raw_byte` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/keyboard.c:keyboard_ps2_usage` | `src/drivers/keyboard.c` | `keyboard_ps2_usage` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/keyboard.c:keyboard_raw_enqueue` | `src/drivers/keyboard.c` | `keyboard_raw_enqueue` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_scancode_to_ascii` | `src/drivers/keyboard.c` | `keyboard_scancode_to_ascii` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_scancode_to_ascii_shifted` | `src/drivers/keyboard.c` | `keyboard_scancode_to_ascii_shifted` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter` | `src/drivers/keyboard.c` | `keyboard_set_focus_cancel_filter` | `drivers` | `COVERED` | 1 |
@@ -4536,6 +4541,7 @@
 | `c:src/drivers/mouse.c:mouse_enqueue_packet` | `src/drivers/mouse.c` | `mouse_enqueue_packet` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_get_buttons` | `src/drivers/mouse.c` | `mouse_get_buttons` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_get_config` | `src/drivers/mouse.c` | `mouse_get_config` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/mouse.c:mouse_get_flow_metrics` | `src/drivers/mouse.c` | `mouse_get_flow_metrics` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/mouse.c:mouse_get_status` | `src/drivers/mouse.c` | `mouse_get_status` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_get_x` | `src/drivers/mouse.c` | `mouse_get_x` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_get_y` | `src/drivers/mouse.c` | `mouse_get_y` | `drivers` | `COVERED` | 1 |
@@ -4547,10 +4553,14 @@
 | `c:src/drivers/mouse.c:mouse_invalidate_cursor` | `src/drivers/mouse.c` | `mouse_invalidate_cursor` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_make_damage_region` | `src/drivers/mouse.c` | `mouse_make_damage_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_map_buttons` | `src/drivers/mouse.c` | `mouse_map_buttons` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_prepare_event_batch` | `src/drivers/mouse.c` | `mouse_prepare_event_batch` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/mouse.c:mouse_present_cursor` | `src/drivers/mouse.c` | `mouse_present_cursor` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_present_damage_region` | `src/drivers/mouse.c` | `mouse_present_damage_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_process_events` | `src/drivers/mouse.c` | `mouse_process_events` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_process_raw_byte` | `src/drivers/mouse.c` | `mouse_process_raw_byte` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_queue_count` | `src/drivers/mouse.c` | `mouse_queue_count` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/mouse.c:mouse_raw_queue_count` | `src/drivers/mouse.c` | `mouse_raw_queue_count` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/mouse.c:mouse_raw_queue_pending` | `src/drivers/mouse.c` | `mouse_raw_queue_pending` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/mouse.c:mouse_read` | `src/drivers/mouse.c` | `mouse_read` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_report_queue_overflow` | `src/drivers/mouse.c` | `mouse_report_queue_overflow` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_reset_state` | `src/drivers/mouse.c` | `mouse_reset_state` | `drivers` | `COVERED` | 1 |
@@ -7968,6 +7978,7 @@
 | `qemu:tst5:krn6-diagnostics` | `qemu` | `smoke` | `qemu:tst5:krn6-diagnostics` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, teclado virtual, Shell e diagnosticos do kernel inicializados | abrir o Shell e executar a sequencia KRN6 somente por QMP | todos os diagnosticos retornam sucesso ou degradacao esperada, o prompt retorna e nao ha processo ring 3 ou zumbi residual | entrada perdida, diagnostico negativo, marcador ausente, prompt preso, timeout, protocolo ou QEMU | somente snapshots de metricas e diagnosticos; o caso reseta as metricas antes da coleta | encerrar o QEMU e preservar script, serial, QMP e resultado |
 | `qemu:tst5:network` | `qemu` | `smoke` | `qemu:tst5:network` | `AUTOMATED` | 90 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta e QEMU configurado com rede isolada | consultar status, rotas e sockets sem conexao externa | o Shell responde e a ausencia de interface permanece coerente e observavel | conexao externa, estado incoerente, prompt preso, timeout, protocolo ou QEMU | somente consultas e estado temporario de rede no snapshot | encerrar o QEMU sem tocar na rede do hospedeiro |
 | `qemu:tst5:perf1-baseline` | `qemu` | `smoke` | `qemu:tst5:perf1-baseline` | `AUTOMATED` | 180 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU, serial e teclado virtual disponiveis | capturar amostra guest antes e depois do reset, aguardar idle fixo e executar diagnosticos somente leitura | cada sessao retorna o prompt, o marcador TST5 e um envelope ZMETRIC/1 completo; o relatorio registra guest e host | envelope ausente ou truncado, chave duplicada, valor fora de uint32, diagnostico negativo, prompt preso, timeout, protocolo ou QEMU | somente snapshots de metricas, diagnosticos observacionais e artefatos host; update/recovery permanecem sem mutacao | encerrar cada QEMU isolado e preservar serial, QMP, logs e relatorio JSON |
+| `qemu:tst5:perf2-input-responsiveness` | `qemu` | `smoke` | `qemu:tst5:perf2-input-responsiveness` | `AUTOMATED` | 240 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com input-send-event, serial, QMP e dispositivo PS/2 disponiveis | selecionar o Shell, capturar baseline, executar diagnosticos somente leitura durante carga QMP de teclado e mouse, cancelar regcheck com F11 e capturar amostra final | cada sessao retorna o prompt e o marcador TST5; o envelope guest tem tres amostras completas; press, release e roda preservam a contagem enviada; descartes e rejeicoes permanecem zero; o relatorio registra host e input.log | QMP sem suporte a input-send-event, envelope ausente ou truncado, chave duplicada, metricas guest ND, descarte, overflow, rejeicao deferred, timeout, prompt preso ou diagnostico negativo | somente eventos QMP, snapshots de metricas e diagnosticos observacionais; o estresse nao existe como comando produtivo e update/recovery permanecem sem mutacao | encerrar cada QEMU isolado e preservar serial, QMP, input.log, amostras host e relatorio JSON |
 | `qemu:tst5:poweroff` | `qemu` | `smoke` | `qemu:tst5:poweroff` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e suporte de poweroff do guest disponivel | confirmar caminho do Shell e enviar poweroff somente apos PASS | o caso publica PASS e QMP observa SHUTDOWN ou a saida esperada do QEMU | poweroff antes do PASS, reset inesperado, timeout, protocolo ou QEMU | encerra somente a instancia QEMU em snapshot | fechar sockets e preservar logs mesmo apos a saida do guest |
 | `qemu:tst5:processes` | `qemu` | `smoke` | `qemu:tst5:processes` | `AUTOMATED` | 75 | 15 | `snapshot` | `quality` | `qemu` | processos, threads, scheduler e Shell estao READY | consultar processos e threads por teclado externo | os diagnosticos terminam e o marcador confirma o retorno ao prompt | processo residual, diagnostico preso, timeout, protocolo ou QEMU | somente consultas de estado do guest em snapshot | encerrar o QEMU e preservar historico de entrada |
 | `qemu:tst5:reboot` | `qemu` | `smoke` | `qemu:tst5:reboot` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e caminho de reboot do guest disponivel | confirmar o terminal, enviar reboot apos PASS e aguardar novo HELLO/READY | QMP publica RESET e uma segunda sessao publica READY e HEARTBEAT | reset prematuro, handshake ausente, timeout, protocolo ou QEMU | reinicia somente a instancia QEMU em snapshot | encerrar a segunda sessao via QMP e preservar as duas fases |
@@ -8017,6 +8028,7 @@
 - `c:src/boot/recovery_loader.c:recovery_in8`
 - `c:src/boot/recovery_loader.c:recovery_out16`
 - `c:src/boot/recovery_loader.c:recovery_out8`
+- `c:src/core/input.c:input_get_flow_metrics`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_find`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case`
@@ -8063,6 +8075,12 @@
 - `c:src/drivers/ehci.c:ehci_dma_layout_valid`
 - `c:src/drivers/ehci.c:ehci_dma_pointer_phys`
 - `c:src/drivers/ehci.c:ehci_schedule_valid`
+- `c:src/drivers/keyboard.c:keyboard_get_flow_metrics`
+- `c:src/drivers/mouse.c:mouse_get_flow_metrics`
+- `c:src/drivers/mouse.c:mouse_prepare_event_batch`
+- `c:src/drivers/mouse.c:mouse_queue_count`
+- `c:src/drivers/mouse.c:mouse_raw_queue_count`
+- `c:src/drivers/mouse.c:mouse_raw_queue_pending`
 - `c:src/drivers/usb_msc.c:msc_bulk_transfer`
 - `c:src/drivers/usb_msc.c:msc_control_request`
 - `c:src/drivers/usb_msc.c:msc_reset_bulk_toggles`

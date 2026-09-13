@@ -82,6 +82,7 @@ static uint32_t fixture_process_count;
 static int fixture_foreground_active;
 static int fixture_run_image_result = OK;
 static uint32_t fixture_run_image_pid;
+static uint32_t fixture_process_yields;
 static recovery_component_t fixture_recovery[RECOVERY_COMPONENT_COUNT];
 static uint32_t fixture_ticks;
 static int fixture_job_active;
@@ -670,6 +671,10 @@ void app_loader_set_operation_generation(uint32_t generation) {
 
 process_t* process_get_current(void) {
     return fixture_current_process.pid ? &fixture_current_process : NULL;
+}
+
+void process_yield(void) {
+    fixture_process_yields++;
 }
 
 uint32_t process_get_focus(void) {

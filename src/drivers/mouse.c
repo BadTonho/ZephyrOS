@@ -13,8 +13,9 @@
 
 #define MOUSE_QUEUE_SIZE 256
 #define MOUSE_RAW_QUEUE_SIZE 512U
-#define MOUSE_BOTTOM_HALF_MAX_EVENTS 8U
-#define MOUSE_BOTTOM_HALF_MAX_BYTES 32U
+#define MOUSE_BOTTOM_HALF_MAX_EVENTS 128U
+#define MOUSE_BOTTOM_HALF_MAX_BYTES 1024U
+#define MOUSE_INPUT_DISPATCH_BUDGET 128U
 #define MOUSE_EVENT_BATCH_BUDGET 32U
 #define MOUSE_COALESCED_DELTA_LIMIT 32767
 #define MOUSE_PACKET_STANDARD_SIZE 3
@@ -83,6 +84,18 @@ static int driver_initialized = 0;
 static int input_sink_ready = 0;
 static int last_error = OK;
 static volatile uint32_t dropped_packets = 0;
+static volatile uint32_t raw_dropped_packets = 0;
+static volatile uint32_t raw_processed_bytes = 0;
+static volatile uint32_t raw_peak_queued = 0;
+static volatile uint32_t decoded_packets = 0;
+static volatile uint32_t packet_drop_count = 0;
+static volatile uint32_t queue_coalesced = 0;
+static volatile uint32_t queue_rejected = 0;
+static volatile uint32_t queue_peak_queued = 0;
+static volatile uint32_t move_event_count = 0;
+static volatile uint32_t press_event_count = 0;
+static volatile uint32_t release_event_count = 0;
+static volatile uint32_t wheel_event_count = 0;
 static int queue_overflow_logged = 0;
 static mouse_config_t mouse_config = {
     MOUSE_SPEED_DEFAULT, 0, MOUSE_PRIMARY_LEFT
@@ -111,6 +124,27 @@ static int wheel_fallback_logged = 0;
 static void mouse_bottom_half(void* context);
 static uint32_t mouse_suspend_interrupts(void);
 static void mouse_restore_interrupts(uint32_t flags);
+
+static uint32_t mouse_queue_count(void) {
+    if (queue_tail >= queue_head) return (uint32_t)(queue_tail - queue_head);
+    return MOUSE_QUEUE_SIZE - (uint32_t)queue_head + (uint32_t)queue_tail;
+}
+
+static uint32_t mouse_raw_queue_count(void) {
+    if (mouse_raw_head >= mouse_raw_tail) {
+        return (uint32_t)(mouse_raw_head - mouse_raw_tail);
+    }
+    return MOUSE_RAW_QUEUE_SIZE - (uint32_t)mouse_raw_tail +
+           (uint32_t)mouse_raw_head;
+}
+
+static uint8_t mouse_raw_queue_pending(void) {
+    uint32_t flags = mouse_suspend_interrupts();
+    uint8_t pending = mouse_raw_tail != mouse_raw_head;
+
+    mouse_restore_interrupts(flags);
+    return pending;
+}
 
 static int32_t mouse_accumulate_delta(int32_t current, int32_t delta) {
     int64_t total = (int64_t)current + (int64_t)delta;
@@ -463,6 +497,7 @@ static void mouse_apply_movement(const vesa_mode_t* mode,
     cursor_y -= mouse_scale_delta(batch->dy, magnitude);
     if (cursor_x < 0) cursor_x = 0;
     if (cursor_y < 0) cursor_y = 0;
+    if (!mode || !mode->initialized) return;
     if (cursor_x >= (int)mode->width) cursor_x = mode->width - 1;
     if (cursor_y >= (int)mode->height) cursor_y = mode->height - 1;
 }
@@ -481,6 +516,8 @@ static void mouse_dispatch_event(const mouse_event_batch_t* batch,
     if (changed) {
         event.event = (current_buttons & changed) ?
                       MOUSE_EVENT_PRESS : MOUSE_EVENT_RELEASE;
+        if (event.event == MOUSE_EVENT_PRESS) press_event_count++;
+        else release_event_count++;
         current_callback(&event);
     }
     if (batch->wheel != 0) {
@@ -491,12 +528,14 @@ static void mouse_dispatch_event(const mouse_event_batch_t* batch,
         event.event = MOUSE_EVENT_WHEEL;
         event.changed = 0;
         event.wheel = (int8_t)wheel;
+        wheel_event_count++;
         current_callback(&event);
     }
     if (batch->dx != 0 || batch->dy != 0) {
         event.event = MOUSE_EVENT_MOVE;
         event.changed = 0;
         event.wheel = 0;
+        move_event_count++;
         current_callback(&event);
     }
 }
@@ -507,6 +546,22 @@ static void mouse_report_queue_overflow(void) {
     queue_overflow_logged = 1;
     last_error = ERR_OVERFLOW;
     LOG_ERROR("MOUSE", "Pipeline de entrada do mouse saturado; pacotes descartados");
+}
+
+static uint8_t mouse_prepare_event_batch(const vesa_mode_t* mode,
+                                         mouse_event_batch_t* batch) {
+    uint8_t changed;
+
+    if (!batch) return 0U;
+    mouse_collect_event_batch(batch);
+    mouse_apply_movement(mode, batch);
+    prev_buttons = current_buttons;
+    if (batch->raw_buttons_changed) {
+        raw_buttons = batch->next_raw_buttons;
+        current_buttons = mouse_map_buttons(raw_buttons);
+    }
+    changed = prev_buttons ^ current_buttons;
+    return changed;
 }
 
 /* ========== Handler de interrupcao (IRQ12) ========== */
@@ -528,11 +583,16 @@ static void mouse_handler(registers_t* regs) {
             mouse_raw_gap_pending = 1U;
         }
         dropped_packets++;
+        raw_dropped_packets++;
         last_error = ERR_OVERFLOW;
         return;
     }
     mouse_raw_queue[mouse_raw_head] = inb(MOUSE_DATA_PORT);
     mouse_raw_head = next;
+    {
+        uint32_t queued = mouse_raw_queue_count();
+        if (queued > raw_peak_queued) raw_peak_queued = queued;
+    }
     (void)irq_deferred_schedule(&mouse_bottom_half_work);
 }
 
@@ -552,9 +612,11 @@ static int mouse_process_raw_byte(uint8_t value) {
         event.wheel = wheel_supported ? mouse_decode_wheel(packet[3]) : 0;
         event.buttons = packet[0] & MOUSE_BUTTON_MASK;
         event.source = INPUT_SOURCE_PS2;
+        decoded_packets++;
         result = input_publish_pointer(&event);
         if (result != OK) {
             dropped_packets++;
+            packet_drop_count++;
             last_error = result;
             return -1;
         }
@@ -568,9 +630,11 @@ static void mouse_bottom_half(void* context) {
     uint32_t bytes = 0U;
     uint32_t events = 0U;
     uint32_t event_budget = MOUSE_BOTTOM_HALF_MAX_EVENTS;
+    uint32_t input_dispatched = 0U;
     input_metrics_t metrics;
 
     (void)context;
+    (void)input_dispatch(MOUSE_INPUT_DISPATCH_BUDGET, &input_dispatched);
     if (input_get_metrics(&metrics) != OK ||
         metrics.pointer_queued >= metrics.pointer_capacity) return;
     if (event_budget > metrics.pointer_capacity - metrics.pointer_queued) {
@@ -594,10 +658,26 @@ static void mouse_bottom_half(void* context) {
         value = mouse_raw_queue[mouse_raw_tail];
         mouse_raw_tail =
             (uint16_t)((mouse_raw_tail + 1U) % MOUSE_RAW_QUEUE_SIZE);
+        raw_processed_bytes++;
         mouse_restore_interrupts(flags);
         result = mouse_process_raw_byte(value);
         if (result > 0) events++;
         bytes++;
+        if (events >= event_budget && bytes < MOUSE_BOTTOM_HALF_MAX_BYTES) {
+            input_dispatched = 0U;
+            if (input_dispatch(MOUSE_INPUT_DISPATCH_BUDGET,
+                               &input_dispatched) != OK ||
+                !input_dispatched || input_get_metrics(&metrics) != OK) {
+                break;
+            }
+            event_budget = MOUSE_BOTTOM_HALF_MAX_EVENTS;
+            if (event_budget > metrics.pointer_capacity -
+                              metrics.pointer_queued) {
+                event_budget = metrics.pointer_capacity -
+                               metrics.pointer_queued;
+            }
+            events = 0U;
+        }
     }
     if (input_get_metrics(&metrics) == OK &&
         metrics.pointer_queued < metrics.pointer_capacity) {
@@ -648,17 +728,23 @@ static int mouse_enqueue_packet(const mouse_packet_t* value) {
         if (queued->wheel == 0 && queued->buttons == value->buttons) {
             queued->dx = mouse_accumulate_delta(queued->dx, value->dx);
             queued->dy = mouse_accumulate_delta(queued->dy, value->dy);
+            queue_coalesced++;
             mouse_restore_interrupts(flags);
             return OK;
         }
     }
     next_tail = (queue_tail + 1) % MOUSE_QUEUE_SIZE;
     if (next_tail == queue_head) {
+        queue_rejected++;
         mouse_restore_interrupts(flags);
         return ERR_OVERFLOW;
     }
     event_queue[queue_tail] = *value;
     queue_tail = next_tail;
+    {
+        uint32_t queued = mouse_queue_count();
+        if (queued > queue_peak_queued) queue_peak_queued = queued;
+    }
     mouse_restore_interrupts(flags);
     return OK;
 }
@@ -698,6 +784,18 @@ static void mouse_reset_state(void) {
     mouse_bottom_half_work.queued = 0U;
     mouse_bottom_half_work.running = 0U;
     dropped_packets = 0;
+    raw_dropped_packets = 0U;
+    raw_processed_bytes = 0U;
+    raw_peak_queued = 0U;
+    decoded_packets = 0U;
+    packet_drop_count = 0U;
+    queue_coalesced = 0U;
+    queue_rejected = 0U;
+    queue_peak_queued = 0U;
+    move_event_count = 0U;
+    press_event_count = 0U;
+    release_event_count = 0U;
+    wheel_event_count = 0U;
     queue_overflow_logged = 0;
     prev_buttons = 0;
     current_buttons = 0;
@@ -832,13 +930,28 @@ void mouse_process_events(void) {
     int old_y;
     int had_old_cursor;
     uint8_t frame_open = 0U;
+    uint8_t prioritize_input;
     uint32_t batches = 0U;
 
     if (!driver_initialized || !input_sink_ready) return;
+    prioritize_input = mouse_raw_queue_pending();
     mouse_bottom_half(0);
+    if (mouse_raw_queue_pending()) prioritize_input = 1U;
     mouse_report_queue_overflow();
     vesa_mode_t* mode = vesa_get_mode();
-    if (!mode || !mode->initialized) return;
+    if ((!mode || !mode->initialized) || prioritize_input) {
+        if (prioritize_input && mode && mode->initialized) erase_cursor();
+        while (queue_head != queue_tail && batches < MOUSE_EVENT_BATCH_BUDGET) {
+            mouse_event_batch_t batch;
+            uint8_t changed = mouse_prepare_event_batch(
+                mode && mode->initialized ? mode : 0, &batch);
+
+            mouse_dispatch_event(&batch, changed);
+            batches++;
+        }
+        if (prioritize_input) cursor_drawn = 0;
+        return;
+    }
 
     /* Se nao ha eventos, apenas garante que o cursor esteja desenhado */
     if (queue_head == queue_tail) {
@@ -857,16 +970,8 @@ void mouse_process_events(void) {
 
     while (queue_head != queue_tail && batches < MOUSE_EVENT_BATCH_BUDGET) {
         mouse_event_batch_t batch;
-        uint8_t changed;
+        uint8_t changed = mouse_prepare_event_batch(mode, &batch);
 
-        mouse_collect_event_batch(&batch);
-        mouse_apply_movement(mode, &batch);
-        prev_buttons = current_buttons;
-        if (batch.raw_buttons_changed) {
-            raw_buttons = batch.next_raw_buttons;
-            current_buttons = mouse_map_buttons(raw_buttons);
-        }
-        changed = prev_buttons ^ current_buttons;
         if (changed && !frame_open) {
             vesa_frame_begin();
             frame_open = 1U;
@@ -875,12 +980,15 @@ void mouse_process_events(void) {
         batches++;
     }
 
-    draw_cursor();
     if (frame_open) {
         vesa_frame_end();
-    } else {
-        mouse_present_cursor(old_x, old_y, had_old_cursor);
     }
+    if (batches) {
+        cursor_drawn = 0;
+        return;
+    }
+    draw_cursor();
+    if (!prioritize_input) mouse_present_cursor(old_x, old_y, had_old_cursor);
 }
 
 mouse_callback_t mouse_set_callback(mouse_callback_t cb) {
@@ -927,6 +1035,38 @@ int mouse_get_status(mouse_status_t* status) {
     status->dropped_packets = dropped_packets;
     status->last_error = last_error;
     status->config = mouse_config;
+    return OK;
+}
+
+int mouse_get_flow_metrics(mouse_flow_metrics_t* metrics) {
+    uint32_t flags;
+
+    if (!metrics) {
+        LOG_ERROR("MOUSE", "Destino nulo no fluxo do mouse");
+        return ERR_NULL;
+    }
+    if (!input_sink_ready) {
+        LOG_WARN("MOUSE", "Fluxo do mouse antes da inicializacao");
+        return ERR_UNAVAILABLE;
+    }
+    flags = mouse_suspend_interrupts();
+    metrics->raw_queued = mouse_raw_queue_count();
+    metrics->raw_capacity = MOUSE_RAW_QUEUE_SIZE - 1U;
+    metrics->raw_dropped = raw_dropped_packets;
+    metrics->raw_processed = raw_processed_bytes;
+    metrics->raw_peak_queued = raw_peak_queued;
+    metrics->packets_decoded = decoded_packets;
+    metrics->packets_dropped = packet_drop_count;
+    metrics->queue_queued = mouse_queue_count();
+    metrics->queue_capacity = MOUSE_QUEUE_SIZE - 1U;
+    metrics->queue_peak_queued = queue_peak_queued;
+    metrics->queue_coalesced = queue_coalesced;
+    metrics->queue_rejected = queue_rejected;
+    metrics->move_events = move_event_count;
+    metrics->press_events = press_event_count;
+    metrics->release_events = release_event_count;
+    metrics->wheel_events = wheel_event_count;
+    mouse_restore_interrupts(flags);
     return OK;
 }
 

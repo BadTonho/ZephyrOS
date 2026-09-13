@@ -40,6 +40,7 @@ QEMU_PORT_RETRIES = 3
 HELLO_RETRY_INTERVAL = 0.5
 QMP_KEY_HOLD_TIME_MS = 20
 QMP_KEY_GAP_SECONDS = 0.025
+QMP_POINTER_GAP_SECONDS = 0.005
 FRAME_ALLOWED = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.:")
 EVENT_TERMINAL = {"PASS", "FAIL", "SKIP", "BLOCKED"}
 EVENT_FATAL = {"PANIC", "TIMEOUT"}
@@ -140,6 +141,12 @@ INPUT_SCRIPT_MAX_STEPS = 128
 INPUT_TEXT_MAX_LENGTH = 160
 INPUT_KEYS_MAX_COUNT = 4
 INPUT_WAIT_MAX_SECONDS = 10.0
+INPUT_STRESS_MAX_SECONDS = 30.0
+INPUT_STRESS_CYCLE_MIN_MS = 20
+INPUT_STRESS_CYCLE_MAX_MS = 1000
+INPUT_POINTER_VALUE_LIMIT = 32767
+INPUT_POINTER_WHEEL_LIMIT = 127
+INPUT_POINTER_BUTTONS = {"left", "middle", "right"}
 INPUT_TEXT_CHARACTERS = set(
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-./:|>"
 )
@@ -387,7 +394,8 @@ def validate_case_for_runner(case: dict[str, Any]) -> None:
 
 def validate_input_step(step: Any, identifier: str) -> None:
     if not isinstance(step, dict) or step.get("op") not in {
-            "key", "keys", "text", "wait"}:
+            "key", "keys", "text", "wait", "pointer_move",
+            "pointer_button", "pointer_wheel", "pointer_drag", "stress"}:
         raise RunnerError(f"script_entrada_invalido:{identifier}",
                           "catalog_error", True)
     operation = step["op"]
@@ -396,6 +404,59 @@ def validate_input_step(step: Any, identifier: str) -> None:
         if (not isinstance(value, (int, float)) or isinstance(value, bool) or
                 value <= 0 or value > INPUT_WAIT_MAX_SECONDS):
             raise RunnerError(f"espera_entrada_invalida:{identifier}",
+                              "catalog_error", True)
+        return
+    if operation == "stress":
+        seconds = step.get("seconds")
+        cycle_ms = step.get("cycle_ms", 100)
+        if (not isinstance(seconds, (int, float)) or isinstance(seconds, bool) or
+                seconds <= 0 or seconds > INPUT_STRESS_MAX_SECONDS):
+            raise RunnerError(f"estresse_entrada_invalido:{identifier}",
+                              "catalog_error", True)
+        if (not isinstance(cycle_ms, int) or isinstance(cycle_ms, bool) or
+                cycle_ms < INPUT_STRESS_CYCLE_MIN_MS or
+                cycle_ms > INPUT_STRESS_CYCLE_MAX_MS):
+            raise RunnerError(f"ciclo_estresse_invalido:{identifier}",
+                              "catalog_error", True)
+        return
+    if operation == "pointer_move":
+        dx = step.get("dx")
+        dy = step.get("dy")
+        if (not isinstance(dx, int) or isinstance(dx, bool) or
+                not isinstance(dy, int) or isinstance(dy, bool) or
+                not -INPUT_POINTER_VALUE_LIMIT <= dx <= INPUT_POINTER_VALUE_LIMIT or
+                not -INPUT_POINTER_VALUE_LIMIT <= dy <= INPUT_POINTER_VALUE_LIMIT or
+                (dx == 0 and dy == 0)):
+            raise RunnerError(f"movimento_ponteiro_invalido:{identifier}",
+                              "catalog_error", True)
+        return
+    if operation == "pointer_button":
+        if (step.get("button") not in INPUT_POINTER_BUTTONS or
+                not isinstance(step.get("down"), bool)):
+            raise RunnerError(f"botao_ponteiro_invalido:{identifier}",
+                              "catalog_error", True)
+        return
+    if operation == "pointer_wheel":
+        delta = step.get("delta")
+        if (not isinstance(delta, int) or isinstance(delta, bool) or
+                delta == 0 or not -INPUT_POINTER_WHEEL_LIMIT <= delta <=
+                INPUT_POINTER_WHEEL_LIMIT):
+            raise RunnerError(f"roda_ponteiro_invalida:{identifier}",
+                              "catalog_error", True)
+        return
+    if operation == "pointer_drag":
+        dx = step.get("dx")
+        dy = step.get("dy")
+        steps = step.get("steps")
+        if (step.get("button") not in INPUT_POINTER_BUTTONS or
+                not isinstance(dx, int) or isinstance(dx, bool) or
+                not isinstance(dy, int) or isinstance(dy, bool) or
+                not isinstance(steps, int) or isinstance(steps, bool) or
+                not 1 <= steps <= 32 or
+                not -INPUT_POINTER_VALUE_LIMIT <= dx <= INPUT_POINTER_VALUE_LIMIT or
+                not -INPUT_POINTER_VALUE_LIMIT <= dy <= INPUT_POINTER_VALUE_LIMIT or
+                (dx == 0 and dy == 0)):
+            raise RunnerError(f"arraste_ponteiro_invalido:{identifier}",
                               "catalog_error", True)
         return
     if operation == "text":
@@ -422,7 +483,8 @@ def validate_input_step(step: Any, identifier: str) -> None:
 def validate_interaction(interaction: Any, identifier: str) -> None:
     if interaction is None:
         return
-    if not isinstance(interaction, dict) or interaction.get("mode") != "qmp-keyboard":
+    if not isinstance(interaction, dict) or interaction.get("mode") not in {
+            "qmp-keyboard", "qmp-input"}:
         raise RunnerError(f"interacao_invalida:{identifier}", "catalog_error", True)
     steps = interaction.get("steps")
     if not isinstance(steps, list) or not steps or len(steps) > INPUT_SCRIPT_MAX_STEPS:
@@ -613,6 +675,8 @@ class QemuSession:
         self.qmp_status: dict[str, Any] | None = None
         self.qmp_events: list[dict[str, Any]] = []
         self.input_trace: list[dict[str, Any]] = []
+        self.input_stress_hook: Any = None
+        self.input_stress_cycles = 0
         self.diagnostics: list[str] = []
         self.observed_capabilities: list[str] = []
         self.allow_qemu_exit = False
@@ -817,6 +881,73 @@ class QemuSession:
                 keys = [character]
             self._send_qmp_keys(keys)
 
+    def _send_qmp_pointer(self, events: list[dict[str, Any]]) -> None:
+        qmp_events = [{"type": event["type"], "data": {
+            key: value for key, value in event.items() if key != "type"
+        }} for event in events]
+        self.qmp.command("input-send-event", {"events": qmp_events})
+        self._record_input({"op": "pointer", "events": qmp_events})
+        time.sleep(QMP_POINTER_GAP_SECONDS)
+
+    def send_pointer_move(self, dx: int, dy: int) -> None:
+        events: list[dict[str, Any]] = []
+        if dx:
+            events.append({"type": "rel", "axis": "x", "value": dx})
+        if dy:
+            events.append({"type": "rel", "axis": "y", "value": dy})
+        self._send_qmp_pointer(events)
+
+    def send_pointer_button(self, button: str, down: bool) -> None:
+        self._send_qmp_pointer([{
+            "type": "btn", "button": button, "down": down,
+        }])
+
+    def send_pointer_wheel(self, delta: int) -> None:
+        button = "wheel-up" if delta > 0 else "wheel-down"
+        events = [{"type": "btn", "button": button, "down": True}
+                  for _ in range(abs(delta))]
+        self._send_qmp_pointer(events)
+
+    def send_pointer_drag(self, button: str, dx: int, dy: int,
+                          steps: int) -> None:
+        self.send_pointer_button(button, True)
+        for _ in range(steps):
+            self.send_pointer_move(dx, dy)
+        self.send_pointer_button(button, False)
+
+    def run_input_stress(self, seconds: float, cycle_ms: int = 100) -> None:
+        self._record_input({"op": "stress_begin", "seconds": seconds,
+                            "cycle_ms": cycle_ms})
+        deadline = time.monotonic() + seconds
+        next_cycle = time.monotonic()
+        cycle = 0
+        try:
+            while time.monotonic() < deadline:
+                now = time.monotonic()
+                if now < next_cycle:
+                    self.pump(preserve_events=True)
+                    time.sleep(min(0.01, next_cycle - now))
+                    continue
+                self.send_key("c" if cycle % 2 == 0 else "left")
+                self.send_pointer_move(4, 2)
+                self.send_pointer_move(-4, -2)
+                self.send_pointer_wheel(1 if cycle % 2 == 0 else -1)
+                if cycle % 10 == 0:
+                    self.send_pointer_drag("left", 3, 2, 4)
+                elif cycle % 10 == 5:
+                    self.send_pointer_button("left", True)
+                    self.send_pointer_button("left", False)
+                self.pump(preserve_events=True)
+                hook = getattr(self, "input_stress_hook", None)
+                if callable(hook):
+                    hook()
+                cycle += 1
+                self.input_stress_cycles = cycle
+                next_cycle += cycle_ms / 1000.0
+        finally:
+            self.input_stress_cycles = cycle
+            self._record_input({"op": "stress_end", "cycles": cycle})
+
     def execute_input_step(self, step: dict[str, Any]) -> None:
         if step["op"] == "key":
             self.send_key(step["key"])
@@ -824,6 +955,17 @@ class QemuSession:
             self.send_keys(step["keys"])
         elif step["op"] == "text":
             self.send_text(step["text"])
+        elif step["op"] == "pointer_move":
+            self.send_pointer_move(step["dx"], step["dy"])
+        elif step["op"] == "pointer_button":
+            self.send_pointer_button(step["button"], step["down"])
+        elif step["op"] == "pointer_wheel":
+            self.send_pointer_wheel(step["delta"])
+        elif step["op"] == "pointer_drag":
+            self.send_pointer_drag(step["button"], step["dx"], step["dy"],
+                                   step["steps"])
+        elif step["op"] == "stress":
+            self.run_input_stress(step["seconds"], step.get("cycle_ms", 100))
         else:
             deadline = time.monotonic() + float(step["seconds"])
             while time.monotonic() < deadline:
