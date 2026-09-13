@@ -7514,3 +7514,31 @@ dívida.
   `DT100-005` e a divida fisica do PS/2 permanecem separadas.
 
   Estado: SHELL6 `PASS`.
+
+- PERF1 - instrumentacao e linha de base automatizada - implementacao registrada
+  em 2026-09-12 23:16:36 -03:00 (America/Sao_Paulo). O `kmetrics` foi
+  preservado e recebeu `kmetrics machine`, com envelope serial `ZMETRIC/1`,
+  coleta guest estruturada, parser/agregador host, amostra do processo QEMU,
+  manifestos por sessao e matriz Simple/Classic de tres iteracoes.
+
+  Foram adicionados o caso `qemu:tst5:perf1-baseline`, testes host C/Python,
+  catalogo, registro de cobertura e alvos `test-perf1-host`,
+  `test-perf1-qemu` e `perf1-baseline`. Em 2026-09-13 09:56:02 -03:00,
+  passaram `make q3check` (com `DT100-003` aceita), `make clean && make`,
+  `make test-perf1-host` (13 testes Python e host C) e
+  `make test-perf1-qemu`. A matriz Simple/Classic com tres iteracoes por modo
+  passou 6/6 sessoes; cada sessao registrou 831 linhas `ZMETRIC/1`, envelope
+  completo, evento `PASS`, imagem de 268435456 bytes com SHA-256
+  `61ea06300b1d52884c3f294df33dd6f87fd7434dd9a103d23d5faf779b206945`, duas
+  amostras do processo QEMU e RSS coletado. Os artefatos estao em
+  `build/test-results/perf1-baseline/`, com agregado em
+  `build/test-results/perf1-baseline/perf1-baseline.json`; nao houve processo
+  QEMU residual. Nenhuma divida tecnica foi marcada como quitada;
+  `src/boot/boot.asm`, ABI, syscalls e scheduler permanecem inalterados.
+
+  Durante a validacao, a primeira execucao revelou que o caso precisava abrir
+  o aplicativo Shell e cancelar explicitamente o `regcheck full` com F11. O
+  catalogo foi ajustado para tornar a interacao autocontida e reproduzivel;
+  nenhuma decisao produtiva foi alterada.
+
+  Estado: PERF1 `PASS`.

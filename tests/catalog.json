@@ -2927,6 +2927,50 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/apps/shell_kmetrics.h:shell_kmetrics_emit_machine",
+      "kind": "api_function",
+      "source": "src/include/apps/shell_kmetrics.h",
+      "symbol": "shell_kmetrics_emit_machine",
+      "linkage": "public",
+      "owner": "apps",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/apps/shell_kmetrics.h:shell_kmetrics_take_snapshot",
+      "kind": "api_function",
+      "source": "src/include/apps/shell_kmetrics.h",
+      "symbol": "shell_kmetrics_take_snapshot",
+      "linkage": "public",
+      "owner": "apps",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active",
       "kind": "api_function",
       "source": "src/include/apps/shell_pipeline.h",
@@ -148483,12 +148527,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:diagnostics"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery",
@@ -148905,12 +148946,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:diagnostics"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_service_supervisor",
@@ -149094,12 +149132,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:diagnostics"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_summary",
@@ -151054,12 +151089,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:diagnostics"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_print_usb_fixture_report",
@@ -151805,27 +151837,6 @@
       "source": "src/shell/shell_commands_diagnostics.c",
       "symbol": "shell_dispatch_cmd_wqinfo",
       "linkage": "macro-generated",
-      "owner": "shell",
-      "layer": "kernel-source",
-      "preconditions": "definir no caso de teste associado",
-      "action": "definir no caso de teste associado",
-      "expected": "superficie localizada e contrato observado",
-      "errors": "definir erros canonicos aplicaveis",
-      "effects": "nenhum efeito durante a catalogacao",
-      "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:diagnostics"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
-    },
-    {
-      "id": "c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot",
-      "kind": "c_function",
-      "source": "src/shell/shell_commands_diagnostics.c",
-      "symbol": "shell_kmetrics_take_snapshot",
-      "linkage": "static",
       "owner": "shell",
       "layer": "kernel-source",
       "preconditions": "definir no caso de teste associado",
@@ -160575,6 +160586,600 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_field",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_append_field",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_text",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_append_text",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_append_u32",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32_field",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_append_u32_field",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_irq",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_capture_irq",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_process",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_capture_process",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_indexed_u32",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_indexed_u32",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_input",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_input",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_job",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_job",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_line",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_line",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_machine",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_machine",
+      "linkage": "external",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_memory",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_memory",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_metric",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_metric",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_network",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_network",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_begin",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_record_begin",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_end",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_record_end",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_recovery",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_recovery",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_scheduler",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_scheduler",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_storage",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_storage",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_system",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_system",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_u32",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_u32",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_update",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_update",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_video",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_work",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_work",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_kind_name",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_kind_name",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_line_start",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_line_start",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_take_snapshot",
+      "linkage": "external",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/shell/shell_pipeline.c:shell_pipeline_all_finished",
       "kind": "c_function",
       "source": "src/shell/shell_pipeline.c",
@@ -169302,7 +169907,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:dispatch"
+        "host:shell:dispatch",
+        "qemu:tst5:perf1-baseline"
       ],
       "coverage_mode": "direct"
     },
@@ -180329,10 +180935,10 @@
         "hardware": "video, VFS e mouse falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar devices -v e device-info pelo VFS sysfs estatico",
+      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar kmetrics machine, baseline, deltas, wraparound, ND e serial parcial; validar devices -v e device-info pelo VFS sysfs estatico",
       "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
       "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real",
+      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, serial, metricas, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "tags": [
@@ -180343,6 +180949,8 @@
         "sto6"
       ],
       "surface_ids": [
+        "api:src/include/apps/shell_kmetrics.h:shell_kmetrics_emit_machine",
+        "api:src/include/apps/shell_kmetrics.h:shell_kmetrics_take_snapshot",
         "api:src/include/apps/shell_runtime.h:shell_core_migrated_builtin_is_ready",
         "api:src/include/apps/shell_runtime.h:shell_diagnostics_print_usb_fixture_report",
         "api:src/include/apps/shell_runtime.h:shell_diagnostics_reset",
@@ -180378,7 +180986,6 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_net_buffers",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_component",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state",
-        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_service_supervisor",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals",
@@ -180398,7 +181005,6 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_component",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel",
-        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_service_supervisor",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_component",
@@ -180407,7 +181013,6 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_update",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid",
-        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_summary",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state",
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat",
@@ -180500,7 +181105,6 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_workq_status",
         "c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo",
-        "c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck",
@@ -180536,7 +181140,33 @@
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wait",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_workq",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wqinfo",
-        "c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot"
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_field",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_text",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32_field",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_irq",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_process",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_indexed_u32",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_input",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_job",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_line",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_machine",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_memory",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_metric",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_network",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_begin",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_end",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_recovery",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_scheduler",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_storage",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_system",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_u32",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_update",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_work",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_kind_name",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_line_start",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot"
       ]
     },
     {
@@ -191567,6 +192197,300 @@
       }
     },
     {
+      "id": "qemu:tst5:perf1-baseline",
+      "scenario": "Linha de base automatizada de desempenho do guest e do processo QEMU",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:perf1-baseline",
+      "qemu_profile": "baseline",
+      "timeout_seconds": 180,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1 + ZMETRIC/1",
+        "input": "qmp-keyboard",
+        "modes": "simple,classic",
+        "iterations": 3,
+        "idle_window_seconds": 3,
+        "diagnostics": "health check,health summary,regcheck full,memcheck,schedcheck,proccheck,vfs status,job status,net status,update status"
+      },
+      "preconditions": "imagem pronta, QEMU, serial e teclado virtual disponiveis",
+      "action": "capturar amostra guest antes e depois do reset, aguardar idle fixo e executar diagnosticos somente leitura",
+      "expected": "cada sessao retorna o prompt, o marcador TST5 e um envelope ZMETRIC/1 completo; o relatorio registra guest e host",
+      "errors": "envelope ausente ou truncado, chave duplicada, valor fora de uint32, diagnostico negativo, prompt preso, timeout, protocolo ou QEMU",
+      "effects": "somente snapshots de metricas, diagnosticos observacionais e artefatos host; update/recovery permanecem sem mutacao",
+      "cleanup": "encerrar cada QEMU isolado e preservar serial, QMP, logs e relatorio JSON",
+      "status": "AUTOMATED",
+      "tags": [
+        "qemu",
+        "tst5",
+        "perf1",
+        "metrics",
+        "baseline",
+        "simple",
+        "classic"
+      ],
+      "surface_ids": [
+        "api:src/include/apps/shell_kmetrics.h:shell_kmetrics_emit_machine",
+        "api:src/include/apps/shell_kmetrics.h:shell_kmetrics_take_snapshot",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_field",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_text",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32_field",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_irq",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_process",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_indexed_u32",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_input",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_job",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_line",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_machine",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_memory",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_metric",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_network",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_begin",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_end",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_recovery",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_scheduler",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_storage",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_system",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_u32",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_update",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_work",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_kind_name",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_line_start",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot",
+        "command:kmetrics"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "wait",
+            "seconds": 3.0
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "text",
+            "text": "health summary"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10.0
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 5.0
+          },
+          {
+            "op": "text",
+            "text": "memcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "text",
+            "text": "vfs status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "job status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "net status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "text",
+            "text": "update status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-perf1-baseline"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
       "id": "qemu:tst5:poweroff",
       "scenario": "Caminho black-box de poweroff isolado no QEMU",
       "owner": "quality",
@@ -198175,6 +199099,13 @@
       "kind": "c_function",
       "source": "src/shell/shell_commands_diagnostics.c",
       "symbol": "shell_kmetrics_delta",
+      "retired_reason": "surface ausente na fonte atual; confirmar remocao ou renomeacao"
+    },
+    {
+      "id": "c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot",
+      "kind": "c_function",
+      "source": "src/shell/shell_commands_diagnostics.c",
+      "symbol": "shell_kmetrics_take_snapshot",
       "retired_reason": "surface ausente na fonte atual; confirmar remocao ou renomeacao"
     },
     {

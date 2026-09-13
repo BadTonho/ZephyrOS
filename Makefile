@@ -542,6 +542,9 @@ SHELL_COMMANDS_STORAGE_OBJ = $(BUILD_DIR)/shell_commands_storage.o
 SHELL_COMMANDS_DIAGNOSTICS_C = src/shell/shell_commands_diagnostics.c
 SHELL_COMMANDS_DIAGNOSTICS_OBJ = $(BUILD_DIR)/shell_commands_diagnostics.o
 
+SHELL_KMETRICS_C = src/shell/shell_kmetrics.c
+SHELL_KMETRICS_OBJ = $(BUILD_DIR)/shell_kmetrics.o
+
 SHELL_DIAGNOSTICS_HELPERS_C = src/shell/shell_diagnostics_helpers.c
 SHELL_DIAGNOSTICS_HELPERS_OBJ = $(BUILD_DIR)/shell_diagnostics_helpers.o
 
@@ -709,6 +712,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_O
 
 OBJS += $(ROUTE_OBJ)
 OBJS += $(POWER_NOTIFIER_OBJ)
+OBJS += $(SHELL_KMETRICS_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -1301,7 +1305,11 @@ $(SHELL_COMMANDS_STORAGE_OBJ): $(SHELL_COMMANDS_STORAGE_C) src/include/apps/shel
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/apps/shell_diagnostics_helpers.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/service_supervisor.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/core/log.h src/include/core/power.h src/include/fs/vfs.h src/include/fs/procfs.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
+$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/apps/shell_diagnostics_helpers.h src/include/apps/shell_kmetrics.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/service_supervisor.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/core/log.h src/include/core/power.h src/include/fs/vfs.h src/include/fs/procfs.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_KMETRICS_OBJ): $(SHELL_KMETRICS_C) src/include/apps/shell_kmetrics.h src/include/apps/shell_job.h src/include/core/ethernet.h src/include/core/errors.h src/include/core/input.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/network_manager.h src/include/core/recovery.h src/include/core/service_supervisor.h src/include/core/string.h src/include/core/timer.h src/include/core/update.h src/include/core/update_system_slots.h src/include/drivers/idt.h src/include/drivers/serial.h src/include/drivers/vesa.h src/include/fs/block.h src/include/fs/block_cache.h src/include/fs/permissions.h src/include/fs/vfs.h src/include/memory/paging.h src/include/process/credentials.h src/include/process/process.h src/include/process/resource.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -2261,6 +2269,17 @@ test-taskmanager-host: tools\core_host_runner.py tools\coverage_collector.py tes
 test-shell-diagnostics-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_diagnostics_host.c tests\catalog.json src\shell\shell_commands_diagnostics.c src\shell\shell_diagnostics_helpers.c src\shell\shell_command_utils.c src\shell\shell_introspection.c src\core\string.c src\include\apps\shell_diagnostics_helpers.h src\include\apps\shell_command_utils.h src\include\apps\shell_introspection.h src\include\apps\shell_runtime.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\string.h src\include\core\video.h src\include\core\device_manager.h src\include\core\input.h src\include\core\network_manager.h src\include\core\power.h src\include\core\recovery.h src\include\core\update_system_slots.h src\include\core\usb_manager.h src\include\core\wifi_manager.h src\include\drivers\acpi.h src\include\drivers\mouse.h src\include\drivers\pci.h src\include\drivers\usb_hid.h src\include\drivers\usb_msc.h src\include\drivers\vesa.h src\include\fs\devfs.h src\include\fs\file_index.h src\include\fs\procfs.h src\include\fs\vfs.h src\include\memory\paging.h src\include\memory\slab.h src\include\process\process.h
 	python tools\core_host_runner.py --case host:shell:diagnostics --cc "$(HOST_CC)"
 test-shell-diagnostics-host: src\core\service_supervisor.c src\include\core\service_supervisor.h
+test-shell-diagnostics-host: src\shell\shell_kmetrics.c src\include\apps\shell_kmetrics.h src\include\drivers\serial.h
+test-shell-diagnostics-host: src\include\apps\shell_job.h src\include\core\ethernet.h src\include\core\input.h src\include\core\network_manager.h src\include\core\recovery.h src\include\core\service_supervisor.h src\include\core\update.h src\include\core\update_system_slots.h src\include\drivers\idt.h src\include\drivers\vesa.h src\include\fs\block.h src\include\fs\block_cache.h src\include\fs\permissions.h src\include\fs\vfs.h src\include\memory\paging.h src\include\process\credentials.h src\include\process\resource.h
+
+test-perf1-host: test-shell-diagnostics-host tools\perf1_metrics.py tests\unit\test_perf1_metrics.py
+	python -m unittest tests.unit.test_perf1_metrics
+
+perf1-baseline: $(OS_IMG) tools\perf1_baseline.py tools\perf1_metrics.py tools\qemu_test_runner.py tests\catalog.json tests\coverage\registry.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\perf1_baseline.py --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-perf1-qemu: perf1-baseline
 
 test-shell-commands-wifi-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_wifi_host.c tests\catalog.json src\shell\shell_commands_wifi.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\wifi_manager.h src\include\core\usb_manager.h
 	python tools\core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
@@ -2438,6 +2457,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

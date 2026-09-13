@@ -1,339 +1,253 @@
 # ZephyrOS
 
-[ 🇺🇸 **English** | 🇧🇷 [Português](README.pt-BR.md) ]
+[English] | [Portuguese (Brazil)](README.pt-BR.md)
 
-Operating system built from scratch in C + x86 Assembly, aiming to be a real, functional, and modular OS.
+ZephyrOS is a 32-bit x86 operating system built from scratch in freestanding C
+and x86 Assembly. It includes its own boot flow, kernel, drivers, filesystems,
+shell, desktop environment, user-mode application API, networking stack, and
+validation tooling.
 
----
+The project is aimed at learning through real systems engineering: every
+subsystem has an explicit contract, diagnostics, fallback behavior, and a
+reproducible validation path whenever the hardware can be exercised.
 
-## Project Status
+## Current status
 
-ZephyrOS is an operating system under active development, built toward reliable use on real hardware and emulated platforms. It runs primarily on **QEMU** during validation and maintains dual user interfaces: a **Simple Mode** utilizing VGA text mode and a **Classic Mode** leveraging VESA VBE graphic resolutions when hardware or emulators support it.
-The `modern` name is reserved for a future interface and is not selectable yet.
+ZephyrOS is under active development. The base system and many of the planned
+1.0.0 platform tracks are implemented and validated primarily in QEMU. It is
+not a general-purpose production operating system yet.
 
-The project is being developed as a real operating system for users. The current build is not yet a general production release: hardware coverage, security review, compatibility, and recovery workflows remain under development. Refer to [`ROADMAP.md`](ROADMAP.md) and [`docs/`](docs/) for progress logs, known limitations, and upcoming milestones.
+The current limitations are important:
 
----
+- Physical hardware support is still `PENDING`; QEMU is the primary supported
+  validation environment.
+- Hardware coverage, compatibility, security review, and recovery workflows
+  continue to evolve.
+- `Simple` and `Classic` are the available interfaces. `Modern` is reserved for
+  a future rendering engine and is not selectable.
+- Roadmap 23 is in progress. PERF1 metric instrumentation and its operational
+  host/QEMU baseline matrix are validated for the current revision.
 
-## Features & Modules
+For the authoritative progress and accepted technical debt, see
+[`ROADMAP.md`](ROADMAP.md) and the [roadmap index](docs/roadmaps/README.md).
 
-| Module | Status | Description |
-|--------|--------|-------------|
-| Bootloader | ✅ | 16-bit Real Mode Assembly → 32-bit Protected Mode |
-| Kernel | ✅ | Entry point, panic handler, register context switching |
-| VGA Video | ✅ | 80x25 Text mode, custom colors, cursor management |
-| VESA VBE | ✅ | Graphic mode, multiple resolutions (640x480 up to 1920x1200, 32bpp) |
-| Font | ✅ | 8x16 Bitmap font engine for graphical text rendering |
-| Keyboard | ✅ | PS/2 driver, scancode-to-ASCII translation, callback registration |
-| Timer | ✅ | Programmable Interval Timer (PIT) at 50 Hz, system ticks |
-| IDT / IRQ / ISR | ✅ | 32 CPU exceptions + 16 mapped PIC IRQs |
-| Memory | ✅ | E820 map detection, page-level bitmap allocator, dynamic kernel heap |
-| Paging | ✅ | Page Directory / Page Tables, virtual memory mapping |
-| RAM Compression | ✅ | LZSS compression engine for in-memory data structures |
-| TSS | ✅ | Task State Segment for Ring 0 kernel stack switching |
-| Processes | ✅ | PID lifecycle, states, preemptive round-robin scheduler |
-| Threads | ✅ | Kernel threads (Create, block, yield, round-robin) |
-| ATA Driver | ✅ | PIO mode sector read/write operations for IDE drives |
-| FAT12 | ✅ | File read/write/delete, root directory listing |
-| FAT32 | ✅ | Large disk support (BPB parsing, 32-bit cluster chains) |
-| Unified VFS | ✅ | Abstract file system layer over FAT12 and FAT32 |
-| BMP Engine | ✅ | Parse and render BMP images (1, 4, 8, and 24 bpp, color palettes) |
-| WAV Audio | ✅ | Parse and stream WAV audio files |
-| PCI Bus | ✅ | PCI bus enumeration, BAR configuration, vendor/device scanning |
-| AC97 Driver | ✅ | AC97 audio controller driver (Play, Stop, Volume control via DMA) |
-| PC Speaker | ✅ | Frequency tones, beeps, and square-wave melodies |
-| Shell | ✅ | Interactive terminal, scrollback history, diagnostics, Ring 3 executable launcher |
-| App API | ✅ | Public API 0.4 with Ring 3 signals, syscalls 0-13, and validated SYNC4 |
-| Text Editor | ✅ | Built-in editor with syntax highlighting and word wrap |
-| Media Player | ✅ | WAV audio player with visual playback indicators |
-| Task Manager | ✅ | Real-time monitoring of processes, threads, CPU, and memory |
-| File Manager | ✅ | Graphical and simple explorer (navigate, create, rename, delete) |
-| Desktop Environment | ✅ | Desktop GUI with customizable icons, start menu, and simple fallback |
-| Window Manager | ✅ | Overlapping windows (focus, z-order, titlebars, resize, minimize, move) |
-| Taskbar | ✅ | Taskbar with application buttons, digital clock, and Start Menu |
-| Settings | ✅ | System configuration suite (display, taskbar, window rules, icons, sound) |
-| Icon Registry | ✅ | Customizable icon management (desktop, windows, file extensions) |
+## What is implemented
 
----
+| Area | Current capabilities |
+|------|----------------------|
+| Boot and kernel | Custom bootloader and Stage 2 loader, protected mode, GDT, IDT/PIC, interrupts, panic handling, paging, physical memory, kernel heap, SLAB/SLUB caches, VMA, and demand paging |
+| Execution | Processes, kernel threads, preemptive round-robin scheduling, wait queues, workqueues, IPC, signals, and isolated Ring 3 execution |
+| Storage | ATA PIO, FAT12, FAT32, unified VFS, block layer, block cache, mount lifecycle, permissions, `devfs`, `/proc`, and `/sys` |
+| Input, video, and audio | VGA text mode, VESA VBE graphics, bitmap fonts, PS/2 keyboard and mouse, USB HID, PC Speaker, and AC97 audio |
+| USB and devices | PCI enumeration, UHCI/EHCI support, USB Mass Storage, device lifecycle tracking, capability snapshots, and degraded fallbacks |
+| Networking | E1000 and RTL8139 Ethernet, ARP, IPv4, ICMP, UDP, DHCP, DNS, TCP, sockets, HTTP, and TLS building blocks |
+| Desktop and applications | Simple VGA fallback, Classic desktop, Window Manager, Taskbar, Settings, File Manager, Text Editor, Media Player, and Task Manager |
+| Application platform | Versioned application API, syscalls, ZAPP/Ring 3 loader, pipes, redirection, local packages, App Store flows, and application diagnostics |
+| System lifecycle | ACPI and power controls, signed ZUPD/ZSYS update flows, A/B runtime support, rollback, recovery paths, and service supervision |
+| Validation | Host-only tests, deterministic fixtures, QEMU test runners, hardware profiles, coverage catalog, diagnostics, and performance metric collection |
 
-## Project Structure
+The status of an individual capability can be more specific than this summary.
+The roadmaps distinguish implemented, validated, pending, accepted debt, and
+hardware-dependent work.
 
-```
-Sistema/
-├── Makefile                 # Master Build System
-├── ROADMAP.md               # Development roadmap
-├── build/                   # Compiled binaries and disk image outputs
-├── docs/                    # Architectural & module documentation (13 chapters)
-└── src/
-    ├── linker.ld            # ELF 32-bit Linker script
-    ├── boot/                # Bootloader and Stage 2 loader (Assembly)
-    │   ├── boot.asm
-    │   └── stage2.asm
-    ├── core/                # Core kernel services, App API, syscalls, and ZAPP loader
-    ├── kernel/              # Core kernel entry, initialization, and context switch
-    │   ├── entry.asm        # Assembly entry point
-    │   ├── kernel.c         # Main kernel logic (initializes 20+ subsystems)
-    │   ├── panic.c          # Kernel panic handling
-    │   └── switch.asm       # Register context switching
-    ├── drivers/             # Hardware device drivers
-    │   ├── ata.c            # ATA PIO disk driver
-    │   ├── idt.c            # IDT configuration & PIC remapping
-    │   ├── irq.asm          # Hardware interrupt request handlers
-    │   ├── isr.asm          # Software interrupt exception handlers
-    │   ├── keyboard.c       # PS/2 keyboard driver
-    │   ├── speaker.c        # PC Speaker sound driver
-    │   ├── timer.c          # PIT timer driver
-    │   ├── tss.c            # Task State Segment driver
-    │   ├── video.c          # VGA 80x25 text mode driver
-    │   ├── vesa.c           # VESA VBE graphics driver
-    │   ├── font.c           # Bitmap font engine
-    │   ├── pci.c            # PCI bus enumerator
-    │   └── ac97.c           # AC97 audio driver
-    ├── memory/              # Memory management subsystem
-    │   ├── memory.c         # Bitmap physical allocator & kernel heap
-    │   ├── paging.c         # Virtual paging directory and table management
-    │   └── compress.c       # LZSS memory compression engine
-    ├── fs/                  # File system subsystem
-    │   ├── fat12.c          # FAT12 driver
-    │   ├── fat32.c          # FAT32 driver
-    │   ├── fs.c             # Unified VFS interface
-    │   ├── bmp.c            # BMP image decoder
-    │   └── wav.c            # WAV audio decoder
-    ├── process/             # Process management & IPC
-    │   ├── process.c        # Process control block manager & scheduler
-    │   └── ipc.c            # Message queues, window focus, and IPC handling
-    ├── thread/              # Threading subsystem
-    │   └── thread.c         # Thread scheduler
-    ├── shell/               # Interactive terminal & shell applications
-    │   ├── shell.c          # Interactive shell CLI & ZAPP launcher
-    │   ├── editor.c         # Text editor application
-    │   ├── mediaplayer.c    # Audio media player application
-    │   └── taskmanager.c    # Process & thread task manager application
-    ├── filemanager/         # File manager application
-    │   └── filemanager.c    # Dual simple/classic file explorer
-    ├── desktop/             # Graphical Desktop environment
-    │   └── desktop.c        # Desktop renderer & icon layout
-    ├── wm/                  # Window Manager
-    │   └── wm.c             # Window manager (decorations, z-order, events)
-    ├── taskbar/             # Desktop Taskbar
-    │   └── taskbar.c        # Taskbar, clock, and Start Menu implementation
-    ├── settings/            # System Settings application
-    │   └── settings.c       # Settings GUI (display, taskbar, windows, audio)
-    ├── icons/               # Icon management system
-    │   └── icons.c          # Icon registry and drawing helpers
-    └── include/             # Header files organized by module
-        ├── types.h, video.h, keyboard.h, idt.h, timer.h,
-        ├── memory.h, paging.h, ata.h, fat12.h, fat32.h,
-        ├── process.h, thread.h, shell.h, speaker.h, tss.h,
-        ├── filemanager.h, panic.h, compress.h, editor.h,
-        ├── mediaplayer.h, settings.h, wm.h, icons.h,
-        ├── ac97.h, pci.h, bmp.h, wav.h, fs.h, font.h,
-        ├── vesa.h, desktop.h, taskbar.h, taskmanager.h
-```
-
----
-
-## Kernel Core Services
-
-In addition to the directory layout shown above, `src/core/` houses logging (`log.c`), string operations (`string.c`), crash recovery (`recovery.c`), application public API (`app_api.c`), file wrappers (`app_files.c`), system call dispatchers (`syscall.c`), executable application loaders (`app_loader.c`), and embedded application assets. `src/process/` manages the process control tables, scheduling queues, and inter-process communication in `ipc.c`. Consult the [Architecture Documentation](docs/02-arquitetura/arquitetura.md) for full system call details.
-
----
-
-## Building & Toolchain Setup
+## Try it in QEMU
 
 ### Prerequisites
 
-- **NASM** - Netwide Assembler (assembles 16-bit/32-bit x86 Assembly)
-- **GCC i686-elf Cross-Compiler** - Freestanding 32-bit C cross-compiler
-- **GNU ld** - 32-bit ELF Linker
-- **QEMU** or **Bochs** - x86 Emulator for running and debugging
+The build expects these tools to be available in `PATH` or configured in the
+untracked `Makefile.local` file:
 
-### Windows Setup
+- GNU Make
+- Python 3
+- NASM
+- `i686-elf-gcc`, `i686-elf-ld`, and `i686-elf-nm`
+- `qemu-system-i386`
+- `cc` for host-only tests; `clang` is also used by sanitizer checks when available
 
-```powershell
-# Install NASM
-winget install nasm
+The kernel must be built with the `i686-elf-*` cross-compiler. A native GCC is
+not a replacement for the freestanding kernel toolchain.
 
-# Install QEMU
-winget install qemu
-
-# GCC cross-compiler i686-elf (via WSL, MinGW, or prebuilt toolchain)
-# Recommended toolchain: https://github.com/lordmilko/i686-elf-gcc
-```
-
-### Linux Setup (Ubuntu / Debian)
+On Ubuntu/Debian, the host-side basics are:
 
 ```bash
-# Core dependencies
-sudo apt update && sudo apt install nasm gcc make qemu-system-x86
-
-# To build an i686-elf cross-compiler:
-# Follow: https://wiki.osdev.org/GCC_Cross-Compiler
+sudo apt update
+sudo apt install make python3 nasm gcc qemu-system-x86 clang
 ```
 
-### Local Toolchain Configuration
+The cross-compiler can be built by following the
+[OSDev cross-compiler guide](https://wiki.osdev.org/GCC_Cross-Compiler).
 
-The `Makefile` searches for `nasm`, `i686-elf-gcc`, `i686-elf-ld`, and `qemu-system-i386` in your system `PATH`.
-Custom toolchain locations can be specified in an untracked local overrides file named `Makefile.local`.
+On Windows, NASM and QEMU can be installed with:
 
-Example `Makefile.local`:
+```powershell
+winget install nasm
+winget install qemu
+```
+
+Install or provide an `i686-elf` cross-toolchain separately. The repository
+does not download toolchains automatically.
+
+### Local toolchain paths
+
+If a tool is not on `PATH`, create `Makefile.local` in the repository root.
+It is ignored by Git and should contain only machine-specific paths:
 
 ```makefile
-NASM = C:\Tools\NASM\nasm.exe
-GCC  = D:\Toolchains\i686-elf-gcc\bin\i686-elf-gcc.exe
-LD   = D:\Toolchains\i686-elf-gcc\bin\i686-elf-ld.exe
-QEMU = C:\Program Files\QEMU\qemu-system-i386.exe
+NASM = /path/to/nasm
+GCC = /path/to/i686-elf-gcc
+LD = /path/to/i686-elf-ld
+NM = /path/to/i686-elf-nm
+QEMU = /path/to/qemu-system-i386
 ```
 
-Or pass toolchain paths directly on the command line:
+On Linux, the default `make` command selects the Linux build flow through the
+versioned `GNUmakefile`. To select it explicitly, use `make -f Makefile.linux`.
 
-```powershell
-make NASM=nasm GCC=i686-elf-gcc LD=i686-elf-ld QEMU=qemu-system-i386
-```
+### Required build flow
 
----
-
-## Build & Run Targets
+From the repository root:
 
 ```bash
-# Build the complete OS image (build/zephyros.img)
-make
+# Quality gate for the working tree
+make q3check
 
-# Build and launch inside QEMU emulator
+# Clean build of build/zephyros.img
+make clean && make
+
+# Launch the image in QEMU
 make run
+```
 
-# Validate stage2 through IDE EDD/LBA without fixed CHS geometry
+The generated image is `build/zephyros.img`. `make run` starts the default QEMU
+profile with an IDE boot disk and an E1000 network device. The image can also
+be exercised with the Stage 2 scenarios:
+
+```bash
 make run-stage2-lba
-
-# Validate the stage2 CHS fallback by booting the image as a floppy
 make run-stage2-chs
+```
 
-# Build with GDB debugging enabled
+For a GDB-ready QEMU session:
+
+```bash
 make debug
-
-# Clean build artifacts
-make clean
 ```
 
-`make run` creates an IDE boot disk with the 80/2/18 geometry expected by the
-1.44 MiB FAT12 image, plus an E1000 NIC with QEMU user networking. The disk
-arguments can be overridden through `QEMU_BOOT_DISK_ARGS` when another layout
-is required.
-`make run-stage2-lba` uses an IDE disk without fixed CHS geometry, while
-`make run-stage2-chs` boots the image as a floppy to exercise the BIOS CHS
-fallback and attaches the original image separately as the ATA system disk.
-`QEMU_NET_ARGS` can be overridden for alternate scenarios without editing
-the Makefile, for example with `-nic none` or
-`-nic user,model=rtl8139`.
+`make run` is an interactive smoke test, not a replacement for the automated
+test suites.
 
----
+## Useful Shell commands
 
-## Shell Commands
+The Shell is available from the Desktop Start Menu or by launching the Shell
+scene. A few commands to explore the system:
 
-The interactive Shell initializes automatically during kernel startup. In the default GUI boot flow, the graphical Desktop loads first and the shell terminal can be launched via the **Shell** item on the Start Menu or Desktop icon.
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `help` | Display list of all shell commands | `help` |
-| `clear` | Clear terminal screen and scrollback buffer | `clear` |
-| `ls` | List files and directories on disk | `ls` |
-| `cat` | Display text file contents | `cat FILE.TXT` |
-| `echo` | Execute ZAPP binary with native fallback | `echo Hello World` |
-| `mem` | Display physical memory allocation stats | `mem` |
-| `procs` | List active processes and PIDs | `procs` |
-| `threads` | List active kernel threads | `threads` |
-| `uptime` | System uptime since boot | `uptime` |
-| `beep` | Trigger PC Speaker frequency tone | `beep` or `beep 440 500` |
-| `melody` | Play musical scale sequence via PC Speaker | `melody` |
-| `explorer` | Launch File Manager application | `explorer` |
-| `desktop` | Launch graphical Desktop environment | `desktop` |
-| `taskmgr` | Launch Task Manager application | `taskmgr` |
-| `edit` | Launch built-in Text Editor | `edit FILE.TXT` |
-| `play` | Stream WAV audio file via AC97 / PC Speaker | `play MUSIC.WAV` |
-| `compress` | Toggle LZSS memory compression | `compress on/off/status` |
-| `settings` | Open Settings configuration utility | `settings` |
-| `health` | Report overall kernel subsystem health status | `health` |
-| `appcheck` | Validate App API, syscalls, VFS, IPC, and loader | `appcheck` |
-| `app run` | Launch a Ring 3 `.ZAP` executable with arguments | `app run DEMO.ZAP alpha beta` |
-| `app inputtest` | Test focus and input handling of Ring 3 app | `app inputtest` |
-| `app argtest` | Test argument passing to Ring 3 application | `app argtest alpha beta` |
-| `usertest` | Execute user-mode test process | `usertest` |
-| `guimode` | Switch between `simple` (text) and `classic` (VESA) | `guimode classic` |
-| `reboot` | Perform CPU hardware reset | `reboot` |
-| `shutdown` | Shutdown system via ACPI / QEMU exit | `shutdown` |
-
-> **Note:** For full command documentation and keyboard shortcuts, see [Shortcuts and Commands](docs/atalhos_e_comandos.md).
-
----
-
-## System Architecture Overview
-
-### Boot Flow (16-bit → 32-bit)
-
-1. BIOS loads `boot.asm` sector to physical address `0x7C00`.
-2. Queries system RAM layout using BIOS Interrupt 0x15 (E820 map).
-3. Reads 30 kernel sectors from disk into `0x1000`.
-4. Configures Global Descriptor Table (GDT) flat memory model.
-5. Switches CPU control register CR0 to enter 32-bit Protected Mode.
-6. Transfers E820 memory map address in `ESI` register to kernel entry.
-
-### Kernel Initialization
-
-1. Initializes VGA text mode buffer.
-2. Constructs Interrupt Descriptor Table (IDT) for 256 gates.
-3. Remaps Programmable Interrupt Controller (PIC Master `0x20` → 32, Slave `0xA0` → 40).
-4. Registers PS/2 Keyboard and PIT Timer IRQ handlers.
-5. Parses E820 memory map and initializes physical page bitmap allocator.
-6. Sets up initial virtual paging structures (Page Directory / Page Tables).
-7. Initializes Task State Segment (TSS) for Ring 0 kernel stack management.
-8. Spawns system processes and background threads.
-9. Mounts ATA storage drives and initializes unified FAT12/FAT32 file system.
-10. Initializes PC Speaker sound driver.
-11. Enumerates VESA VBE graphic modes and initializes font renderer.
-12. Scans PCI bus and attaches AC97 audio controller driver.
-13. Loads Desktop icon registry, taskbar, window manager, and settings.
-14. Spawns interactive Shell and Desktop graphical environment.
-
-### Physical Memory Layout
-
-```
-0x00000 - 0x7C00   Real mode BIOS workspace (reused post-boot)
-0x7C00  - 0x8000   Boot sector location
-0x8000  - 0x10000  E820 Memory map buffer
-0x1000  - 0x20000  Kernel image binary
-0x20000 - 0x120000 Kernel dynamic heap space (1 MB)
-0x90000 - 0x9FFFF  Kernel execution stack
-0xB8000 - 0xBFFFF  VGA text video memory buffer
+```text
+help
+health
+regcheck full
+memcheck
+kmetrics
+devices
+device-scan
+net status
+usb status
+ls
+cat FILE.TXT
+edit FILE.TXT
+explorer
+taskmgr
+settings
+app run DEMO.ZAP alpha beta
+store status
+update status
+guimode simple
+guimode classic
+shutdown
 ```
 
-### Process Management
+The complete command and keyboard reference is in
+[`docs/atalhos_e_comandos.md`](docs/atalhos_e_comandos.md). The `kmetrics`
+command exposes runtime counters; `kmetrics machine` emits the structured
+PERF1 metric envelope used by the host collector.
 
-- **PIDs 1-64**: Reserved for system kernel tasks and desktop processes.
-- **States**: `UNUSED`, `READY`, `RUNNING`, `BLOCKED`, `ZOMBIE`.
-- **Scheduler**: Preemptive round-robin algorithm driven by IRQ0 timer tick interrupts.
-- **Context Switch**: Assembly routine (`switch.asm`) saves and restores general-purpose registers and flags.
-- **User Mode**: Isolated Ring 3 process execution for ZAPP applications with isolated page directories.
+## Validation
 
----
+The project keeps separate host-only, deterministic, and QEMU validation
+layers. The minimum gates before opening a newly built image in QEMU are:
+
+```text
+make q3check
+make clean && make
+make run
+```
+
+Useful focused checks include:
+
+```text
+make test-qemu-selftest
+make test-shell-diagnostics-host
+make test-perf1-host
+make test-perf1-qemu
+```
+
+The PERF1 QEMU baseline depends on an already-built image and preserves its
+artifacts under `build/test-results/perf1-baseline/`. Run only the suites that
+match the change being made; the full catalog and command index are available
+in [`docs/qualidade/catalogo-testes.md`](docs/qualidade/catalogo-testes.md) and
+[`docs/qualidade/comandos-testes-sistema.md`](docs/qualidade/comandos-testes-sistema.md).
+
+## Repository guide
+
+| Path | Purpose |
+|------|---------|
+| [`src/boot/`](src/boot/) | Bootloader, Stage 2, and recovery boot paths |
+| [`src/kernel/`](src/kernel/) | Kernel entry, initialization, panic handling, and context switching |
+| [`src/core/`](src/core/) | Logging, syscalls, application services, networking, updates, power, and recovery |
+| [`src/drivers/`](src/drivers/) | Video, input, storage, USB, PCI, audio, timer, ACPI, and network drivers |
+| [`src/memory/`](src/memory/) | Physical memory, heap, paging, caches, and compression |
+| [`src/fs/`](src/fs/) | FAT, VFS, block storage, pseudo-filesystems, and media formats |
+| [`src/process/`](src/process/) and [`src/thread/`](src/thread/) | Scheduling, process lifecycle, IPC, and kernel threads |
+| [`src/shell/`](src/shell/) and UI directories | Shell commands, jobs, Desktop, WM, Taskbar, Settings, and File Manager |
+| [`tests/`](tests/) and [`tools/`](tools/) | Test catalog, fixtures, host runners, QEMU runners, and analysis tools |
+
+## Documentation map
+
+- [Documentation index](docs/indice.md): module guides, contracts, operations, and history.
+- [Architecture](docs/02-arquitetura/arquitetura.md): system structure and dependencies.
+- [Roadmap](ROADMAP.md): overall progress, completed work, and backlog.
+- [Roadmaps by stage](docs/roadmaps/README.md): scope, dependencies, criteria, and validation by workstream.
+- [Kernel, processes, and userland](docs/roadmaps/18-kernel-processos-e-userland-v1.0.md)
+- [ABI, security, and permissions](docs/roadmaps/19-abi-seguranca-e-permissoes-v1.0.md)
+- [VFS, storage, and system update](docs/roadmaps/20-vfs-storage-e-atualizacao-v1.0.md)
+- [Hardware, networking, and power](docs/roadmaps/21-hardware-rede-e-energia-v1.0.md)
+- [Shell, interface, and applications](docs/roadmaps/22-shell-interface-e-aplicativos-v1.0.md)
+- [Performance, validation, and technical debt](docs/roadmaps/23-desempenho-e-dividas-v1.0.md)
+- [Release and 1.0.0 acceptance](docs/roadmaps/24-release-e-aceitacao-v1.0.md)
+- [Linux environment](docs/qualidade/ambiente-linux.md): Linux-specific setup and image checks.
+- [Optimization metrics](docs/qualidade/metricas.md): reproducible performance records and baselines.
 
 ## Contributing
 
-Contributions are welcome! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before submitting pull requests or opening issues.
+Contributions are welcome. Before opening an issue or pull request:
 
----
+1. Read [`CONTRIBUTING.md`](CONTRIBUTING.md), [`AGENTS.md`](AGENTS.md), and [`docs/regras.md`](docs/regras.md).
+2. Keep new code in the subsystem that owns its responsibility.
+3. Update the directly affected tests and canonical documentation.
+4. Run the relevant host checks, `make q3check`, and a clean build before QEMU validation.
 
-## References & Resources
+Do not commit `build/`, `Makefile.local`, private keys, or generated local
+artifacts. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for adapted
+third-party code and its licenses.
+
+## References
 
 - [OSDev Wiki](https://wiki.osdev.org)
-- [Writing a Simple OS from Scratch (University of Birmingham)](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf)
+- [OSDev GCC Cross-Compiler](https://wiki.osdev.org/GCC_Cross-Compiler)
+- [Writing a Simple Operating System from Scratch](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf)
 - [James Molloy's Kernel Development Tutorial](http://www.jamesmolloy.co.uk/tutorial_html/)
-- [OSDev Wiki - FAT12 File System](https://wiki.osdev.org/FAT12)
-- [OSDev Wiki - ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
-
----
 
 ## License
 
-This project is open-source and licensed under the [GNU General Public License v3.0 (GPLv3)](LICENSE).
+ZephyrOS is licensed under the [GNU General Public License v3.0](LICENSE).
 Third-party components retain their respective licenses as documented in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

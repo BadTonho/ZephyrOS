@@ -344,6 +344,7 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     static const char shell5_case[] = "qemu:tst5:shell5-system-update";
     static const char shell6_case[] =
         "qemu:tst5:shell6-interface-compatibility";
+    static const char perf1_case[] = "qemu:tst5:perf1-baseline";
 
     if (blackbox_equals(case_id, case_length, shell_case)) return "tst5-shell";
     if (blackbox_equals(case_id, case_length, input_case)) return "tst5-input";
@@ -398,6 +399,9 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     }
     if (blackbox_equals(case_id, case_length, shell6_case)) {
         return "shell6-interface-compatibility";
+    }
+    if (blackbox_equals(case_id, case_length, perf1_case)) {
+        return "tst5-perf1-baseline";
     }
     return 0;
 }

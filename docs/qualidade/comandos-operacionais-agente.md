@@ -2422,6 +2422,32 @@ refresh integrado, a recuperacao de managers nao inicializados, inventarios
 parciais, degradacoes opcionais, falhas de PCI e argumentos invalidos sem
 hardware ou armazenamento reais.
 
+## PERF1: baseline de métricas
+
+Depois dos gates de build, a validação host e a matriz de linha de base podem
+ser executadas pelos alvos dedicados:
+
+```text
+make q3check
+make clean && make
+make test-perf1-host
+make test-perf1-qemu
+make perf1-baseline
+```
+
+`make test-perf1-host` executa o diagnóstico C e os testes Python do parser,
+agregação e coleta host. `make perf1-baseline` é o alvo de geração direta do
+relatório; `make test-perf1-qemu` o invoca como validação da matriz. O runner
+usa seis sessões isoladas, três em `simple` e três em `classic`, com a mesma
+imagem, perfil `baseline`, rede `none`, janela fixa de idle e diagnósticos
+somente leitura.
+
+O relatório agregado fica em
+`build/test-results/perf1-baseline/perf1-baseline.json`. Cada sessão preserva
+`manifest.json`, `serial.log`, logs do QEMU e `perf1.json` no próprio diretório
+de modo/iteração. Envelopes `ZMETRIC/1` ausentes, incompletos ou truncados,
+falhas de protocolo, timeout e QEMU residual devem reprovar a matriz.
+
 ## Traces Assembly de boot e recuperacao
 
 Os traces QEMU de Assembly devem ser executados individualmente, com um ID de

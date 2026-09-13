@@ -1199,6 +1199,7 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return (SHELL_DIAGNOSTICS_RESULT_DIR, SHELL_DIAGNOSTICS_BINARY,
                 (ROOT / "tests" / "unit" / "test_shell_diagnostics_host.c",
                  ROOT / "src" / "shell" / "shell_commands_diagnostics.c",
+                 ROOT / "src" / "shell" / "shell_kmetrics.c",
                  ROOT / "src" / "shell" / "shell_diagnostics_helpers.c",
                  ROOT / "src" / "shell" / "shell_command_utils.c",
                  ROOT / "src" / "shell" / "shell_introspection.c",

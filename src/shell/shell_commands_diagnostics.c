@@ -89,6 +89,7 @@
 #include "apps/shell_introspection.h"
 #include "apps/shell_runtime.h"
 #include "apps/shell_diagnostics_helpers.h"
+#include "apps/shell_kmetrics.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
 #define SHELL_HOSTED_DEFAULT_CONTENT_WIDTH 880
@@ -247,23 +248,6 @@ typedef struct {
 } shell_net_qemu_tcp_check_t;
 
 typedef struct {
-    uint32_t ticks;
-    keyboard_metrics_t keyboard;
-    ipc_stats_t ipc;
-    scheduler_stats_t scheduler;
-    vesa_metrics_t vesa;
-    memory_heap_stats_t heap;
-    memory_pmm_stats_t pmm;
-    paging_user_stats_t paging_user;
-    paging_boot_stats_t paging_boot;
-} shell_kmetrics_snapshot_t;
-
-typedef struct {
-    shell_kmetrics_snapshot_t snapshot;
-    uint8_t valid;
-} shell_kmetrics_baseline_t;
-
-typedef struct {
     char operation[16];
     char first[FS_MAX_PATH];
     char second[UPDATE_REMOTE_URL_SIZE];
@@ -305,6 +289,8 @@ static wait_info_t shell_wait_records[MAX_PROCESSES + MAX_THREADS];
 static wait_queue_info_t shell_wait_queues[WAIT_QUEUE_REGISTRY_CAPACITY];
 static work_info_t shell_work_records[WORKQUEUE_CAPACITY];
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
+static shell_kmetrics_snapshot_t shell_kmetrics_current;
+static shell_kmetrics_snapshot_t shell_kmetrics_empty;
 static scheduler_stats_t shell_cpu_usage_baseline;
 static uint8_t shell_cpu_usage_baseline_valid;
 static vfs_descriptor_info_t shell_vfs_descriptors[VFS_MAX_FDS];
@@ -4332,26 +4318,6 @@ static void cmd_acpi(const char* args) {
                 0x0E);
 }
 
-static void shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
-    if (!snapshot) {
-        LOG_ERROR("SHELL", "Destino nulo ao capturar metricas K1");
-        return;
-    }
-
-    kmemset(snapshot, 0, sizeof(shell_kmetrics_snapshot_t));
-    snapshot->ticks = timer_get_ticks();
-    keyboard_get_metrics(&snapshot->keyboard);
-    ipc_get_stats(&snapshot->ipc);
-    scheduler_get_stats(&snapshot->scheduler);
-    vesa_get_metrics(&snapshot->vesa);
-    memory_get_heap_stats(&snapshot->heap);
-    memory_get_pmm_stats(&snapshot->pmm);
-    paging_get_user_stats(&snapshot->paging_user);
-    if (paging_get_boot_stats(&snapshot->paging_boot) != OK) {
-        LOG_WARN("SHELL", "Metricas de bootstrap do paging indisponiveis");
-    }
-}
-
 static void cmd_kmetrics_print_scheduler(
     const shell_kmetrics_snapshot_t* current,
     const shell_kmetrics_snapshot_t* baseline) {
@@ -4542,40 +4508,58 @@ static void cmd_kmetrics_print_vesa(
 }
 
 static void cmd_kmetrics(const char* args) {
-    shell_kmetrics_snapshot_t current;
-    shell_kmetrics_snapshot_t empty;
     const shell_kmetrics_snapshot_t* baseline;
+    int result;
 
     if (*args) {
-        if (kstrcmp(args, "reset") != 0) {
-            video_print("Uso: kmetrics [reset]\n", 0x0C);
+        if (kstrcmp(args, "machine") == 0) {
+            result = shell_kmetrics_take_snapshot(&shell_kmetrics_current);
+            if (result != OK || shell_kmetrics_emit_machine(
+                    &shell_kmetrics_current,
+                    shell_kmetrics_baseline.valid ?
+                    &shell_kmetrics_baseline.snapshot : NULL,
+                    shell_kmetrics_baseline.valid) != OK) {
+                video_print("Metricas machine indisponiveis.\n", 0x0C);
+            }
             return;
         }
-        shell_kmetrics_take_snapshot(&shell_kmetrics_baseline.snapshot);
-        shell_kmetrics_baseline.valid = 1;
+        if (kstrcmp(args, "reset") != 0) {
+            video_print("Uso: kmetrics [reset|machine]\n", 0x0C);
+            return;
+        }
+        result = shell_kmetrics_take_snapshot(&shell_kmetrics_baseline.snapshot);
+        if (result != OK) {
+            video_print("Linha-base K1 indisponivel.\n", 0x0C);
+            return;
+        }
+        shell_kmetrics_baseline.valid = 1U;
         video_print("Linha-base K1 capturada.\n", 0x0A);
         return;
     }
 
-    shell_kmetrics_take_snapshot(&current);
-    kmemset(&empty, 0, sizeof(shell_kmetrics_snapshot_t));
+    result = shell_kmetrics_take_snapshot(&shell_kmetrics_current);
+    if (result != OK) {
+        video_print("Metricas K1 indisponiveis.\n", 0x0C);
+        return;
+    }
     baseline = shell_kmetrics_baseline.valid ?
-               &shell_kmetrics_baseline.snapshot : &empty;
+               &shell_kmetrics_baseline.snapshot : &shell_kmetrics_empty;
     video_begin_update();
     video_print(shell_kmetrics_baseline.valid ?
                 "Metricas K1 (desde reset):\n" :
                 "Metricas K1 (desde boot):\n", 0x0B);
     video_print("  PIT: ticks=", 0x07);
-    shell_command_print_num(shell_kmetrics_delta(current.ticks, baseline->ticks));
+    shell_command_print_num(shell_kmetrics_delta(
+        shell_kmetrics_current.ticks, baseline->ticks));
     video_print(" frequencia=", 0x08);
     shell_command_print_num(timer_get_frequency());
     video_print(" Hz\n", 0x07);
     video_print("  CPU real: N/D (RDTSC/PMU adiado)\n", 0x07);
     video_print("  CPU estimada: TCK% do Task Manager\n", 0x08);
-    cmd_kmetrics_print_scheduler(&current, baseline);
-    cmd_kmetrics_print_queues(&current, baseline);
-    cmd_kmetrics_print_memory(&current, baseline);
-    cmd_kmetrics_print_vesa(&current, baseline);
+    cmd_kmetrics_print_scheduler(&shell_kmetrics_current, baseline);
+    cmd_kmetrics_print_queues(&shell_kmetrics_current, baseline);
+    cmd_kmetrics_print_memory(&shell_kmetrics_current, baseline);
+    cmd_kmetrics_print_vesa(&shell_kmetrics_current, baseline);
     video_end_update();
 }
 

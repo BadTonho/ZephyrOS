@@ -90,6 +90,7 @@ permissão por UID/GID no `open` continua reservada à SEC5.
 | `src/include/apps/shell_checks.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_runtime.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_job.h` | `docs/09-shell/refatoracao-shell.md` |
+| `src/include/apps/shell_kmetrics.h` | `docs/qualidade/metricas.md` |
 | `src/include/apps/shell_pipeline.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_introspection.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/taskmanager.h` | `docs/13-aplicativos/aplicativos.md` |

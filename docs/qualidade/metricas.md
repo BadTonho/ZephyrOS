@@ -34,6 +34,68 @@ A comparacao do consumo do processo QEMU e do host ainda depende da medicao
 do usuario; este documento nao infere ganho sem valores pareados no mesmo
 cenario.
 
+## PERF1 - Envelope e relatorio de linha de base
+
+A coleta machine do guest e somente leitura e ocorre sob solicitacao de
+`kmetrics machine`. O comando nao altera scheduler, timers, filas, ABI,
+syscalls ou boot. `kmetrics` e `kmetrics reset` continuam sendo a interface
+humana existente; `kmetrics reset` captura a linha-base privada usada para
+calcular deltas.
+
+Cada amostra serial usa o envelope versionado abaixo:
+
+```text
+@@ZMETRIC/1 record=begin seq=... baseline=boot|reset source=guest
+@@ZMETRIC/1 record=metric metric=... value=... unit=... kind=... source=... context=... status=ok|unavailable resolution=1 overflow=wrap_u32|none
+@@ZMETRIC/1 record=end seq=... status=ok|partial
+```
+
+Campos `key=value` nao podem repetir chaves na mesma linha. Uma metric possui
+nome unico dentro da amostra e sempre informa unidade, tipo, origem, contexto,
+resolucao, overflow e estado. `kind` pode ser `counter`, `gauge`, `bytes`,
+`duration` ou `state`; `unit` identifica tick, byte, page, count, cycle,
+estado ou outra unidade publicada pelo dominio.
+
+`ND` com `status=unavailable` significa que o getter, hardware ou coletor nao
+estava disponivel. Ausencia nao e convertida em zero. Deltas de contadores e
+bytes usam subtracao `uint32_t`, preservando wraparound. RDTSC e PMU permanecem
+`ND` ate existir uma fonte validada.
+
+Os dominios capturados sao PIT/scheduler/IRQ/processos, entrada/IPC/Shell,
+jobs/workqueue, heap/PMM/paging/limites por processo, VFS/block/cache,
+Ethernet/rede, VESA/apresentacoes, supervisor de servicos,
+credenciais/permissoes, update A/B e recovery.
+
+O relatorio de uma sessao usa `zephyros-perf1-baseline-v1` e inclui imagem,
+tamanho, SHA-256, perfil, modo, iteracao, amostras e agregados guest, filas,
+memoria, latencias observaveis e o processo QEMU. O relatorio da matriz usa
+`zephyros-perf1-baseline-matrix-v1`, com os modos `simple` e `classic` e tres
+iteracoes por modo. O coletor host registra tempo de parede, CPU user/system,
+RSS/pico, quantidade e intervalo das amostras; quando a plataforma nao oferece
+um campo, o valor e `ND`.
+
+Falha de protocolo, envelope ausente/incompleto, truncamento, chave ou metrica
+duplicada, valor fora de `uint32_t`, timeout ou QEMU residual reprova a sessao.
+Os artefatos sao preservados por modo/iteracao em
+`build/test-results/perf1-baseline/`.
+
+Os indices `service_N` e `recovery_N` seguem a ordem publicada pelos headers
+`service_supervisor.h` e `recovery.h`. Alem de estado e falhas, a coleta inclui
+tentativas de reinicio, fallback e ultimo erro do supervisor, bem como ultimo
+erro dos componentes de recovery quando o valor esta disponivel.
+
+Comandos da etapa:
+
+```text
+make test-perf1-host
+make test-perf1-qemu
+make perf1-baseline
+```
+
+Os gates `make q3check` e `make clean && make` devem ser executados antes da
+matriz QEMU. A implementacao esta registrada como `PENDING` ate a validacao
+do usuario; nenhum valor de desempenho e inferido nesta etapa.
+
 ## Registros
 
 ### 2026-08-30 - PWR1, Idle arquitetural com HLT

@@ -2,7 +2,7 @@
 
 ## Estado
 
-Planejado. Esta frente mede e corrige gargalos conhecidos sem trocar o
+Em andamento. A PERF1 foi implementada e validada operacionalmente. Esta frente mede e corrige gargalos conhecidos sem trocar o
 scheduler, o modelo de memória, a ABI ou o boot por suposição de desempenho.
 Cada otimização precisa de uma linha de base, um ganho observável e uma
 regressão controlada.
@@ -52,18 +52,32 @@ de segurança, memória, processos, VFS, hardware ou Shell para a release.
 
 ### PERF1 — Instrumentação sem mudança de comportamento
 
-- [ ] Definir pontos de medição para boot, IRQ, scheduler, troca de contexto,
+- [x] Definir pontos de medição para boot, IRQ, scheduler, troca de contexto,
   System, Shell, jobs, VFS, rede, cache e desenho.
-- [ ] Registrar contadores, unidade, resolução, overflow, custo da própria
+- [x] Registrar contadores, unidade, resolução, overflow, custo da própria
   medição e contexto de execução.
-- [ ] Separar ticks do PIT, ciclos RDTSC/PMU, bytes copiados, tempo de host e
+- [x] Separar ticks do PIT, ciclos RDTSC/PMU, bytes copiados, tempo de host e
   utilização da VM.
-- [ ] Publicar linha-base de memória, tamanho da imagem, latência e filas sem
+- [x] Publicar linha-base de memória, tamanho da imagem, latência e filas sem
   alterar o fluxo produtivo.
-- [ ] Incluir no baseline o supervisor de serviços, limites por processo,
+- [x] Incluir no baseline o supervisor de serviços, limites por processo,
   permissões, atualização A/B e recuperação de boot quando aplicável.
-- [ ] Garantir que diagnósticos não gerem logging por tick ou perturbem o
+- [x] Garantir que diagnósticos não gerem logging por tick ou perturbem o
   cenário medido de forma significativa.
+
+Implementação entregue: `kmetrics machine` em `ZMETRIC/1`, coleta estruturada
+em módulo interno, parser/agregador host, relatório guest + processo QEMU,
+caso `qemu:tst5:perf1-baseline`, testes determinísticos, catálogo e alvos
+Windows/Linux. `kmetrics` e `kmetrics reset` mantêm o contrato anterior;
+RDTSC/PMU publica `ND` e o `src/boot/boot.asm` permanece inalterado.
+
+Validação operacional concluída em 2026-09-13: `make q3check`, `make clean &&
+make`, `make test-perf1-host` e `make test-perf1-qemu` passaram. A matriz
+Simple/Classic com três iterações por modo passou 6/6 sessões, com envelopes
+`ZMETRIC/1` completos, amostras guest e coleta do processo QEMU. O relatório
+está em `build/test-results/perf1-baseline/perf1-baseline.json`. A PERF1 não
+quita nenhuma dívida técnica; ela apenas produz a evidência necessária para
+PERF2/PERF3.
 
 ### PERF2 — Entrada e responsividade
 

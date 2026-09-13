@@ -24,6 +24,7 @@
 #include "core/recovery.h"
 #include "core/device_manager.h"
 #include "core/network_manager.h"
+#include "core/ethernet.h"
 #include "core/power.h"
 #include "core/usb_manager.h"
 #include "core/wifi_manager.h"
@@ -36,12 +37,17 @@
 #include "core/update_system_slots.h"
 #include "core/update_remote.h"
 #include "apps/shell_runtime.h"
+#include "apps/shell_job.h"
+#include "apps/shell_kmetrics.h"
+#include "drivers/serial.h"
 #include "drivers/idt.h"
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
 #include "drivers/vesa.h"
 #include "fs/vfs.h"
 #include "fs/block_cache.h"
+#include "fs/block.h"
+#include "fs/permissions.h"
 #include "fs/fs.h"
 #include "fs/storage.h"
 #include "fs/devfs.h"
@@ -49,6 +55,7 @@
 #include "memory/paging.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/credentials.h"
 #include "process/resource.h"
 #include "process/signal.h"
 #include "drivers/usb_hid.h"
@@ -95,12 +102,17 @@ void shell_diagnostics_reset(void);
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_OUTPUT_CAPACITY 4096U
 #define HOST_PATH_CAPACITY 256U
+#define HOST_SERIAL_CAPACITY 65536U
 
 static uintptr_t coverage_addresses[HOST_COVERAGE_CAPACITY];
 static uint32_t coverage_count;
 static uint8_t coverage_active;
 static char video_output[HOST_OUTPUT_CAPACITY];
 static uint32_t video_output_length;
+static char fixture_serial_output[HOST_SERIAL_CAPACITY];
+static uint32_t fixture_serial_output_length;
+static uint8_t fixture_serial_ready;
+static uint32_t fixture_serial_write_limit;
 static char fixture_cwd[HOST_PATH_CAPACITY];
 static char fixture_last_path[HOST_PATH_CAPACITY];
 static mouse_status_t fixture_mouse_status;
@@ -313,6 +325,19 @@ static block_cache_stats_t fixture_block_cache_stats;
 static block_durability_status_t fixture_block_durability;
 static process_signal_stats_t fixture_signal_stats;
 static input_metrics_t fixture_input_metrics;
+static shell_job_status_t fixture_shell_job_status;
+static int fixture_shell_job_result;
+static block_queue_stats_t fixture_block_stats;
+static int fixture_block_stats_result;
+static ethernet_status_t fixture_ethernet_status;
+static int fixture_ethernet_status_result;
+static network_manager_status_t fixture_network_status;
+static int fixture_network_status_result;
+static process_stack_validation_t fixture_stack_validation;
+static int fixture_stack_validation_result;
+static process_credentials_t fixture_credentials;
+static int fixture_credentials_result;
+static int fixture_permissions_result;
 static process_user_fault_summary_t fixture_user_fault;
 process_t* processes[MAX_PROCESSES];
 
@@ -410,6 +435,11 @@ static void copy_text(char* output, uint32_t capacity, const char* input) {
 static void output_reset(void) {
     video_output_length = 0U;
     video_output[0] = '\0';
+}
+
+static void serial_output_reset(void) {
+    fixture_serial_output_length = 0U;
+    fixture_serial_output[0] = '\0';
 }
 
 static void output_append(const char* text) {
@@ -579,7 +609,10 @@ static int fixture_vfs_get_file(const char* path, fixture_vfs_file_t* file) {
 
 static void fixture_reset(void) {
     output_reset();
+    serial_output_reset();
     shell_diagnostics_reset();
+    fixture_serial_ready = 1U;
+    fixture_serial_write_limit = HOST_SERIAL_CAPACITY;
     kmemset(fixture_vfs_handles, 0, sizeof(fixture_vfs_handles));
     copy_text(fixture_vfs_console_level,
               sizeof(fixture_vfs_console_level),
@@ -644,6 +677,25 @@ static void fixture_reset(void) {
     fixture_workq_test_result = OK;
     fixture_workq_validate_result = OK;
     fixture_workq_probe_result = OK;
+    fixture_shell_job_result = OK;
+    kmemset(&fixture_shell_job_status, 0, sizeof(fixture_shell_job_status));
+    fixture_shell_job_status.state = SHELL_JOB_STATE_IDLE;
+    fixture_block_stats_result = OK;
+    kmemset(&fixture_block_stats, 0, sizeof(fixture_block_stats));
+    fixture_block_stats.queue_capacity = BLOCK_QUEUE_CAPACITY;
+    fixture_ethernet_status_result = OK;
+    kmemset(&fixture_ethernet_status, 0, sizeof(fixture_ethernet_status));
+    fixture_ethernet_status.initialized = 1U;
+    fixture_network_status_result = OK;
+    kmemset(&fixture_network_status, 0, sizeof(fixture_network_status));
+    fixture_network_status.initialized = 1U;
+    fixture_stack_validation_result = OK;
+    kmemset(&fixture_stack_validation, 0, sizeof(fixture_stack_validation));
+    fixture_credentials_result = OK;
+    fixture_credentials.uid = PROCESS_UID_USER;
+    fixture_credentials.gid = PROCESS_GID_USER;
+    fixture_credentials.capabilities = PROCESS_CAPABILITIES_USER;
+    fixture_permissions_result = OK;
     fixture_wait_queue_count = 1U;
     fixture_waiter_count = 1U;
     fixture_work_info_count = 1U;
@@ -1627,6 +1679,12 @@ static int expect_contains(const char* text) {
     return 1;
 }
 
+static int expect_serial_contains(const char* text) {
+    if (text && strstr(fixture_serial_output, text)) return 0;
+    fprintf(stderr, "diagnostics-host: trecho serial ausente: %s\n", text);
+    return 1;
+}
+
 static void prepare_health_fixture(void) {
     fixture_irq_status.rejected = 0U;
     fixture_irq_status.context_errors = 0U;
@@ -1919,6 +1977,33 @@ uint32_t timer_get_ticks(void) {
     return fixture_ticks;
 }
 
+uint8_t serial_is_ready(void) {
+    return fixture_serial_ready;
+}
+
+uint32_t serial_write_text(const char* text, uint32_t length) {
+    uint32_t writable = length;
+
+    if (!text) return 0U;
+    if (writable > fixture_serial_write_limit) {
+        writable = fixture_serial_write_limit;
+    }
+    if (writable > HOST_SERIAL_CAPACITY - fixture_serial_output_length - 1U) {
+        writable = HOST_SERIAL_CAPACITY - fixture_serial_output_length - 1U;
+    }
+    for (uint32_t index = 0U; index < writable; index++) {
+        fixture_serial_output[fixture_serial_output_length++] = text[index];
+    }
+    fixture_serial_output[fixture_serial_output_length] = '\0';
+    fixture_serial_write_limit -= writable;
+    return writable;
+}
+
+uint32_t serial_flush(uint32_t budget) {
+    (void)budget;
+    return 0U;
+}
+
 void keyboard_get_metrics(keyboard_metrics_t* metrics) {
     if (metrics) *metrics = fixture_keyboard_metrics;
 }
@@ -1935,6 +2020,13 @@ int workqueue_get_stats(workqueue_stats_t* stats) {
     if (!stats) return ERR_NULL;
     if (fixture_workq_stats_result != OK) return fixture_workq_stats_result;
     *stats = fixture_workq_stats;
+    return OK;
+}
+
+int shell_job_get_status(shell_job_status_t* status_out) {
+    if (!status_out) return ERR_NULL;
+    if (fixture_shell_job_result != OK) return fixture_shell_job_result;
+    *status_out = fixture_shell_job_status;
     return OK;
 }
 
@@ -2024,6 +2116,13 @@ int vfs_get_status(vfs_status_t* status) {
     if (!status) return ERR_NULL;
     if (fixture_vfs_status_result != OK) return fixture_vfs_status_result;
     *status = fixture_vfs_status;
+    return OK;
+}
+
+int block_get_stats(block_queue_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    if (fixture_block_stats_result != OK) return fixture_block_stats_result;
+    *stats = fixture_block_stats;
     return OK;
 }
 
@@ -2776,6 +2875,24 @@ int update_system_slots_get_status(update_system_slots_status_t* status) {
     return OK;
 }
 
+int ethernet_get_status(ethernet_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (fixture_ethernet_status_result != OK) {
+        return fixture_ethernet_status_result;
+    }
+    *status = fixture_ethernet_status;
+    return OK;
+}
+
+int network_manager_get_status(network_manager_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (fixture_network_status_result != OK) {
+        return fixture_network_status_result;
+    }
+    *status = fixture_network_status;
+    return OK;
+}
+
 const char* update_system_slots_state_name(update_system_slots_state_t state) {
     if (state == UPDATE_SYSTEM_SLOTS_STATE_READY) return "READY";
     if (state == UPDATE_SYSTEM_SLOTS_STATE_DEGRADED) return "DEGRADED";
@@ -3034,6 +3151,34 @@ int process_resource_snapshot_copy(uint32_t pid, uint32_t generation,
     output->pipe_peak = 1U;
     output->pipe_limit = PROCESS_RESOURCE_MAX_PIPES;
     return OK;
+}
+
+int process_resource_validate_all(process_resource_validation_t* validation) {
+    if (!validation) return ERR_NULL;
+    kmemset(validation, 0, sizeof(*validation));
+    validation->checked = 1U;
+    validation->valid = 1U;
+    return OK;
+}
+
+int process_stack_validate_all(process_stack_validation_t* validation) {
+    if (!validation) return ERR_NULL;
+    if (fixture_stack_validation_result != OK) {
+        return fixture_stack_validation_result;
+    }
+    *validation = fixture_stack_validation;
+    return OK;
+}
+
+int process_credentials_current(process_credentials_t* output) {
+    if (!output) return ERR_NULL;
+    if (fixture_credentials_result != OK) return fixture_credentials_result;
+    *output = fixture_credentials;
+    return OK;
+}
+
+int fs_permissions_validate(void) {
+    return fixture_permissions_result;
 }
 
 int process_is_user(const process_t* proc) {
@@ -4107,9 +4252,16 @@ static int test_memcheck(void) {
 }
 
 static int test_kmetrics(void) {
+    shell_kmetrics_snapshot_t snapshot;
     int failures = 0;
 
     fixture_reset();
+    if (shell_kmetrics_take_snapshot(0) != ERR_NULL ||
+        shell_kmetrics_emit_machine(0, 0, 0) != ERR_NULL ||
+        shell_kmetrics_take_snapshot(&snapshot) != OK) {
+        fprintf(stderr, "diagnostics-host: contrato nulo de kmetrics invalido\n");
+        failures++;
+    }
     shell_dispatch_cmd_kmetrics("");
     failures += expect_contains("Metricas K1 (desde boot):\n");
     failures += expect_contains("  PIT: ticks=1000 frequencia=100 Hz\n");
@@ -4122,7 +4274,67 @@ static int test_kmetrics(void) {
 
     fixture_reset();
     shell_dispatch_cmd_kmetrics("invalid");
-    failures += expect_text("Uso: kmetrics [reset]\n");
+    failures += expect_text("Uso: kmetrics [reset|machine]\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_kmetrics("machine");
+    failures += expect_serial_contains(
+        "@@ZMETRIC/1 record=begin seq=1 baseline=boot source=guest");
+    failures += expect_serial_contains(
+        "@@ZMETRIC/1 record=metric metric=pit_ticks value=1000");
+    failures += expect_serial_contains(
+        "metric=rdtsc_cycles value=ND unit=cycle");
+    failures += expect_serial_contains("metric=input_key_queued value=0");
+    failures += expect_serial_contains("metric=vfs_descriptors_open");
+    failures += expect_serial_contains("metric=cache_durability_state");
+    failures += expect_serial_contains("metric=network_interfaces");
+    failures += expect_serial_contains("metric=credentials_uid");
+    failures += expect_serial_contains("metric=update_active_slot");
+    failures += expect_serial_contains("metric=recovery_25_state");
+    failures += expect_serial_contains("metric=service_0_restart_attempts");
+    failures += expect_serial_contains("metric=recovery_0_last_error");
+    failures += expect_serial_contains("@@ZMETRIC/1 record=end");
+    if (video_output_length != 0U) {
+        fprintf(stderr, "diagnostics-host: machine escreveu no video\n");
+        failures++;
+    }
+
+    fixture_reset();
+    fixture_workq_stats_result = ERR_UNAVAILABLE;
+    fixture_paging_boot_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_kmetrics("machine");
+    failures += expect_serial_contains(
+        "metric=workqueue_pending value=ND unit=count");
+    failures += expect_serial_contains(
+        "metric=paging_boot_identity_pages value=ND unit=page");
+
+    fixture_reset();
+    fixture_serial_ready = 0U;
+    shell_dispatch_cmd_kmetrics("machine");
+    if (fixture_serial_output_length != 0U ||
+        !contains_text("Metricas machine indisponiveis.\n")) {
+        fprintf(stderr, "diagnostics-host: serial indisponivel nao foi rejeitada\n");
+        failures++;
+    }
+
+    fixture_reset();
+    fixture_serial_write_limit = 100U;
+    shell_dispatch_cmd_kmetrics("machine");
+    if (strstr(fixture_serial_output, "record=end") ||
+        !contains_text("Metricas machine indisponiveis.\n")) {
+        fprintf(stderr, "diagnostics-host: escrita parcial aceitou envelope\n");
+        failures++;
+    }
+
+    fixture_reset();
+    fixture_ticks = 0xFFFFFFF0U;
+    shell_dispatch_cmd_kmetrics("reset");
+    fixture_ticks = 0x10U;
+    serial_output_reset();
+    shell_dispatch_cmd_kmetrics("machine");
+    failures += expect_serial_contains("baseline=reset source=guest");
+    failures += expect_serial_contains(
+        "metric=pit_ticks value=32 unit=tick kind=counter");
 
     fixture_reset();
     shell_dispatch_cmd_kmetrics("reset");

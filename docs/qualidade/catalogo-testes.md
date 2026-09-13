@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7690**
-- Casos de teste: **195**
-- Superfícies aposentadas: **60**
+- Superfícies ativas: **7718**
+- Casos de teste: **196**
+- Superfícies aposentadas: **61**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1653 |
+| `api_function` | 1655 |
 | `asm_entry` | 101 |
-| `c_function` | 5816 |
+| `c_function` | 5842 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7607 |
+| `COVERED` | 7631 |
 | `MANUAL` | 0 |
-| `PENDING` | 83 |
+| `PENDING` | 87 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 195 |
+| `AUTOMATED` | 196 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -34,7 +34,7 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 173 |
+| `apps` | 175 |
 | `appstore` | 98 |
 | `boot` | 146 |
 | `core` | 2897 |
@@ -48,7 +48,7 @@
 | `memory` | 202 |
 | `process` | 332 |
 | `settings` | 62 |
-| `shell` | 1101 |
+| `shell` | 1127 |
 | `taskbar` | 47 |
 | `thread` | 36 |
 | `ui` | 149 |
@@ -181,6 +181,8 @@
 | `api:src/include/apps/shell_job.h:shell_network_start_job` | `src/include/apps/shell_job.h` | `shell_network_start_job` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_job.h:shell_packages_start_job` | `src/include/apps/shell_job.h` | `shell_packages_start_job` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_job.h:shell_storage_start_job` | `src/include/apps/shell_job.h` | `shell_storage_start_job` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_kmetrics.h:shell_kmetrics_emit_machine` | `src/include/apps/shell_kmetrics.h` | `shell_kmetrics_emit_machine` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_kmetrics.h:shell_kmetrics_take_snapshot` | `src/include/apps/shell_kmetrics.h` | `shell_kmetrics_take_snapshot` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_is_active` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_print_num` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_print_num` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_read` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_read` | `apps` | `COVERED` | 6 |
@@ -6704,7 +6706,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_net_buffers` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_net_buffers` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_component` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_named_state` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_query_failure` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_query_failure` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_recovery` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_service_supervisor` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_service_supervisor` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_signals` | `shell` | `COVERED` | 1 |
@@ -6724,7 +6726,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_component` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_inline_state` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_kernel` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_migrated_builtin` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_migrated_builtin` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_service_supervisor` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_service_supervisor` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_app_store` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_component` | `shell` | `COVERED` | 1 |
@@ -6733,7 +6735,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_update` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_update` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_update_capabilities` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_usb_hid` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_user_fault` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_user_fault` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_summary` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_summary` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_update_remote_state` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat` | `src/shell/shell_commands_diagnostics.c` | `cmd_irqstat` | `shell` | `COVERED` | 1 |
@@ -6826,7 +6828,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_workq_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_workq_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_workq_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo` | `src/shell/shell_commands_diagnostics.c` | `cmd_wqinfo` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready` | `src/shell/shell_commands_diagnostics.c` | `shell_core_migrated_builtin_is_ready` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready` | `src/shell/shell_commands_diagnostics.c` | `shell_core_migrated_builtin_is_ready` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_print_usb_fixture_report` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_print_usb_fixture_report` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_reset` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_device_scan` | `shell` | `COVERED` | 1 |
@@ -6863,7 +6865,6 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wait` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_wait` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_workq` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_workq` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wqinfo` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_wqinfo` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_commands_diagnostics.c` | `shell_kmetrics_take_snapshot` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_dns_wait` | `src/shell/shell_commands_network.c` | `cmd_dns_wait` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_http` | `src/shell/shell_commands_network.c` | `cmd_http` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_http_execute` | `src/shell/shell_commands_network.c` | `cmd_http_execute` | `shell` | `COVERED` | 1 |
@@ -7273,6 +7274,33 @@
 | `c:src/shell/shell_job.c:shell_job_set_timeout` | `src/shell/shell_job.c` | `shell_job_set_timeout` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_job.c:shell_job_start` | `src/shell/shell_job.c` | `shell_job_start` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_job.c:shell_job_state_name` | `src/shell/shell_job.c` | `shell_job_state_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_append_field` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_append_field` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_append_text` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_append_text` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_append_u32` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32_field` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_append_u32_field` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_irq` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_capture_irq` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_process` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_capture_process` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_indexed_u32` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_indexed_u32` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_input` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_input` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_job` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_job` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_line` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_line` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_machine` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_machine` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_memory` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_memory` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_metric` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_metric` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_network` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_network` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_begin` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_record_begin` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_end` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_record_end` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_recovery` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_recovery` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_scheduler` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_scheduler` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_storage` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_storage` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_system` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_system` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_u32` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_u32` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_update` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_update` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_video` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_work` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_work` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_kind_name` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_kind_name` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_line_start` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_line_start` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_take_snapshot` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished` | `src/shell/shell_pipeline.c` | `shell_pipeline_all_finished` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_fd` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_resources` | `shell` | `COVERED` | 1 |
@@ -7680,7 +7708,7 @@
 | `command:irqstat` | `src/shell/shell_dispatch.c` | `irqstat` | `shell` | `COVERED` | 1 |
 | `command:job` | `src/shell/shell_dispatch.c` | `job` | `shell` | `COVERED` | 1 |
 | `command:kill` | `src/shell/shell_dispatch.c` | `kill` | `shell` | `COVERED` | 1 |
-| `command:kmetrics` | `src/shell/shell_dispatch.c` | `kmetrics` | `shell` | `COVERED` | 1 |
+| `command:kmetrics` | `src/shell/shell_dispatch.c` | `kmetrics` | `shell` | `COVERED` | 2 |
 | `command:log` | `src/shell/shell_dispatch.c` | `log` | `shell` | `COVERED` | 1 |
 | `command:ls` | `src/shell/shell_dispatch.c` | `ls` | `shell` | `COVERED` | 1 |
 | `command:melody` | `src/shell/shell_dispatch.c` | `melody` | `shell` | `COVERED` | 1 |
@@ -7873,7 +7901,7 @@
 | `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar caminhos validos, negativos, limites, diagnostico, busca, sync e callbacks de job | dispatchers, parsers, formatacao e callbacks preservam limites, estados e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar devices -v e device-info pelo VFS sysfs estatico | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar kmetrics machine, baseline, deltas, wraparound, ND e serial parcial; validar devices -v e device-info pelo VFS sysfs estatico | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, serial, metricas, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginação falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:editor` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar parsing de texto, sintaxe, cores, edicao de linhas e word-wrap com buffers estaticos | limites, conversoes, classificacao e operacoes de edicao preservam os contratos observaveis | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Editor no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7939,6 +7967,7 @@
 | `qemu:tst5:input` | `qemu` | `smoke` | `qemu:tst5:input` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, fila de teclado e Shell inicializados | enviar texto, backspace, historico e Ctrl-C por QMP | o terminal recebe a entrada e publica o marcador depois da recuperacao do prompt | texto incorreto, cancelamento perdido, prompt preso, timeout, protocolo ou QEMU | altera somente buffer e historico de comandos no snapshot | encerrar o QEMU e preservar o script e os logs |
 | `qemu:tst5:krn6-diagnostics` | `qemu` | `smoke` | `qemu:tst5:krn6-diagnostics` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, teclado virtual, Shell e diagnosticos do kernel inicializados | abrir o Shell e executar a sequencia KRN6 somente por QMP | todos os diagnosticos retornam sucesso ou degradacao esperada, o prompt retorna e nao ha processo ring 3 ou zumbi residual | entrada perdida, diagnostico negativo, marcador ausente, prompt preso, timeout, protocolo ou QEMU | somente snapshots de metricas e diagnosticos; o caso reseta as metricas antes da coleta | encerrar o QEMU e preservar script, serial, QMP e resultado |
 | `qemu:tst5:network` | `qemu` | `smoke` | `qemu:tst5:network` | `AUTOMATED` | 90 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta e QEMU configurado com rede isolada | consultar status, rotas e sockets sem conexao externa | o Shell responde e a ausencia de interface permanece coerente e observavel | conexao externa, estado incoerente, prompt preso, timeout, protocolo ou QEMU | somente consultas e estado temporario de rede no snapshot | encerrar o QEMU sem tocar na rede do hospedeiro |
+| `qemu:tst5:perf1-baseline` | `qemu` | `smoke` | `qemu:tst5:perf1-baseline` | `AUTOMATED` | 180 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU, serial e teclado virtual disponiveis | capturar amostra guest antes e depois do reset, aguardar idle fixo e executar diagnosticos somente leitura | cada sessao retorna o prompt, o marcador TST5 e um envelope ZMETRIC/1 completo; o relatorio registra guest e host | envelope ausente ou truncado, chave duplicada, valor fora de uint32, diagnostico negativo, prompt preso, timeout, protocolo ou QEMU | somente snapshots de metricas, diagnosticos observacionais e artefatos host; update/recovery permanecem sem mutacao | encerrar cada QEMU isolado e preservar serial, QMP, logs e relatorio JSON |
 | `qemu:tst5:poweroff` | `qemu` | `smoke` | `qemu:tst5:poweroff` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e suporte de poweroff do guest disponivel | confirmar caminho do Shell e enviar poweroff somente apos PASS | o caso publica PASS e QMP observa SHUTDOWN ou a saida esperada do QEMU | poweroff antes do PASS, reset inesperado, timeout, protocolo ou QEMU | encerra somente a instancia QEMU em snapshot | fechar sockets e preservar logs mesmo apos a saida do guest |
 | `qemu:tst5:processes` | `qemu` | `smoke` | `qemu:tst5:processes` | `AUTOMATED` | 75 | 15 | `snapshot` | `quality` | `qemu` | processos, threads, scheduler e Shell estao READY | consultar processos e threads por teclado externo | os diagnosticos terminam e o marcador confirma o retorno ao prompt | processo residual, diagnostico preso, timeout, protocolo ou QEMU | somente consultas de estado do guest em snapshot | encerrar o QEMU e preservar historico de entrada |
 | `qemu:tst5:reboot` | `qemu` | `smoke` | `qemu:tst5:reboot` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e caminho de reboot do guest disponivel | confirmar o terminal, enviar reboot apos PASS e aguardar novo HELLO/READY | QMP publica RESET e uma segunda sessao publica READY e HEARTBEAT | reset prematuro, handshake ausente, timeout, protocolo ou QEMU | reinicia somente a instancia QEMU em snapshot | encerrar a segunda sessao via QMP e preservar as duas fases |
@@ -8055,6 +8084,10 @@
 - `c:src/shell/shell.c:shell_prompt_hide`
 - `c:src/shell/shell.c:shell_prompt_reconcile`
 - `c:src/shell/shell.c:shell_prompt_request`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault`
+- `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready`
 - `c:src/shell/shell_hosted.c:shell_hosted_release`
 - `c:src/shell/shell_hosted.c:shell_runtime_close_hosted`
 
@@ -8116,6 +8149,7 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_cpu_usage_percent` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_health_state_color` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_delta` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_layout` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_memory_metrics` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_valid_memory_metrics` — surface ausente na fonte atual; confirmar remocao ou renomeacao
