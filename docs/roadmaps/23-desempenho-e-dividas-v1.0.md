@@ -2,10 +2,12 @@
 
 ## Estado
 
-Em andamento. A PERF1 foi implementada e validada operacionalmente. Esta frente mede e corrige gargalos conhecidos sem trocar o
-scheduler, o modelo de memória, a ABI ou o boot por suposição de desempenho.
-Cada otimização precisa de uma linha de base, um ganho observável e uma
-regressão controlada.
+Concluído para as implementações e validações PERF1–PERF6. A preparação do
+build interno `0.1.0` foi validada, mas o congelamento, a assinatura e o
+lançamento da candidata permanecem no Roadmap 24. Esta frente mede e corrige
+gargalos conhecidos sem trocar o scheduler, o modelo de memória, a ABI ou o
+boot por suposição de desempenho. Cada otimização precisa de uma linha de
+base, um ganho observável e uma regressão controlada.
 
 ## Objetivo
 
@@ -218,27 +220,38 @@ evidência. Nenhuma dívida técnica será quitada nesta fase.
 - [x] Adicionar o caso `qemu:tst5:perf6-kworker-thread`, o relatório de
   release `zephyros-perf6-kworker-release-v1`, amostras host e a preparação
   operacional do candidato `v0.1.0-rc1` sobre a versão `0.1.0`.
-- [ ] Atualizar `DT100-001` e `DT100-002` somente com evidência reproduzível.
-- [ ] Registrar tamanho, boot, memória, latência e uso do host antes/depois.
-- [ ] Confirmar que o diagnóstico continue correto depois de ciclos de pressão,
+- [x] Atualizar `DT100-001` e `DT100-002` somente com evidência reproduzível.
+- [x] Registrar tamanho, boot, memória, latência e uso do host antes/depois.
+- [x] Confirmar que o diagnóstico continue correto depois de ciclos de pressão,
   cancelamento, reboot e ausência de hardware.
-- [ ] Publicar decisões negativas quando uma otimização não trouxer benefício
+- [x] Publicar decisões negativas quando uma otimização não trouxer benefício
   suficiente.
-- [ ] Entregar à RLS5 apenas alterações com rollback e documentação completa.
+- [ ] Entregar à RLS5 apenas alterações com rollback e documentação completa
+  (próxima etapa do Roadmap 24; não realizado enquanto o lançamento estiver
+  adiado).
 
-Implementação PERF6 preparada: a `kworker` agora é criada como `thread_t`
-kernel, identificada por `tid + generation`, vinculada à workqueue por alvo
-`THREAD` e supervisionada separadamente de `System`, `Shell` e `Desktop`, que
-continuam processos. O fallback permanece explícito e degradado quando a
-criação ou o binding falham. A verificação do release reutiliza os formatos
-assinados existentes e mantém `0.1.0`; nenhuma chave é armazenada no
-repositório.
+Implementação e validação PERF6 concluídas: a `kworker` é criada como
+`thread_t` kernel no contexto de execução do serviço System, identificada por
+`tid + generation`, vinculada à workqueue por alvo `THREAD` e supervisionada
+separadamente de `System`, `Shell` e `Desktop`, que continuam processos. O
+fallback permanece explícito e degradado quando a criação ou o binding falham.
 
-A validação essencial e a matriz QEMU de nove sessões ainda estão pendentes
-para esta versão da implementação. A PERF6 não deve ser marcada como concluída
-nem `DT100-002` como `QUITADA` antes de `make q3check`, build limpo,
-`make catalog-test`, `make test-perf6-host`, matriz 9/9, reboot/fallback e
-verificação do release.
+Em 2026-09-14, passaram `make q3check`, `make clean && make`,
+`make catalog-test`, `make test-perf6-host`, `make test-perf6-qemu` e
+`make perf6-release`. A matriz `baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, com três iterações por perfil, terminou 9/9
+sessões `PASS` em dois workers paralelos; cada sessão registrou três amostras,
+reboot aprovado, prompt restaurado, binding ativo, `tid=1`, `generation=1`,
+`pid=0` para a worker e fallback inativo. A imagem interna tem 268435456 bytes,
+SHA-256 `82361a70ec0480656a3fa18c5aa68dcb563c4c641c89f3ceb90b4600021b0d76` e
+versão `0.1.0`. A auditoria de imagem passou; nenhuma tag ou publicação de
+release foi criada.
+
+O relatório consolidado está em
+`build/test-results/perf6-kworker-release/perf6-kworker-release.json`. A
+instrumentação não introduziu formato, ABI, syscall, bootloader, scheduler de
+processos ou otimização funcional sem ganho reproduzível. A pendência da RLS5
+é deliberada e não impede o encerramento técnico da PERF6.
 
 ## Critérios de saída
 
@@ -258,8 +271,10 @@ verificação do release.
 Não haverá SMP, PMU obrigatório, novo scheduler, reescrita ampla em Rust,
 mudança de ABI, renderizador novo ou otimização baseada apenas em percepção.
 
-## Validação do usuário
+## Validação operacional
 
-O agente não executará build, testes ou QEMU. O usuário deve coletar as linhas
-de base e repetir a matriz em condições comparáveis, registrando métricas,
-comandos, perfil da VM e horário real antes de alterar o estado das dívidas.
+A validação PERF6 foi executada em condições reproduzíveis e registrada em
+`docs/qualidade/registro-validacoes.md`, com os artefatos do runner em
+`build/test-results/perf6-kworker-release/`. O congelamento, a assinatura, a
+criação da tag e a publicação da candidata continuam dependendo da autorização
+do usuário e dos gates da RLS5 no Roadmap 24.

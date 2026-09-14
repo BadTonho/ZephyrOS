@@ -22,15 +22,25 @@ segredos.
   `zephyros-perf6-kworker-release-v1`, a matriz de nove sessões, os testes
   host/Python, catálogo, manifesto e alvos Windows/Linux foram adicionados.
   A versão permanece `0.1.0` e `v0.1.0-rc1` é apenas a tag operacional padrão.
-- Evidencia: validação pendente nesta sessão. Ainda não foram executados sem
-  autorização explícita os gates `make q3check`, build limpo,
-  `make catalog-test`, `make test-perf6-host`, a matriz QEMU 9/9,
-  reboot/fallback ou `make perf6-release`. O relatório esperado é
+- Evidencia: em 2026-09-14 passaram `make q3check`, `make clean && make`,
+  `make catalog-test`, `make test-perf6-host`, `make test-perf6-qemu` e
+  `make perf6-release`. O catalogo permaneceu valido com 7.769 superficies e
+  201 casos; o host passou os sete casos Core direcionados e 29 testes Python.
+  A matriz QEMU `baseline/Simple`, `baseline/Classic` e
+  `no-vesa/Simple fallback`, com tres iteracoes por perfil, terminou 9/9
+  sessoes `PASS` em dois workers paralelos. Cada sessao registrou tres
+  amostras guest, envelope completo, prompt restaurado, reboot aprovado,
+  `workqueue_worker_tid=1`, `workqueue_worker_thread_generation=1`,
+  `workqueue_worker_pid=0`, `workqueue_worker_bound=1` e
+  `service_0_fallback_active=0`; nenhum processo QEMU ficou residual.
+  O relatorio agregado esta em
   `build/test-results/perf6-kworker-release/perf6-kworker-release.json`.
-- Estado: PERF6 `PENDING`; `DT100-002` permanece `ACEITA` até a evidência
-  reproduzível confirmar identidade thread válida, ausência de processo
-  kworker, filas drenadas, prompt restaurado, reboot/fallback e release
-  verificável. Nenhuma dívida técnica foi quitada por implementação.
+  A imagem interna tem 268435456 bytes, SHA-256
+  `82361a70ec0480656a3fa18c5aa68dcb563c4c641c89f3ceb90b4600021b0d76` e
+  versao `0.1.0`; `perf6-release` auditou a imagem com sucesso.
+- Estado: PERF6 `PASS`; `DT100-002` `QUITADA`. Nenhuma tag, assinatura ou
+  publicacao foi criada, pois o lancamento foi adiado; RLS5 permanece
+  pendente no Roadmap 24.
 
 ## 2026-09-14 - PERF4: memoria, VFS, armazenamento e rede
 

@@ -29,7 +29,7 @@ uma etapa.
 | ID | Estado | Origem | Responsavel | Alvo |
 |---|---|---|---|---|
 | `DT100-001` | QUITADA | SYNC1 | Roadmap 23 / PERF2 | v1.0.0 |
-| `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 23 / PERF6 | v1.0.0 |
+| `DT100-002` | QUITADA | SYNC3 / R4 | Roadmap 23 / PERF6 | v1.0.0 |
 | `DT100-003` | ACEITA | SEC4 | Roadmap 19 / SEC4 | v1.0.0 |
 | `DT100-004` | ACEITA | STO6 | Roadmap 20 / STO6 | v1.0.0 |
 | `DT100-005` | ACEITA | SHELL3 | Roadmap 22 / SHELL3 | v1.0.0 |
@@ -237,13 +237,14 @@ validacao final e seu horario estao registrados em
 
 ## DT100-002 - kworker como processo ring0
 
-- **Estado:** `ACEITA`.
+- **Estado:** `QUITADA`.
 - **Aceita em:** 2026-08-27 17:09 (America/Sao_Paulo).
+- **Quitada em:** 2026-09-14 19:35 (America/Sao_Paulo).
 - **Origem:** SYNC3 / R4 - Kernel Workqueues.
 - **Responsavel:** [Roadmap 23 - PERF6](../roadmaps/23-desempenho-e-dividas-v1.0.md#perf6--quita%C3%A7%C3%A3o-e-release).
 - **Versao limite:** v1.0.0.
 
-### Motivo da aceitacao
+### Motivo da aceitacao original
 
 O scheduler produtivo do ZephyrOS gerencia processos ring0 e ring3, enquanto
 o scheduler de `thread_t` ainda e isolado e usado apenas por diagnosticos.
@@ -253,31 +254,43 @@ ring0 e transferir essa unificacao para a K5.
 
 ### Atualizacao da PERF6
 
-A implementacao da PERF6 foi preparada para substituir o processo dedicado por
-uma `thread_t` kernel com identidade geracional `(tid, generation)`. O
-supervisor agora distingue alvos `PROCESS` e `THREAD`; somente a kworker usa
-`THREAD`, enquanto System, Shell e Desktop continuam processos. A workqueue
-preserva as APIs legadas e aceita binding por thread, com fallback explicito e
-estado `DEGRADED` quando a criacao nao for possivel.
+A implementação da PERF6 substituiu o processo dedicado por uma `thread_t`
+kernel com identidade geracional `(tid, generation)`. O supervisor agora
+distingue alvos `PROCESS` e `THREAD`; somente a kworker usa `THREAD`, enquanto
+System, Shell e Desktop continuam processos. A workqueue preserva as APIs
+legadas e aceita binding por thread, com fallback explícito e estado `DEGRADED`
+quando a criação não for possível.
 
-Esta atualizacao ainda nao altera o estado de aceite. A evidencia necessaria e
-o relatorio `build/test-results/perf6-kworker-release/perf6-kworker-release.json`
-com 9/9 sessoes `PASS`, identidade thread valida, nenhum processo kworker,
-filas drenadas, reboot/fallback verificados e release `0.1.0` auditado. Ate
-essa execucao, `DT100-002` permanece `ACEITA`.
+### Evidencia da quitacao
+
+O relatorio `build/test-results/perf6-kworker-release/perf6-kworker-release.json`
+registrou 9/9 sessoes `PASS` em `baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, com tres amostras por sessao. Em todas as sessoes,
+`workqueue_worker_tid=1`, `workqueue_worker_thread_generation=1`,
+`workqueue_worker_pid=0`, `workqueue_worker_bound=1` e
+`service_0_fallback_active=0`. Os diagnósticos, o prompt e o reboot foram
+restaurados em todas as sessões; não houve processo QEMU residual.
+
+Passaram `make q3check`, `make clean && make`, `make catalog-test`,
+`make test-perf6-host`, `make test-perf6-qemu` e `make perf6-release`. A
+auditoria confirmou a imagem interna `0.1.0`, com 268435456 bytes e SHA-256
+`82361a70ec0480656a3fa18c5aa68dcb563c4c641c89f3ceb90b4600021b0d76`. A tag e
+a publicação do release não fazem parte desta quitação e continuam pendentes
+no Roadmap 24.
 
 ### Impacto conhecido
 
 Antes da PERF6, a `kworker` consumia um slot da tabela de processos e uma
-stack nativa de 16 KiB. A implementacao em validacao usa a stack de
-`thread_t`, nao publica processo kworker e mantem a espera por Wait Queue,
-sem busy-wait e sem callbacks na IRQ.
+stack nativa de 16 KiB. A implementação concluída usa a stack de `thread_t`,
+não publica processo kworker e mantém a espera por Wait Queue, sem busy-wait e
+sem callbacks na IRQ.
 
 ### Evidencia de referencia
 
-`workq status` publica o PID e o contexto `KWORKER`; `procs` identifica
-`Zephyr kworker` como processo ring0. O contrato `thread_t` permanece sem uso
-produtivo fora do seu scheduler e autoteste isolados.
+`workq status` publica o alvo `THREAD`, o contexto `KWORKER`, o `tid` e a
+geração; `procs` não publica uma entrada para a kworker. System, Shell e
+Desktop permanecem processos, e a compatibilidade das APIs legadas da
+workqueue foi preservada.
 
 ### Escopo da quitacao
 
@@ -338,7 +351,8 @@ de entrar neste resumo.
 
 ## Dividas quitadas
 
-Nenhuma ate o momento.
+- `DT100-001` — entrada PS/2 durante `regcheck full`, quitada na PERF2.
+- `DT100-002` — `kworker` como processo ring0, quitada na PERF6.
 
 ## Referencias
 

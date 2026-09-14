@@ -2594,6 +2594,13 @@ operacional padrão até aprovação do release. Não marcar `DT100-002` como
 `QUITADA` sem 9/9 `PASS`, reboot/fallback verificados, identidade thread
 válida e o relatório auditável.
 
+Validação de referência concluída em 2026-09-14: `make q3check`, build limpo,
+`make catalog-test`, `make test-perf6-host`, `make test-perf6-qemu` e
+`make perf6-release` passaram; a matriz terminou 9/9 em dois workers paralelos,
+com três amostras por sessão. A imagem auditada continua sendo um artefato
+interno `0.1.0`; a criação da tag, assinatura e publicação ficam reservadas ao
+procedimento RLS5 do Roadmap 24.
+
 ## Traces Assembly de boot e recuperacao
 
 Os traces QEMU de Assembly devem ser executados individualmente, com um ID de
