@@ -7,6 +7,30 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-14 - PERF3: scheduler, Idle e kworker
+
+- Implementacao: `scheduler_runtime_stats_t` e a coleta de latencia da
+  workqueue foram expostas de forma append-only em `kmetrics machine`. O
+  caminho de espera do PID 0 preserva `sti; hlt`, e a amostra diagnostica
+  oferece uma oportunidade cooperativa para a kworker concluir o trabalho
+  pendente antes do snapshot final. Nenhum bootloader, syscall, ABI, quantum,
+  prioridade ou selecao do scheduler foi alterado.
+- Evidencia: `make q3check`, `make clean`, `make`, `make test-perf3-host` e
+  `make test-perf3-qemu` passaram. A matriz fixa de nove sessoes, com tres
+  iteracoes para cada perfil `baseline/Simple`, `baseline/Classic` e
+  `no-vesa/Simple fallback`, passou 9/9 no relatorio
+  `build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json`, schema
+  `zephyros-perf3-scheduler-idle-v1`, imagem SHA-256
+  `a992a6c5b63a86654eebaab8641510902e7a06f96cfa3e1c6fa5653d5b5a01a5`.
+- Resultado: as sessoes tiveram envelopes guest completos, metricas
+  obrigatorias disponiveis, contabilidade `idle_ticks + active_ticks`
+  consistente, kworker vinculada, fila final drenada, prompt restaurado e
+  nenhuma rejeicao ou erro permanente observavel. A coleta host foi incluida
+  quando disponivel e permanece `ND` somente onde a plataforma nao oferece
+  coletor.
+- Estado: PERF3 `PASS`; `DT100-002` permanece `ACEITA` e `thread_t` continua
+  isolada, conforme o plano. Nenhuma divida tecnica foi marcada como quitada.
+
 ## 2026-09-13 - PERF2: responsividade de entrada
 
 - Implementação: `kmetrics machine` passou a publicar filas, picos, contadores

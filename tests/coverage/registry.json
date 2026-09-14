@@ -11259,7 +11259,7 @@
         "c:src/process/process.c:scheduler_note_wakeup",
         "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case"
       ],
-      "evidence": "make test-perf3-host PASS; matriz perf3-scheduler-idle registrada em build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json com 5/9 sessoes PASS e 4/9 FAIL por fila READY transitória em baseline/Simple e baseline/Classic; nenhuma sessão teve erro de protocolo, ND obrigatório, erro de workqueue ou falha de kworker",
+      "evidence": "make q3check PASS; make clean && make PASS; make test-perf3-host PASS com 32 testes; make test-perf3-qemu PASS; matriz perf3-scheduler-idle registrada em build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json com 9/9 sessoes PASS, sem fila READY/RUNNING residual, erro de protocolo, ND obrigatório, erro de workqueue ou falha de kworker",
       "case_definition": {
         "id": "qemu:tst5:perf3-scheduler-idle",
         "scenario": "Scheduler, Idle e kworker com janela deterministica de carga",

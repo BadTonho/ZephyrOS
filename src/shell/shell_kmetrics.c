@@ -293,9 +293,14 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
         return ERR_NULL;
     }
     kmemset(snapshot, 0, sizeof(*snapshot));
+    process_yield();
     start_ticks = timer_get_ticks();
     snapshot->ticks = start_ticks;
     snapshot->frequency = timer_get_frequency();
+    snapshot->workqueue_result = workqueue_get_stats(&snapshot->workqueue);
+    if (snapshot->workqueue_result == OK) {
+        snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_WORKQUEUE;
+    }
     keyboard_get_metrics(&snapshot->keyboard);
     snapshot->keyboard_flow_result =
         keyboard_get_flow_metrics(&snapshot->keyboard_flow);
@@ -312,10 +317,6 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
         mouse_get_flow_metrics(&snapshot->mouse_flow);
     if (snapshot->input_result == OK) {
         snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_INPUT;
-    }
-    snapshot->workqueue_result = workqueue_get_stats(&snapshot->workqueue);
-    if (snapshot->workqueue_result == OK) {
-        snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_WORKQUEUE;
     }
     snapshot->job_result = shell_job_get_status(&snapshot->job);
     if (snapshot->job_result == OK) {

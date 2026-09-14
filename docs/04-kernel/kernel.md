@@ -298,7 +298,9 @@ logging ou alocacao no caminho. Latencias usam aritmetica modular de
 `workqueue_stats_t` publica amostras, total e maximo da latencia entre
 enfileiramento e despacho, sem alterar a fila, o orcamento ou o contexto de
 execucao. A kworker continua sendo um processo ring0 e `thread_t` permanece
-isolada, usada apenas pelos diagnosticos.
+isolada, usada apenas pelos diagnosticos. A matriz final da PERF3 passou 9/9
+sessoes nos perfis baseline e no fallback sem VESA, com fila drenada, prompt
+restaurado e sem metricas guest obrigatorias indisponiveis.
 
 ## Isolamento ring 3
 

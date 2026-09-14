@@ -181,12 +181,12 @@ O relatorio agregado fica em
 `DT100-002` permanece `ACEITA`; estas metricas produzem evidencia para uma
 decisao futura e nao integram `thread_t` ao scheduler.
 
-Na primeira matriz operacional da PERF3, o relatorio consolidado registrou
-5/9 sessoes `PASS` e 4/9 `FAIL` por `fila_workqueue_residual` na amostra final
-das faixas com VESA (`baseline/Simple` 3/3 e `baseline/Classic` 1/3). O
-fallback `no-vesa/Simple` passou 3/3. Esse resultado e backlog observavel de
-manutencao da workqueue sob VESA, nao e evidencia suficiente para quitar
-`DT100-002`.
+A validacao final de 2026-09-14 executou a matriz completa com 9/9 sessoes
+`PASS` nos perfis `baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, tres iteracoes por perfil. Os envelopes guest
+foram completos, sem metricas obrigatorias `ND`, sem erro de protocolo e sem
+fila residual ou erro permanente da workqueue. `DT100-002` permanece `ACEITA`
+e `thread_t` continua isolada, conforme o criterio da PERF3.
 
 ## Registros
 

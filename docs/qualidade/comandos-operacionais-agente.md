@@ -1472,10 +1472,12 @@ full` por dez segundos e encerra com `schedcheck`, `workq check`, `cpu usage`,
 coletor sao `ND`. O relatorio fica em
 `build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json`.
 
-Na validacao de 2026-09-14, `make test-perf3-host` passou e a matriz QEMU
-registrou 5/9 sessoes aprovadas; 4/9 reprovaram por fila READY residual na
-amostra final das faixas baseline com VESA. O resultado nao deve ser tratado
-como quitacao de `DT100-002`.
+Na validacao final de 2026-09-14, `make test-perf3-host` e
+`make test-perf3-qemu` passaram; a matriz QEMU registrou 9/9 sessoes
+aprovadas, com envelopes completos, prompt restaurado e sem fila residual ou
+erro permanente da workqueue. O relatorio versionado e a evidencia da PERF3
+ficam em `build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json`.
+`DT100-002` permanece `ACEITA`.
 
 ## TST6: matriz, estresse e falhas controladas
 

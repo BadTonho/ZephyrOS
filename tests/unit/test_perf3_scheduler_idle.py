@@ -229,7 +229,8 @@ class Perf3ValidationTests(unittest.TestCase):
         self.assertEqual(selected["interaction"]["steps"][final_index - 3],
                          {"op": "text", "text": "workq check"})
         self.assertEqual(selected["interaction"]["steps"][final_index - 1],
-                         {"op": "wait", "seconds": 1})
+                         {"op": "wait",
+                          "seconds": perf3.PERF3_FINAL_DRAIN_SECONDS})
 
 
 class Perf3RunnerTests(unittest.TestCase):

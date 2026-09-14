@@ -653,10 +653,11 @@ com os ticks PIT, a fila termina vazia, a kworker permanece vinculada e o
 prompt e restaurado. A `DT100-002` continua `ACEITA` ate uma decisao baseada
 nessa evidencia.
 
-Na execucao de 2026-09-14, a matriz terminou com 5/9 sessoes aprovadas. As
-quatro falhas foram `fila_workqueue_residual` somente na amostra final das
-faixas baseline com VESA; o fallback `no-vesa/Simple` passou 3/3. A evidencia
-mantem `thread_t` isolada e nao autoriza a quitacao de `DT100-002`.
+Na execucao final de 2026-09-14, a matriz terminou com 9/9 sessoes aprovadas
+nos tres perfis e tres iteracoes por perfil. Os ajustes permaneceram locais ao
+fluxo diagnostico de espera e a drenagem cooperativa da kworker; nao houve
+alteracao na selecao do scheduler, quantum, prioridades ou contrato de
+`thread_t`. A divida `DT100-002` permanece `ACEITA`.
 
 ## TSS (Task State Segment)
 

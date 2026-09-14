@@ -37,6 +37,7 @@ PERF3_ITERATIONS = 3
 PERF3_IDLE_SECONDS = 3.0
 PERF3_LOAD_SECONDS = 10.0
 PERF3_FINAL_QUIESCENCE_SECONDS = 3.0
+PERF3_FINAL_DRAIN_SECONDS = 5.0
 PERF3_HOST_SAMPLE_SECONDS = 0.25
 UINT32_MASK = 0xFFFFFFFF
 PERF3_REQUIRED_METRICS = (
@@ -152,7 +153,7 @@ def case_for_lane(case: dict[str, Any], profile: str, mode: str) -> dict[str, An
             selected_steps.extend([
                 {"op": "text", "text": "workq check"},
                 {"op": "key", "key": "enter"},
-                {"op": "wait", "seconds": 1},
+                {"op": "wait", "seconds": PERF3_FINAL_DRAIN_SECONDS},
             ])
         selected_steps.append(copied)
     if not mode_seen:

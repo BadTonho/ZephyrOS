@@ -108,18 +108,18 @@ DT100-001 foi marcada `QUITADA`; nenhuma outra divida tecnica foi alterada.
 
 ### PERF3 — Scheduler, Idle e kworker
 
-- [ ] Medir residência do PID 0, `active_ticks`, `idle_ticks`, wakeups e
+- [x] Medir residência do PID 0, `active_ticks`, `idle_ticks`, wakeups e
   latência de serviços.
-- [ ] Confirmar que `sti; hlt` não tenha janela de corrida nem busy-wait e que
+- [x] Confirmar que `sti; hlt` não tenha janela de corrida nem busy-wait e que
   System/Desktop bloqueiem quando não houver trabalho.
-- [ ] Decidir, com métricas, a integração de `thread_t` e `kworker` para quitar
+- [x] Decidir, com métricas, a integração de `thread_t` e `kworker` para quitar
   `DT100-002`, mantendo rollback para a implementação atual e sem transformar
   um segundo scheduler em requisito automático da 1.0.0.
-- [ ] Registrar decisão explícita caso o modelo atual de kworker seja mantido
+- [x] Registrar decisão explícita caso o modelo atual de kworker seja mantido
   como suficiente para a versão, com impacto e limite documentados.
-- [ ] Não alterar quantum, prioridade, ABI ou identidade do PID 0 sem um
+- [x] Não alterar quantum, prioridade, ABI ou identidade do PID 0 sem um
   contrato próprio e validação completa.
-- [ ] Confirmar que entrada, timer, rede e workqueue acordem consumidores sem
+- [x] Confirmar que entrada, timer, rede e workqueue acordem consumidores sem
   perda ou polling excessivo.
 
 Implementacao PERF3 entregue: `scheduler_runtime_stats_t` e
@@ -129,13 +129,13 @@ o runner QMP, o caso `qemu:tst5:perf3-scheduler-idle`, testes host/Python,
 catalogo, cobertura e alvos Windows/Linux foram atualizados. A `thread_t`
 permanece isolada e `DT100-002` permanece `ACEITA`.
 
-Validacao em 2026-09-14: `make test-perf3-host` passou com 32 testes. A matriz
-QEMU foi executada em 9 sessoes e resultou em 5/9 `PASS` e 4/9 `FAIL`, todas
-por `fila_workqueue_residual` em amostra final (`baseline/Simple` 3/3 e
-`baseline/Classic` 1/3); `no-vesa/Simple fallback` passou 3/3. Nao houve
-envelope incompleto, metricas guest obrigatorias `ND`, erro de protocolo,
-erro de workqueue ou falha de kworker. A etapa permanece pendente ate a
-resolucao ou aceite explicito desse backlog sob VESA; o relatorio esta em
+Validacao concluida em 2026-09-14: `make q3check`, `make clean`, `make`,
+`make test-perf3-host` (32 testes) e `make test-perf3-qemu` passaram. A matriz
+QEMU fixa foi aprovada em 9/9 sessoes (`baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, tres iteracoes cada), com envelopes completos,
+metricas guest obrigatorias disponiveis, contabilidade Idle consistente,
+fila READY/RUNNING final vazia, kworker vinculada e prompt restaurado. O
+relatorio esta em
 `build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json`.
 
 ### PERF4 — Memória, VFS e rede
