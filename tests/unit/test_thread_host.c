@@ -297,6 +297,9 @@ static void block_hook(void) {
 static int test_initialization_and_lifecycle(void) {
     thread_t* first;
     thread_t* second;
+    thread_t* kernel;
+    thread_identity_t identity;
+    uint32_t kernel_id;
     char long_name[THREAD_NAME_LENGTH + 8U];
 
     if (thread_create("before", thread_entry_fixture) != NULL) return 1;
@@ -315,6 +318,21 @@ static int test_initialization_and_lifecycle(void) {
         first->state != THREAD_RUNNING || first->name[THREAD_NAME_LENGTH - 1U] ||
         thread_get_count() != 2U || thread_get_count_by_owner(THREAD_OWNER_PID) != 2U) {
         return 4;
+    }
+    kernel = thread_create_kernel("kworker", thread_entry_fixture);
+    if (!kernel || kernel->owner_pid != 0U || !kernel->kernel_service ||
+        !kernel->generation || thread_get_count() != 3U) return 41;
+    kernel_id = kernel->id;
+    if (thread_get_identity(kernel->id, kernel->generation, &identity) != OK ||
+        identity.id != kernel->id || identity.generation != kernel->generation ||
+        !identity.kernel_service) return 42;
+    if (thread_get_identity(kernel->id, kernel->generation + 1U,
+                            &identity) != ERR_NOT_FOUND ||
+        thread_is_live(kernel->id, kernel->generation + 1U, NULL) !=
+            ERR_NOT_FOUND) return 43;
+    thread_destroy(kernel);
+    if (thread_get_count() != 2U || thread_get_by_id(kernel_id) != NULL) {
+        return 44;
     }
     if (thread_create(NULL, thread_entry_fixture) != NULL ||
         thread_create("bad", NULL) != NULL) return 5;

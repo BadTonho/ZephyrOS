@@ -13473,6 +13473,28 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/core/service_supervisor.h:service_supervisor_get_thread_identity",
+      "kind": "api_function",
+      "source": "src/include/core/service_supervisor.h",
+      "symbol": "service_supervisor_get_thread_identity",
+      "linkage": "public",
+      "owner": "core",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:service-supervisor",
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/core/service_supervisor.h:service_supervisor_init",
       "kind": "api_function",
       "source": "src/include/core/service_supervisor.h",
@@ -20663,6 +20685,32 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/core/workqueue.h:workqueue_bind_thread",
+      "kind": "api_function",
+      "source": "src/include/core/workqueue.h",
+      "symbol": "workqueue_bind_thread",
+      "linkage": "public",
+      "owner": "core",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue",
+        "qemu:tst4:execution",
+        "qemu:tst5:perf6-kworker-thread",
+        "qemu:tst5:processes",
+        "qemu:tst6:stress:kernel"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/core/workqueue.h:workqueue_bind_worker",
       "kind": "api_function",
       "source": "src/include/core/workqueue.h",
@@ -21056,6 +21104,32 @@
         "host:core:scheduling",
         "host:core:workqueue",
         "qemu:tst4:execution",
+        "qemu:tst5:processes",
+        "qemu:tst6:stress:kernel"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/core/workqueue.h:workqueue_worker_target_name",
+      "kind": "api_function",
+      "source": "src/include/core/workqueue.h",
+      "symbol": "workqueue_worker_target_name",
+      "linkage": "public",
+      "owner": "core",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue",
+        "qemu:tst4:execution",
+        "qemu:tst5:perf6-kworker-thread",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
       ],
@@ -36206,6 +36280,34 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/process/thread.h:thread_create_kernel",
+      "kind": "api_function",
+      "source": "src/include/process/thread.h",
+      "symbol": "thread_create_kernel",
+      "linkage": "public",
+      "owner": "process",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution",
+        "qemu:tst5:apps",
+        "qemu:tst5:perf6-kworker-thread",
+        "qemu:tst5:processes",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "api:src/include/process/thread.h:thread_destroy",
       "kind": "api_function",
       "source": "src/include/process/thread.h",
@@ -36221,14 +36323,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:threads",
-        "qemu:tst4:execution",
-        "qemu:tst5:apps",
-        "qemu:tst5:processes",
-        "qemu:tst6:matrix:baseline",
-        "qemu:tst6:stress:kernel",
-        "qemu:tst6:stress:network",
-        "qemu:tst6:stress:storage"
+        "host:process:threads"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36249,14 +36344,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:threads",
-        "qemu:tst4:execution",
-        "qemu:tst5:apps",
-        "qemu:tst5:processes",
-        "qemu:tst6:matrix:baseline",
-        "qemu:tst6:stress:kernel",
-        "qemu:tst6:stress:network",
-        "qemu:tst6:stress:storage"
+        "host:process:threads"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36333,9 +36421,30 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:threads",
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/process/thread.h:thread_get_identity",
+      "kind": "api_function",
+      "source": "src/include/process/thread.h",
+      "symbol": "thread_get_identity",
+      "linkage": "public",
+      "owner": "process",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
         "qemu:tst4:execution",
         "qemu:tst5:apps",
+        "qemu:tst5:perf6-kworker-thread",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:stress:kernel",
@@ -36343,7 +36452,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/process/thread.h:thread_init",
@@ -36372,6 +36481,34 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/process/thread.h:thread_is_live",
+      "kind": "api_function",
+      "source": "src/include/process/thread.h",
+      "symbol": "thread_is_live",
+      "linkage": "public",
+      "owner": "process",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution",
+        "qemu:tst5:apps",
+        "qemu:tst5:perf6-kworker-thread",
+        "qemu:tst5:processes",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/process/thread.h:thread_is_ready",
@@ -63541,7 +63678,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63586,7 +63722,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63608,12 +63743,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete",
@@ -63629,12 +63761,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
@@ -63652,7 +63781,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -63674,7 +63802,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -63696,7 +63823,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:perf3-scheduler-idle"
       ],
       "tags": [],
@@ -63745,6 +63871,27 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf6_case",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_is_perf6_case",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
       "kind": "c_function",
       "source": "src/core/kernel_tests_blackbox.c",
@@ -63758,12 +63905,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_length",
@@ -63781,7 +63925,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63803,12 +63946,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed",
@@ -63824,12 +63964,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report",
@@ -63847,7 +63984,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63887,12 +64023,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
@@ -63908,12 +64041,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
@@ -63931,7 +64061,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -63973,12 +64102,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
@@ -63996,7 +64122,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -64020,7 +64145,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -64042,7 +64166,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -64062,12 +64185,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
@@ -64085,7 +64205,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -64109,7 +64228,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -71604,6 +71722,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/service_supervisor.c:service_supervisor_created_thread_cleanup",
+      "kind": "c_function",
+      "source": "src/core/service_supervisor.c",
+      "symbol": "service_supervisor_created_thread_cleanup",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/service_supervisor.c:service_supervisor_finish_failure",
       "kind": "c_function",
       "source": "src/core/service_supervisor.c",
@@ -71641,6 +71780,71 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:service-supervisor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/service_supervisor.c:service_supervisor_get_thread_identity",
+      "kind": "c_function",
+      "source": "src/core/service_supervisor.c",
+      "symbol": "service_supervisor_get_thread_identity",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:service-supervisor",
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/service_supervisor.c:service_supervisor_identity_exists",
+      "kind": "c_function",
+      "source": "src/core/service_supervisor.c",
+      "symbol": "service_supervisor_identity_exists",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/service_supervisor.c:service_supervisor_identity_live",
+      "kind": "c_function",
+      "source": "src/core/service_supervisor.c",
+      "symbol": "service_supervisor_identity_live",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:service-supervisor",
+        "qemu:tst5:perf6-kworker-thread"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72003,6 +72207,28 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/service_supervisor.c:service_supervisor_thread_live_values",
+      "kind": "c_function",
+      "source": "src/core/service_supervisor.c",
+      "symbol": "service_supervisor_thread_live_values",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:service-supervisor",
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/service_supervisor.c:service_supervisor_valid_id",
       "kind": "c_function",
       "source": "src/core/service_supervisor.c",
@@ -72043,6 +72269,70 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/service_supervisor.c:thread_destroy",
+      "kind": "c_function",
+      "source": "src/core/service_supervisor.c",
+      "symbol": "thread_destroy",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/service_supervisor.c:thread_get_by_id",
+      "kind": "c_function",
+      "source": "src/core/service_supervisor.c",
+      "symbol": "thread_get_by_id",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:service-supervisor",
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/service_supervisor.c:thread_get_current",
+      "kind": "c_function",
+      "source": "src/core/service_supervisor.c",
+      "symbol": "thread_get_current",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/sk_buff.c:alloc_skb",
@@ -92768,6 +93058,51 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/workqueue.c:thread_get_by_id",
+      "kind": "c_function",
+      "source": "src/core/workqueue.c",
+      "symbol": "thread_get_by_id",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:workqueue",
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/workqueue.c:thread_get_current",
+      "kind": "c_function",
+      "source": "src/core/workqueue.c",
+      "symbol": "thread_get_current",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue",
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/workqueue.c:work_destroy",
       "kind": "c_function",
       "source": "src/core/workqueue.c",
@@ -92808,6 +93143,28 @@
         "host:core:scheduling",
         "host:core:workqueue",
         "qemu:tst4:execution"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/workqueue.c:workqueue_bind_thread",
+      "kind": "c_function",
+      "source": "src/core/workqueue.c",
+      "symbol": "workqueue_bind_thread",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:workqueue",
+        "qemu:tst5:perf6-kworker-thread"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -93919,6 +94276,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/workqueue.c:workqueue_worker_target_name",
+      "kind": "c_function",
+      "source": "src/core/workqueue.c",
+      "symbol": "workqueue_worker_target_name",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/desktop/desktop.c:desktop_add_icon",
       "kind": "c_function",
       "source": "src/desktop/desktop.c",
@@ -94415,9 +94793,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_get_mode",
@@ -101288,9 +101669,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_get_status",
@@ -131742,6 +132126,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:tst5:perf6-kworker-thread",
         "qemu:tst6:fault:service-supervisor"
       ],
       "tags": [],
@@ -132336,6 +132721,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:tst5:perf6-kworker-thread",
         "qemu:tst6:fault:service-supervisor"
       ],
       "tags": [],
@@ -139271,6 +139657,7 @@
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
+        "qemu:tst5:perf6-kworker-thread",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -149126,9 +149513,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery",
@@ -149545,9 +149935,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_service_supervisor",
@@ -149731,9 +150124,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_summary",
@@ -151688,9 +152084,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_print_usb_fixture_report",
@@ -161622,7 +162021,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
-        "qemu:tst5:perf1-baseline"
+        "qemu:tst5:perf1-baseline",
+        "qemu:tst5:perf6-kworker-thread"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -161711,7 +162111,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
-        "qemu:tst5:perf1-baseline"
+        "qemu:tst5:perf1-baseline",
+        "qemu:tst5:perf6-kworker-thread"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -161779,7 +162180,8 @@
         "host:shell:diagnostics",
         "qemu:tst5:perf1-baseline",
         "qemu:tst5:perf4-memory-storage-network",
-        "qemu:tst5:perf5-video-ui"
+        "qemu:tst5:perf5-video-ui",
+        "qemu:tst5:perf6-kworker-thread"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -164761,9 +165163,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_get_work_area",
@@ -165268,6 +165673,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/thread/thread.c:thread_allocate_generation",
+      "kind": "c_function",
+      "source": "src/thread/thread.c",
+      "symbol": "thread_allocate_generation",
+      "linkage": "static",
+      "owner": "thread",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/thread/thread.c:thread_allocate_id",
       "kind": "c_function",
       "source": "src/thread/thread.c",
@@ -165416,6 +165842,48 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/thread/thread.c:thread_create_internal",
+      "kind": "c_function",
+      "source": "src/thread/thread.c",
+      "symbol": "thread_create_internal",
+      "linkage": "static",
+      "owner": "thread",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/thread/thread.c:thread_create_kernel",
+      "kind": "c_function",
+      "source": "src/thread/thread.c",
+      "symbol": "thread_create_kernel",
+      "linkage": "external",
+      "owner": "thread",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/thread/thread.c:thread_destroy",
       "kind": "c_function",
       "source": "src/thread/thread.c",
@@ -165553,6 +166021,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/thread/thread.c:thread_get_identity",
+      "kind": "c_function",
+      "source": "src/thread/thread.c",
+      "symbol": "thread_get_identity",
+      "linkage": "external",
+      "owner": "thread",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/thread/thread.c:thread_id_in_use",
       "kind": "c_function",
       "source": "src/thread/thread.c",
@@ -165617,6 +166106,27 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/thread/thread.c:thread_is_live",
+      "kind": "c_function",
+      "source": "src/thread/thread.c",
+      "symbol": "thread_is_live",
+      "linkage": "external",
+      "owner": "thread",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf6-kworker-thread"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/thread/thread.c:thread_is_ready",
@@ -168351,9 +168861,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:wm"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/wm/wm.c:wm_get_window",
@@ -174571,6 +175084,7 @@
         "api:src/include/core/workqueue.h:schedule_work",
         "api:src/include/core/workqueue.h:work_destroy",
         "api:src/include/core/workqueue.h:work_init",
+        "api:src/include/core/workqueue.h:workqueue_bind_thread",
         "api:src/include/core/workqueue.h:workqueue_bind_worker",
         "api:src/include/core/workqueue.h:workqueue_context_name",
         "api:src/include/core/workqueue.h:workqueue_copy_info",
@@ -174587,6 +175101,7 @@
         "api:src/include/core/workqueue.h:workqueue_state_name",
         "api:src/include/core/workqueue.h:workqueue_validate_state",
         "api:src/include/core/workqueue.h:workqueue_worker_main",
+        "api:src/include/core/workqueue.h:workqueue_worker_target_name",
         "c:src/core/irq_deferred.c:irq_deferred_cancel",
         "c:src/core/irq_deferred.c:irq_deferred_cancel_on",
         "c:src/core/irq_deferred.c:irq_deferred_copy_owner",
@@ -174685,6 +175200,7 @@
         "c:src/core/workqueue.c:cancel_work",
         "c:src/core/workqueue.c:schedule_delayed_work",
         "c:src/core/workqueue.c:schedule_work",
+        "c:src/core/workqueue.c:thread_get_current",
         "c:src/core/workqueue.c:work_destroy",
         "c:src/core/workqueue.c:work_init",
         "c:src/core/workqueue.c:workqueue_bind_worker",
@@ -174765,6 +175281,7 @@
       "surface_ids": [
         "api:src/include/core/service_supervisor.h:service_supervisor_configure",
         "api:src/include/core/service_supervisor.h:service_supervisor_get_identity",
+        "api:src/include/core/service_supervisor.h:service_supervisor_get_thread_identity",
         "api:src/include/core/service_supervisor.h:service_supervisor_init",
         "api:src/include/core/service_supervisor.h:service_supervisor_is_initialized",
         "api:src/include/core/service_supervisor.h:service_supervisor_poll",
@@ -174787,6 +175304,8 @@
         "c:src/core/service_supervisor.c:service_supervisor_created_process_cleanup",
         "c:src/core/service_supervisor.c:service_supervisor_finish_failure",
         "c:src/core/service_supervisor.c:service_supervisor_get_identity",
+        "c:src/core/service_supervisor.c:service_supervisor_get_thread_identity",
+        "c:src/core/service_supervisor.c:service_supervisor_identity_live",
         "c:src/core/service_supervisor.c:service_supervisor_init",
         "c:src/core/service_supervisor.c:service_supervisor_is_initialized",
         "c:src/core/service_supervisor.c:service_supervisor_poll",
@@ -174804,8 +175323,10 @@
         "c:src/core/service_supervisor.c:service_supervisor_state_name",
         "c:src/core/service_supervisor.c:service_supervisor_test_fail_next",
         "c:src/core/service_supervisor.c:service_supervisor_test_reset",
+        "c:src/core/service_supervisor.c:service_supervisor_thread_live_values",
         "c:src/core/service_supervisor.c:service_supervisor_valid_id",
         "c:src/core/service_supervisor.c:service_supervisor_validate_state",
+        "c:src/core/service_supervisor.c:thread_get_by_id",
         "c:src/core/string.c:kmemset"
       ],
       "tags": [
@@ -176438,6 +176959,7 @@
         "api:src/include/core/workqueue.h:schedule_work",
         "api:src/include/core/workqueue.h:work_destroy",
         "api:src/include/core/workqueue.h:work_init",
+        "api:src/include/core/workqueue.h:workqueue_bind_thread",
         "api:src/include/core/workqueue.h:workqueue_bind_worker",
         "api:src/include/core/workqueue.h:workqueue_context_name",
         "api:src/include/core/workqueue.h:workqueue_copy_info",
@@ -176454,11 +176976,15 @@
         "api:src/include/core/workqueue.h:workqueue_state_name",
         "api:src/include/core/workqueue.h:workqueue_validate_state",
         "api:src/include/core/workqueue.h:workqueue_worker_main",
+        "api:src/include/core/workqueue.h:workqueue_worker_target_name",
         "c:src/core/workqueue.c:cancel_work",
         "c:src/core/workqueue.c:schedule_delayed_work",
         "c:src/core/workqueue.c:schedule_work",
+        "c:src/core/workqueue.c:thread_get_by_id",
+        "c:src/core/workqueue.c:thread_get_current",
         "c:src/core/workqueue.c:work_destroy",
         "c:src/core/workqueue.c:work_init",
+        "c:src/core/workqueue.c:workqueue_bind_thread",
         "c:src/core/workqueue.c:workqueue_bind_worker",
         "c:src/core/workqueue.c:workqueue_cancel_on",
         "c:src/core/workqueue.c:workqueue_capture_owner",
@@ -177209,6 +177735,7 @@
         "c:src/drivers/mouse.c:mouse_get_buttons",
         "c:src/drivers/mouse.c:mouse_get_config",
         "c:src/drivers/mouse.c:mouse_get_flow_metrics",
+        "c:src/drivers/mouse.c:mouse_get_render_metrics",
         "c:src/drivers/mouse.c:mouse_get_status",
         "c:src/drivers/mouse.c:mouse_get_x",
         "c:src/drivers/mouse.c:mouse_get_y",
@@ -181644,6 +182171,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_net_buffers",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_component",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_service_supervisor",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals",
@@ -181663,6 +182191,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_component",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_service_supervisor",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_component",
@@ -181671,6 +182200,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_update",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_summary",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state",
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat",
@@ -181763,6 +182293,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_workq_status",
         "c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo",
+        "c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck",
@@ -184768,30 +185299,8 @@
       "cleanup": "processo host encerrado e relatorio de cobertura preservado",
       "status": "AUTOMATED",
       "surface_ids": [
-        "c:src/core/kernel_tests_blackbox.c:blackbox_contains",
         "c:src/core/kernel_tests_blackbox.c:blackbox_contains_prompt",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_equals",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_find",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_length",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_marker",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_report",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
-        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox"
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation"
       ]
     },
     {
@@ -185002,6 +185511,7 @@
         "c:src/desktop/desktop.c:desktop_find_nearest_slot",
         "c:src/desktop/desktop.c:desktop_find_slot_by_grid",
         "c:src/desktop/desktop.c:desktop_get_icon_entry",
+        "c:src/desktop/desktop.c:desktop_get_metrics",
         "c:src/desktop/desktop.c:desktop_get_mode",
         "c:src/desktop/desktop.c:desktop_get_selected_app",
         "c:src/desktop/desktop.c:desktop_handle_click",
@@ -185456,6 +185966,7 @@
         "c:src/taskbar/taskbar.c:taskbar_get_clock_rect",
         "c:src/taskbar/taskbar.c:taskbar_get_config",
         "c:src/taskbar/taskbar.c:taskbar_get_menu_bounds",
+        "c:src/taskbar/taskbar.c:taskbar_get_metrics",
         "c:src/taskbar/taskbar.c:taskbar_get_work_area",
         "c:src/taskbar/taskbar.c:taskbar_handle_click",
         "c:src/taskbar/taskbar.c:taskbar_handle_click_gui",
@@ -185695,6 +186206,7 @@
         "c:src/wm/wm.c:wm_get_config",
         "c:src/wm/wm.c:wm_get_focused",
         "c:src/wm/wm.c:wm_get_focused_id",
+        "c:src/wm/wm.c:wm_get_metrics",
         "c:src/wm/wm.c:wm_get_window",
         "c:src/wm/wm.c:wm_gui_begin_drag",
         "c:src/wm/wm.c:wm_gui_begin_resize",
@@ -188365,6 +188877,7 @@
         "api:src/include/core/workqueue.h:schedule_work",
         "api:src/include/core/workqueue.h:work_destroy",
         "api:src/include/core/workqueue.h:work_init",
+        "api:src/include/core/workqueue.h:workqueue_bind_thread",
         "api:src/include/core/workqueue.h:workqueue_bind_worker",
         "api:src/include/core/workqueue.h:workqueue_context_name",
         "api:src/include/core/workqueue.h:workqueue_copy_info",
@@ -188381,6 +188894,7 @@
         "api:src/include/core/workqueue.h:workqueue_state_name",
         "api:src/include/core/workqueue.h:workqueue_validate_state",
         "api:src/include/core/workqueue.h:workqueue_worker_main",
+        "api:src/include/core/workqueue.h:workqueue_worker_target_name",
         "api:src/include/process/process.h:process_apply_pending_cancel",
         "api:src/include/process/process.h:process_block",
         "api:src/include/process/process.h:process_bootstrap_idle",
@@ -188462,12 +188976,12 @@
         "api:src/include/process/thread.h:thread_context_switch",
         "api:src/include/process/thread.h:thread_copy_waiters",
         "api:src/include/process/thread.h:thread_create",
-        "api:src/include/process/thread.h:thread_destroy",
-        "api:src/include/process/thread.h:thread_get_by_id",
+        "api:src/include/process/thread.h:thread_create_kernel",
         "api:src/include/process/thread.h:thread_get_count",
         "api:src/include/process/thread.h:thread_get_count_by_owner",
-        "api:src/include/process/thread.h:thread_get_current",
+        "api:src/include/process/thread.h:thread_get_identity",
         "api:src/include/process/thread.h:thread_init",
+        "api:src/include/process/thread.h:thread_is_live",
         "api:src/include/process/thread.h:thread_is_ready",
         "api:src/include/process/thread.h:thread_run_self_test",
         "api:src/include/process/thread.h:thread_schedule_next",
@@ -191188,12 +191702,12 @@
         "api:src/include/process/thread.h:thread_cancel_wait",
         "api:src/include/process/thread.h:thread_copy_waiters",
         "api:src/include/process/thread.h:thread_create",
-        "api:src/include/process/thread.h:thread_destroy",
-        "api:src/include/process/thread.h:thread_get_by_id",
+        "api:src/include/process/thread.h:thread_create_kernel",
         "api:src/include/process/thread.h:thread_get_count",
         "api:src/include/process/thread.h:thread_get_count_by_owner",
-        "api:src/include/process/thread.h:thread_get_current",
+        "api:src/include/process/thread.h:thread_get_identity",
         "api:src/include/process/thread.h:thread_init",
+        "api:src/include/process/thread.h:thread_is_live",
         "api:src/include/process/thread.h:thread_is_ready",
         "api:src/include/process/thread.h:thread_run_self_test",
         "api:src/include/process/thread.h:thread_schedule_next",
@@ -194451,6 +194965,308 @@
       }
     },
     {
+      "id": "qemu:tst5:perf6-kworker-thread",
+      "scenario": "Quitacao da DT100-002 e auditoria do release 0.1.0",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:perf6-kworker-thread",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 240,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1 + ZMETRIC/1",
+        "input": "qmp-input",
+        "profiles": "baseline,baseline,no-vesa",
+        "modes": "simple,classic,simple-fallback",
+        "iterations": 3,
+        "idle_seconds": 3,
+        "load_seconds": 10,
+        "host_sample_interval_seconds": 0.25,
+        "release_version": "0.1.0",
+        "candidate_tag": "v0.1.0-rc1",
+        "diagnostics": "procs,threads,workq status,workq check,wait check,schedcheck,regcheck full,health check"
+      },
+      "preconditions": "imagem pronta, QEMU com serial, QMP e suporte de thread do kworker",
+      "action": "validar identidade thread do kworker, espera, cancelamento, diagnosticos e release",
+      "expected": "tid e generation validos, nenhum processo kworker, filas drenadas, fallback inativo e prompt restaurado",
+      "errors": "envelope ausente ou incompleto, chaves duplicadas, protocolo, timeout, prompt ausente, fila residual, fallback ou identidade invalida",
+      "effects": "somente diagnosticos observacionais, amostras guest/host e encerramento de cada QEMU isolado",
+      "cleanup": "encerrar cada QEMU isolado e preservar manifest, serial, input, QMP e relatorio JSON",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/service_supervisor.h:service_supervisor_get_thread_identity",
+        "api:src/include/core/workqueue.h:workqueue_bind_thread",
+        "api:src/include/core/workqueue.h:workqueue_worker_target_name",
+        "api:src/include/process/thread.h:thread_create_kernel",
+        "api:src/include/process/thread.h:thread_get_identity",
+        "api:src/include/process/thread.h:thread_is_live",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf6_case",
+        "c:src/core/service_supervisor.c:service_supervisor_created_thread_cleanup",
+        "c:src/core/service_supervisor.c:service_supervisor_get_thread_identity",
+        "c:src/core/service_supervisor.c:service_supervisor_identity_exists",
+        "c:src/core/service_supervisor.c:service_supervisor_identity_live",
+        "c:src/core/service_supervisor.c:service_supervisor_thread_live_values",
+        "c:src/core/service_supervisor.c:thread_destroy",
+        "c:src/core/service_supervisor.c:thread_get_by_id",
+        "c:src/core/service_supervisor.c:thread_get_current",
+        "c:src/core/workqueue.c:thread_get_by_id",
+        "c:src/core/workqueue.c:thread_get_current",
+        "c:src/core/workqueue.c:workqueue_bind_thread",
+        "c:src/core/workqueue.c:workqueue_worker_target_name",
+        "c:src/kernel/kernel.c:kernel_create_kworker",
+        "c:src/kernel/kernel.c:kernel_prepare_kworker",
+        "c:src/process/process.c:process_yield",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_system",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_work",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot",
+        "c:src/thread/thread.c:thread_allocate_generation",
+        "c:src/thread/thread.c:thread_create_internal",
+        "c:src/thread/thread.c:thread_create_kernel",
+        "c:src/thread/thread.c:thread_get_identity",
+        "c:src/thread/thread.c:thread_is_live"
+      ],
+      "tags": [
+        "qemu",
+        "tst5",
+        "perf6",
+        "kworker",
+        "thread",
+        "release",
+        "fallback"
+      ],
+      "interaction": {
+        "mode": "qmp-input",
+        "steps": [
+          {
+            "op": "phase",
+            "phase": "boot"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "phase",
+            "phase": "baseline"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "phase",
+            "phase": "pressure"
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "phase",
+            "phase": "cancel"
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "procs"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "threads"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "workq status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "wait check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "phase",
+            "phase": "diagnostics"
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "workq check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 5
+          },
+          {
+            "op": "phase",
+            "phase": "final"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-perf6-kworker-thread"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          }
+        ],
+        "post_action": {
+          "type": "reboot",
+          "timeout_seconds": 45,
+          "steps": [
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "text",
+              "text": "reboot"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "qemu:tst5:poweroff",
       "scenario": "Caminho black-box de poweroff isolado no QEMU",
       "owner": "quality",
@@ -194654,6 +195470,7 @@
         "api:src/include/core/workqueue.h:schedule_work",
         "api:src/include/core/workqueue.h:work_destroy",
         "api:src/include/core/workqueue.h:work_init",
+        "api:src/include/core/workqueue.h:workqueue_bind_thread",
         "api:src/include/core/workqueue.h:workqueue_bind_worker",
         "api:src/include/core/workqueue.h:workqueue_context_name",
         "api:src/include/core/workqueue.h:workqueue_copy_info",
@@ -194670,6 +195487,7 @@
         "api:src/include/core/workqueue.h:workqueue_state_name",
         "api:src/include/core/workqueue.h:workqueue_validate_state",
         "api:src/include/core/workqueue.h:workqueue_worker_main",
+        "api:src/include/core/workqueue.h:workqueue_worker_target_name",
         "api:src/include/process/process.h:ipc_current_has_pending",
         "api:src/include/process/process.h:ipc_get_pending_count",
         "api:src/include/process/process.h:ipc_get_pending_count_for_pid",
@@ -194763,12 +195581,12 @@
         "api:src/include/process/thread.h:thread_cancel_wait",
         "api:src/include/process/thread.h:thread_copy_waiters",
         "api:src/include/process/thread.h:thread_create",
-        "api:src/include/process/thread.h:thread_destroy",
-        "api:src/include/process/thread.h:thread_get_by_id",
+        "api:src/include/process/thread.h:thread_create_kernel",
         "api:src/include/process/thread.h:thread_get_count",
         "api:src/include/process/thread.h:thread_get_count_by_owner",
-        "api:src/include/process/thread.h:thread_get_current",
+        "api:src/include/process/thread.h:thread_get_identity",
         "api:src/include/process/thread.h:thread_init",
+        "api:src/include/process/thread.h:thread_is_live",
         "api:src/include/process/thread.h:thread_is_ready",
         "api:src/include/process/thread.h:thread_run_self_test",
         "api:src/include/process/thread.h:thread_schedule_next",
@@ -197842,12 +198660,12 @@
         "api:src/include/process/thread.h:thread_cancel_wait",
         "api:src/include/process/thread.h:thread_copy_waiters",
         "api:src/include/process/thread.h:thread_create",
-        "api:src/include/process/thread.h:thread_destroy",
-        "api:src/include/process/thread.h:thread_get_by_id",
+        "api:src/include/process/thread.h:thread_create_kernel",
         "api:src/include/process/thread.h:thread_get_count",
         "api:src/include/process/thread.h:thread_get_count_by_owner",
-        "api:src/include/process/thread.h:thread_get_current",
+        "api:src/include/process/thread.h:thread_get_identity",
         "api:src/include/process/thread.h:thread_init",
+        "api:src/include/process/thread.h:thread_is_live",
         "api:src/include/process/thread.h:thread_is_ready",
         "api:src/include/process/thread.h:thread_run_self_test",
         "api:src/include/process/thread.h:thread_schedule_next",
@@ -198566,6 +199384,7 @@
         "api:src/include/core/workqueue.h:schedule_work",
         "api:src/include/core/workqueue.h:work_destroy",
         "api:src/include/core/workqueue.h:work_init",
+        "api:src/include/core/workqueue.h:workqueue_bind_thread",
         "api:src/include/core/workqueue.h:workqueue_bind_worker",
         "api:src/include/core/workqueue.h:workqueue_context_name",
         "api:src/include/core/workqueue.h:workqueue_copy_info",
@@ -198582,6 +199401,7 @@
         "api:src/include/core/workqueue.h:workqueue_state_name",
         "api:src/include/core/workqueue.h:workqueue_validate_state",
         "api:src/include/core/workqueue.h:workqueue_worker_main",
+        "api:src/include/core/workqueue.h:workqueue_worker_target_name",
         "api:src/include/fs/vfs.h:vfs_close",
         "api:src/include/fs/vfs.h:vfs_close_owner",
         "api:src/include/fs/vfs.h:vfs_copy_descriptors",
@@ -198740,12 +199560,12 @@
         "api:src/include/process/thread.h:thread_cancel_wait",
         "api:src/include/process/thread.h:thread_copy_waiters",
         "api:src/include/process/thread.h:thread_create",
-        "api:src/include/process/thread.h:thread_destroy",
-        "api:src/include/process/thread.h:thread_get_by_id",
+        "api:src/include/process/thread.h:thread_create_kernel",
         "api:src/include/process/thread.h:thread_get_count",
         "api:src/include/process/thread.h:thread_get_count_by_owner",
-        "api:src/include/process/thread.h:thread_get_current",
+        "api:src/include/process/thread.h:thread_get_identity",
         "api:src/include/process/thread.h:thread_init",
+        "api:src/include/process/thread.h:thread_is_live",
         "api:src/include/process/thread.h:thread_is_ready",
         "api:src/include/process/thread.h:thread_run_self_test",
         "api:src/include/process/thread.h:thread_schedule_next",
@@ -199298,12 +200118,12 @@
         "api:src/include/process/thread.h:thread_cancel_wait",
         "api:src/include/process/thread.h:thread_copy_waiters",
         "api:src/include/process/thread.h:thread_create",
-        "api:src/include/process/thread.h:thread_destroy",
-        "api:src/include/process/thread.h:thread_get_by_id",
+        "api:src/include/process/thread.h:thread_create_kernel",
         "api:src/include/process/thread.h:thread_get_count",
         "api:src/include/process/thread.h:thread_get_count_by_owner",
-        "api:src/include/process/thread.h:thread_get_current",
+        "api:src/include/process/thread.h:thread_get_identity",
         "api:src/include/process/thread.h:thread_init",
+        "api:src/include/process/thread.h:thread_is_live",
         "api:src/include/process/thread.h:thread_is_ready",
         "api:src/include/process/thread.h:thread_run_self_test",
         "api:src/include/process/thread.h:thread_schedule_next",
@@ -200057,12 +200877,12 @@
         "api:src/include/process/thread.h:thread_cancel_wait",
         "api:src/include/process/thread.h:thread_copy_waiters",
         "api:src/include/process/thread.h:thread_create",
-        "api:src/include/process/thread.h:thread_destroy",
-        "api:src/include/process/thread.h:thread_get_by_id",
+        "api:src/include/process/thread.h:thread_create_kernel",
         "api:src/include/process/thread.h:thread_get_count",
         "api:src/include/process/thread.h:thread_get_count_by_owner",
-        "api:src/include/process/thread.h:thread_get_current",
+        "api:src/include/process/thread.h:thread_get_identity",
         "api:src/include/process/thread.h:thread_init",
+        "api:src/include/process/thread.h:thread_is_live",
         "api:src/include/process/thread.h:thread_is_ready",
         "api:src/include/process/thread.h:thread_run_self_test",
         "api:src/include/process/thread.h:thread_schedule_next",

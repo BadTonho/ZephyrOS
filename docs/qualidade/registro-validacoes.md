@@ -7,6 +7,31 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-14 - PERF6: kworker como thread e preparação do release
+
+- Implementacao: a `kworker` passou a ser criada por `thread_create_kernel()`
+  como `thread_t` de serviço kernel, vinculada à workqueue por `(tid,
+  generation)`. O supervisor distingue alvos `THREAD` e `PROCESS`; apenas a
+  kworker usa `THREAD`, enquanto System, Shell e Desktop continuam processos.
+  `process_yield()` devolve uma thread kernel ativa ao scheduler de threads,
+  sem trocar processos usando a stack da thread. ABI, syscalls, quantum,
+  prioridades, PID 0, bootloader e `switch.asm` não foram alterados.
+- Implementacao: `kmetrics machine`, `workq status`, `threads`, `procs` e os
+  snapshots do supervisor publicam a identidade thread, o alvo, o fallback e
+  o estado do serviço. O caso `qemu:tst5:perf6-kworker-thread`, o schema
+  `zephyros-perf6-kworker-release-v1`, a matriz de nove sessões, os testes
+  host/Python, catálogo, manifesto e alvos Windows/Linux foram adicionados.
+  A versão permanece `0.1.0` e `v0.1.0-rc1` é apenas a tag operacional padrão.
+- Evidencia: validação pendente nesta sessão. Ainda não foram executados sem
+  autorização explícita os gates `make q3check`, build limpo,
+  `make catalog-test`, `make test-perf6-host`, a matriz QEMU 9/9,
+  reboot/fallback ou `make perf6-release`. O relatório esperado é
+  `build/test-results/perf6-kworker-release/perf6-kworker-release.json`.
+- Estado: PERF6 `PENDING`; `DT100-002` permanece `ACEITA` até a evidência
+  reproduzível confirmar identidade thread válida, ausência de processo
+  kworker, filas drenadas, prompt restaurado, reboot/fallback e release
+  verificável. Nenhuma dívida técnica foi quitada por implementação.
+
 ## 2026-09-14 - PERF4: memoria, VFS, armazenamento e rede
 
 - Implementacao: `kmetrics machine` passou a copiar os getters existentes de

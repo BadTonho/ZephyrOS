@@ -20,6 +20,7 @@ static kmem_cache_t* thread_cache = 0;
 static thread_t* current_thread = 0;
 static uint32_t thread_count = 0;
 static uint32_t next_thread_id = 1;
+static uint32_t next_thread_generation = 1;
 static uint32_t scheduler_esp = 0;
 static int scheduler_active = 0;
 static int last_scheduled_idx = -1;
@@ -158,6 +159,17 @@ static int thread_allocate_id(uint32_t* id_out) {
     return ERR_OVERFLOW;
 }
 
+static int thread_allocate_generation(uint32_t* generation_out) {
+    if (!generation_out) {
+        LOG_ERROR("THRD", "Destino nulo ao alocar geracao de thread");
+        return ERR_NULL;
+    }
+    *generation_out = next_thread_generation ? next_thread_generation : 1U;
+    next_thread_generation++;
+    if (!next_thread_generation) next_thread_generation = 1U;
+    return OK;
+}
+
 static void thread_entry_trampoline(void) {
     thread_t* thread = current_thread;
 
@@ -241,6 +253,7 @@ void thread_init(void) {
     current_thread = 0;
     thread_count = 0;
     next_thread_id = 1;
+    next_thread_generation = 1U;
     scheduler_esp = 0;
     scheduler_active = 0;
     last_scheduled_idx = -1;
@@ -258,9 +271,11 @@ int thread_is_ready(void) {
     return thread_initialized;
 }
 
-thread_t* thread_create(const char* name, void (*entry)(void)) {
+static thread_t* thread_create_internal(const char* name,
+                                        void (*entry)(void),
+                                        uint32_t owner_pid,
+                                        uint8_t kernel_service) {
     thread_t* thread = 0;
-    process_t* owner;
     int name_index = 0;
 
     if (!thread_initialized) {
@@ -286,9 +301,9 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     }
 
     kmemset(thread, 0, sizeof(thread_t));
-    owner = process_get_current();
-    thread->owner_pid = owner ? owner->pid : 0U;
-    while (name[name_index] && name_index < THREAD_NAME_LENGTH - 1) {
+    thread->owner_pid = owner_pid;
+    thread->kernel_service = kernel_service ? 1U : 0U;
+    while (name_index < THREAD_NAME_LENGTH - 1 && name[name_index]) {
         thread->name[name_index] = name[name_index];
         name_index++;
     }
@@ -322,6 +337,14 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
         kmem_cache_free(thread_cache, thread);
         return 0;
     }
+    if (thread_allocate_generation(&thread->generation) != OK) {
+        LOG_ERROR("THRD", "Falha ao alocar geracao de thread");
+        kfree(thread->stack);
+        thread->stack = 0;
+        threads[thread_index(thread)] = 0;
+        kmem_cache_free(thread_cache, thread);
+        return 0;
+    }
 
     thread->eip = (uint32_t)entry;
     thread->wait_deadline = WAIT_TIMEOUT_INFINITE;
@@ -331,9 +354,21 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     if (thread_self_test_active) {
         LOG_DEBUG("THRD", "Thread de auto teste criada");
     } else {
-        LOG_INFO("THRD", "Thread criada com sucesso");
+        LOG_INFO(kernel_service ? "THRD/KERNEL" : "THRD",
+                 kernel_service ? "Kernel thread criada com sucesso" :
+                                   "Thread criada com sucesso");
     }
     return thread;
+}
+
+thread_t* thread_create(const char* name, void (*entry)(void)) {
+    process_t* owner = process_get_current();
+
+    return thread_create_internal(name, entry, owner ? owner->pid : 0U, 0U);
+}
+
+thread_t* thread_create_kernel(const char* name, void (*entry)(void)) {
+    return thread_create_internal(name, entry, 0U, 1U);
 }
 
 void thread_destroy(thread_t* thread) {
@@ -654,6 +689,53 @@ thread_t* thread_get_by_id(uint32_t id) {
         }
     }
     return 0;
+}
+
+int thread_get_identity(uint32_t id, uint32_t generation,
+                        thread_identity_t* output) {
+    thread_t* thread;
+
+    if (!output) {
+        LOG_ERROR("THRD", "Destino nulo para identidade de thread");
+        return ERR_NULL;
+    }
+    kmemset(output, 0, sizeof(*output));
+    if (!thread_initialized) return ERR_STATE;
+    if (!id || !generation) return ERR_INVALID;
+    thread = thread_get_by_id(id);
+    if (!thread || thread->generation != generation ||
+        thread->state == THREAD_UNUSED) {
+        return ERR_NOT_FOUND;
+    }
+    output->id = thread->id;
+    output->generation = thread->generation;
+    output->owner_pid = thread->owner_pid;
+    output->state = thread->state;
+    output->kernel_service = thread->kernel_service;
+    return OK;
+}
+
+int thread_is_live(uint32_t id, uint32_t generation, thread_t** output) {
+    thread_t* thread;
+
+    if (output) *output = 0;
+    if (!thread_initialized) {
+        LOG_ERROR("THRD", "Consulta de thread antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!id || !generation) {
+        LOG_WARN("THRD", "Identidade invalida na consulta de thread");
+        return ERR_INVALID;
+    }
+    thread = thread_get_by_id(id);
+    if (!thread || thread->generation != generation ||
+        thread->state == THREAD_UNUSED ||
+        thread->state == THREAD_FINISHED) {
+        LOG_WARN("THRD", "Thread ausente ou obsoleta na consulta de identidade");
+        return ERR_NOT_FOUND;
+    }
+    if (output) *output = thread;
+    return OK;
 }
 
 uint32_t thread_get_count(void) {

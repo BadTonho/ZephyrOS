@@ -19,6 +19,15 @@ typedef enum {
 
 typedef struct {
     uint32_t id;
+    uint32_t generation;
+    uint32_t owner_pid;
+    thread_state_t state;
+    uint8_t kernel_service;
+} thread_identity_t;
+
+typedef struct {
+    uint32_t id;
+    uint32_t generation;
     char name[THREAD_NAME_LENGTH];
     thread_state_t state;
     uint32_t* stack;
@@ -34,11 +43,13 @@ typedef struct {
     uint8_t wait_deadline_active;
     uint8_t wait_active;
     uint32_t owner_pid;
+    uint8_t kernel_service;
 } thread_t;
 
 void thread_init(void);
 int thread_is_ready(void);
 thread_t* thread_create(const char* name, void (*entry)(void));
+thread_t* thread_create_kernel(const char* name, void (*entry)(void));
 void thread_destroy(thread_t* thread);
 void thread_yield(void);
 void thread_block(uint32_t ticks);
@@ -53,6 +64,9 @@ int thread_copy_waiters(wait_info_t* output, uint32_t max_entries,
                         uint32_t* out_count);
 thread_t* thread_get_current(void);
 thread_t* thread_get_by_id(uint32_t id);
+int thread_get_identity(uint32_t id, uint32_t generation,
+                        thread_identity_t* output);
+int thread_is_live(uint32_t id, uint32_t generation, thread_t** output);
 uint32_t thread_get_count(void);
 uint32_t thread_get_count_by_owner(uint32_t owner_pid);
 void thread_scheduler_tick(void);

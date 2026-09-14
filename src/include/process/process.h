@@ -77,6 +77,9 @@ typedef struct {
     uint32_t blocked_peak;
     uint32_t current_pid;
     int last_error;
+    uint32_t current_tid;
+    uint32_t current_thread_generation;
+    uint8_t current_thread_kernel_service;
 } scheduler_runtime_stats_t;
 
 typedef struct {

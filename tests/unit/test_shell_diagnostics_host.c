@@ -100,7 +100,7 @@ void shell_dispatch_cmd_proccheck(const char* arguments);
 void shell_dispatch_cmd_health(const char* arguments);
 void shell_diagnostics_reset(void);
 
-#define HOST_COVERAGE_CAPACITY 512U
+#define HOST_COVERAGE_CAPACITY 1024U
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_OUTPUT_CAPACITY 4096U
 #define HOST_PATH_CAPACITY 256U
@@ -1204,6 +1204,8 @@ static void fixture_reset(void) {
     fixture_workq_stats.worker_active = 1U;
     fixture_workq_stats.fallback_active = 0U;
     fixture_workq_stats.worker_pid = 42U;
+    fixture_workq_stats.worker_process_generation = 3U;
+    fixture_workq_stats.worker_target = WORKER_TARGET_PROCESS;
     fixture_workq_stats.execution_context = WORK_CONTEXT_KWORKER;
     fixture_workq_stats.capacity = WORKQUEUE_CAPACITY;
     fixture_workq_stats.registered = 1U;
@@ -2168,6 +2170,12 @@ const char* workqueue_context_name(work_context_t context) {
     if (context == WORK_CONTEXT_KWORKER) return "kworker";
     if (context == WORK_CONTEXT_SYSTEM_FALLBACK) return "fallback";
     return "nenhum";
+}
+
+const char* workqueue_worker_target_name(workqueue_worker_target_t target) {
+    if (target == WORKER_TARGET_PROCESS) return "PROCESS";
+    if (target == WORKER_TARGET_THREAD) return "THREAD";
+    return "NONE";
 }
 
 int tls_get_policy(tls_policy_t* policy) {
@@ -3768,7 +3776,7 @@ static int test_workq(void) {
 
     fixture_reset();
     shell_dispatch_cmd_workq("status");
-    failures += expect_contains("Workqueue: contexto=kworker worker_pid=42 ativo=1 fallback=0\n");
+    failures += expect_contains("Workqueue: contexto=kworker alvo=PROCESS worker_pid=42 worker_tid=0 gen=3 ativo=1 fallback=0\n");
     failures += expect_contains("Registro=1/64 prontos H/N=1/2 atrasados=1 executando=1 pico=4\n");
     failures += expect_contains("Agendados/executados=8/4 coalescidos=2 reexecucoes=1 cancelados=1\n");
     failures += expect_contains("Duracao ticks media/max=5/8 sub-tick=N/D\n");

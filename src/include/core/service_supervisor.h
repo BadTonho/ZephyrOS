@@ -4,6 +4,7 @@
 #include "types.h"
 #include "core/recovery.h"
 #include "process/process.h"
+#include "process/thread.h"
 
 #define SERVICE_SUPERVISOR_NAME_LENGTH 24U
 #define SERVICE_SUPERVISOR_ID_COUNT 4U
@@ -22,10 +23,17 @@ typedef enum {
     SERVICE_SUPERVISOR_STOPPED
 } service_supervisor_state_t;
 
+typedef enum {
+    SERVICE_SUPERVISOR_TARGET_PROCESS = 0,
+    SERVICE_SUPERVISOR_TARGET_THREAD
+} service_supervisor_target_t;
+
 typedef process_t* (*service_supervisor_create_fn)(void);
 typedef int (*service_supervisor_prepare_fn)(process_t* process);
 typedef int (*service_supervisor_dependency_fn)(void);
 typedef void (*service_supervisor_fallback_fn)(uint8_t active);
+typedef thread_t* (*service_supervisor_create_thread_fn)(void);
+typedef int (*service_supervisor_prepare_thread_fn)(thread_t* thread);
 
 typedef struct {
     service_supervisor_id_t id;
@@ -35,6 +43,9 @@ typedef struct {
     service_supervisor_prepare_fn prepare;
     service_supervisor_dependency_fn dependency;
     service_supervisor_fallback_fn fallback;
+    service_supervisor_target_t target;
+    service_supervisor_create_thread_fn create_thread;
+    service_supervisor_prepare_thread_fn prepare_thread;
 } service_supervisor_definition_t;
 
 typedef struct {
@@ -47,6 +58,9 @@ typedef struct {
     uint32_t failures;
     int last_error;
     uint8_t fallback_active;
+    service_supervisor_target_t target;
+    uint32_t tid;
+    uint32_t thread_generation;
 } service_supervisor_snapshot_t;
 
 int service_supervisor_init(void);
@@ -57,6 +71,9 @@ int service_supervisor_poll(void);
 int service_supervisor_set_quiescing(uint8_t active);
 int service_supervisor_get_identity(service_supervisor_id_t id,
                                     uint32_t* pid, uint32_t* generation);
+int service_supervisor_get_thread_identity(service_supervisor_id_t id,
+                                           uint32_t* tid,
+                                           uint32_t* generation);
 int service_supervisor_snapshot_copy(
     service_supervisor_id_t id, service_supervisor_snapshot_t* output);
 int service_supervisor_snapshot_list(service_supervisor_snapshot_t* output,

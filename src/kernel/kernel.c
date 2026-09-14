@@ -83,7 +83,6 @@
 #define SHELL_KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 #define KERNEL_USB_POLL_BUDGET 4U
 #define KERNEL_DEFERRED_DISPATCH_BUDGET 8U
-#define KWORKER_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define SYSTEM_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define TEST_PROTOCOL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define SHELL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
@@ -934,22 +933,20 @@ void desktop_process_main(void) {
     }
 }
 
-static process_t* kernel_create_kworker(void) {
+static thread_t* kernel_create_kworker(void) {
     if (!kernel_workqueue_enabled) return 0;
-    return process_create_with_stack_size(
-        "Zephyr kworker", workqueue_worker_main,
-        KWORKER_PROCESS_STACK_SIZE);
+    return thread_create_kernel("Zephyr kworker", workqueue_worker_main);
 }
 
-static int kernel_prepare_kworker(process_t* process) {
+static int kernel_prepare_kworker(thread_t* thread) {
     int result;
 
-    if (!process) {
+    if (!thread) {
         LOG_ERROR_CODE("KERNEL", ERR_NULL,
-                       "kworker preparation received null process");
+                       "kworker preparation received null thread");
         return ERR_NULL;
     }
-    result = workqueue_bind_worker(process->pid);
+    result = workqueue_bind_thread(thread->id, thread->generation);
     if (result != OK) {
         LOG_ERROR_CODE("KERNEL", result, "kworker binding failed");
     }
@@ -1068,25 +1065,27 @@ static int kernel_init_service_supervisor(void) {
     static const service_supervisor_definition_t definitions[] = {
         {
             SERVICE_SUPERVISOR_KWORKER, "kworker", RECOVERY_COMPONENT_COUNT,
-            kernel_create_kworker, kernel_prepare_kworker,
-            kernel_dependency_kworker, kernel_fallback_kworker
+            0, 0, kernel_dependency_kworker, kernel_fallback_kworker,
+            SERVICE_SUPERVISOR_TARGET_THREAD, kernel_create_kworker,
+            kernel_prepare_kworker
         },
         {
             SERVICE_SUPERVISOR_SYSTEM, "System",
             RECOVERY_COMPONENT_SYSTEM_PROCESS, kernel_create_system,
             kernel_prepare_system, kernel_dependency_system,
-            kernel_fallback_system
+            kernel_fallback_system, SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0
         },
         {
             SERVICE_SUPERVISOR_SHELL, "Shell", RECOVERY_COMPONENT_SHELL,
             kernel_create_shell, kernel_prepare_shell,
-            kernel_dependency_shell, kernel_fallback_shell
+            kernel_dependency_shell, kernel_fallback_shell,
+            SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0
         },
         {
             SERVICE_SUPERVISOR_DESKTOP, "Desktop",
             RECOVERY_COMPONENT_DESKTOP, kernel_create_desktop,
             kernel_prepare_desktop, kernel_dependency_desktop,
-            kernel_fallback_desktop
+            kernel_fallback_desktop, SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0
         }
     };
     int result;

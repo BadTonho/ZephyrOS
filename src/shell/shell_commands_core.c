@@ -749,8 +749,14 @@ static void cmd_threads(void) {
             shell_command_print_num(t->id);
             video_print("  ", 0x07);
             video_print(t->name, 0x0B);
+            video_print(" gen=", 0x07);
+            shell_command_print_num(t->generation);
+            video_print(" owner_pid=", 0x07);
+            shell_command_print_num(t->owner_pid);
+            if (t->kernel_service) video_print(" kernel-service", 0x0B);
             video_print("  ", 0x07);
-            video_print(state_names[t->state], 0x08);
+            video_print(t->state <= THREAD_FINISHED ? state_names[t->state] :
+                        "INVALID", 0x08);
             video_print("\n", 0x07);
         }
     }

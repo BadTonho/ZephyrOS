@@ -207,6 +207,17 @@ evidência. Nenhuma dívida técnica será quitada nesta fase.
 
 ### PERF6 — Quitação e release
 
+- [x] Migrar a `kworker` para uma `thread_t` kernel no contexto de execução do
+  serviço System, preservando o scheduler de processos, ABI, syscalls,
+  quantum, prioridades, PID 0, `switch.asm` e bootloader.
+- [x] Publicar identidade `(tid, generation)`, alvo `THREAD`, estado de
+  fallback e ausência de slot de processo em `threads`, `procs`, `workq` e
+  `kmetrics machine`.
+- [x] Integrar criação, binding, espera, timeout, cancelamento, restart e
+  validação geracional ao supervisor, à workqueue e aos testes existentes.
+- [x] Adicionar o caso `qemu:tst5:perf6-kworker-thread`, o relatório de
+  release `zephyros-perf6-kworker-release-v1`, amostras host e a preparação
+  operacional do candidato `v0.1.0-rc1` sobre a versão `0.1.0`.
 - [ ] Atualizar `DT100-001` e `DT100-002` somente com evidência reproduzível.
 - [ ] Registrar tamanho, boot, memória, latência e uso do host antes/depois.
 - [ ] Confirmar que o diagnóstico continue correto depois de ciclos de pressão,
@@ -214,6 +225,20 @@ evidência. Nenhuma dívida técnica será quitada nesta fase.
 - [ ] Publicar decisões negativas quando uma otimização não trouxer benefício
   suficiente.
 - [ ] Entregar à RLS5 apenas alterações com rollback e documentação completa.
+
+Implementação PERF6 preparada: a `kworker` agora é criada como `thread_t`
+kernel, identificada por `tid + generation`, vinculada à workqueue por alvo
+`THREAD` e supervisionada separadamente de `System`, `Shell` e `Desktop`, que
+continuam processos. O fallback permanece explícito e degradado quando a
+criação ou o binding falham. A verificação do release reutiliza os formatos
+assinados existentes e mantém `0.1.0`; nenhuma chave é armazenada no
+repositório.
+
+A validação essencial e a matriz QEMU de nove sessões ainda estão pendentes
+para esta versão da implementação. A PERF6 não deve ser marcada como concluída
+nem `DT100-002` como `QUITADA` antes de `make q3check`, build limpo,
+`make catalog-test`, `make test-perf6-host`, matriz 9/9, reboot/fallback e
+verificação do release.
 
 ## Critérios de saída
 

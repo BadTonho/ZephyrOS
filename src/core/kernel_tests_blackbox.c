@@ -144,6 +144,13 @@ static int blackbox_is_perf5_case(const char* case_id,
     return blackbox_equals(case_id, case_length, case_name);
 }
 
+static int blackbox_is_perf6_case(const char* case_id,
+                                  uint32_t case_length) {
+    static const char case_name[] = "qemu:tst5:perf6-kworker-thread";
+
+    return blackbox_equals(case_id, case_length, case_name);
+}
+
 static int blackbox_requires_prompt(const char* case_id,
                                     uint32_t case_length) {
     static const char reboot_case[] = "qemu:tst5:reboot";
@@ -372,6 +379,7 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     static const char perf4_case[] =
         "qemu:tst5:perf4-memory-storage-network";
     static const char perf5_case[] = "qemu:tst5:perf5-video-ui";
+    static const char perf6_case[] = "qemu:tst5:perf6-kworker-thread";
 
     if (blackbox_equals(case_id, case_length, shell_case)) return "tst5-shell";
     if (blackbox_equals(case_id, case_length, input_case)) return "tst5-input";
@@ -441,6 +449,9 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     }
     if (blackbox_equals(case_id, case_length, perf5_case)) {
         return "tst5-perf5-video-ui";
+    }
+    if (blackbox_equals(case_id, case_length, perf6_case)) {
+        return "tst5-perf6-kworker-thread";
     }
     return 0;
 }
@@ -548,7 +559,8 @@ int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
     validate_hw6 = blackbox_is_hw6_case(case_id, case_length);
     require_prompt = blackbox_requires_prompt(case_id, case_length);
     block_between_polls = blackbox_is_perf3_case(case_id, case_length) ||
-                          blackbox_is_perf5_case(case_id, case_length);
+                          blackbox_is_perf5_case(case_id, case_length) ||
+                          blackbox_is_perf6_case(case_id, case_length);
     if (validate_krn6) blackbox_reset_krn6_observation();
     if (validate_sec6) blackbox_reset_sec6_observation();
     if (validate_hw6) blackbox_reset_hw6_observation();

@@ -114,6 +114,60 @@ class CatalogAndStatusTests(unittest.TestCase):
 
 
 class QemuSessionTests(unittest.TestCase):
+    def test_reset_protocol_discards_stale_frames_until_ready(self):
+        session = runner.QemuSession.__new__(runner.QemuSession)
+        session.serial_buffer = bytearray()
+        session.protocol_errors = []
+        session.events = []
+        session.deferred_events = []
+        session.host_sequence = 4
+        session.guest_sequence = 42
+        session.last_heartbeat = 123.0
+        session.awaiting_ready_after_reset = False
+        session.restart_waiting = False
+        session.restart_detected = False
+        session.run_id = "unit"
+        session.observed_capabilities = []
+        session.progress = runner.ProgressTracker()
+        session.serial = None
+
+        session.reset_protocol()
+
+        self.assertTrue(session.awaiting_ready_after_reset)
+        self.assertEqual(session.guest_sequence, 0)
+        self.assertEqual(session.host_sequence, 0)
+
+    def test_serial_ready_detects_reboot_without_qmp_reset(self):
+        session = runner.QemuSession.__new__(runner.QemuSession)
+        session.serial_buffer = bytearray()
+        session.protocol_errors = []
+        session.events = []
+        session.deferred_events = []
+        session.host_sequence = 2
+        session.guest_sequence = 8
+        session.last_heartbeat = None
+        session.awaiting_ready_after_reset = False
+        session.restart_waiting = True
+        session.restart_detected = False
+        session.run_id = "unit"
+        session.observed_capabilities = []
+        session.progress = runner.ProgressTracker()
+        frame = runner.build_frame([
+            ("event", "READY"), ("run", "unit"), ("seq", "1")])
+
+        class FakeSerial:
+            def recv(self, size):
+                return frame
+
+        with tempfile.TemporaryDirectory() as directory:
+            session.artifact_dir = Path(directory)
+            session.serial = FakeSerial()
+            session._read_serial()
+
+        self.assertTrue(session.restart_detected)
+        self.assertEqual(session.events, [])
+        self.assertEqual(session.protocol_errors, [])
+
     def test_send_text_supports_colon_in_device_ids(self):
         with tempfile.TemporaryDirectory() as directory:
             session = runner.QemuSession.__new__(runner.QemuSession)

@@ -138,8 +138,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 ### KRN5.2 — Supervisor privado de serviços nativos
 
 O kernel mantém uma tabela estática privada para `kworker`, `System`, `Shell` e
-`Desktop`. A inicialização ocorre nessa ordem e cada registro guarda somente a
-identidade `PID + generation`, o estado, o diagnóstico e o fallback; snapshots
+`Desktop`. A inicialização ocorre nessa ordem e cada registro guarda a
+identidade `PID + generation` para processos ou `TID + thread_generation` para
+threads, o estado, o diagnóstico e o fallback; snapshots
 são copiados e não expõem ponteiros, stacks ou endereços físicos. O supervisor
 não cria processo, syscall, scheduler ou layout público adicional.
 
@@ -301,6 +302,23 @@ execucao. A kworker continua sendo um processo ring0 e `thread_t` permanece
 isolada, usada apenas pelos diagnosticos. A matriz final da PERF3 passou 9/9
 sessoes nos perfis baseline e no fallback sem VESA, com fila drenada, prompt
 restaurado e sem metricas guest obrigatorias indisponiveis.
+
+## PERF6: kworker thread no contexto System
+
+Na PERF6, a kworker é criada por `thread_create_kernel()` e vinculada por
+`workqueue_bind_thread(tid, generation)`. Ela usa a Wait Queue, timeout,
+cancelamento e `thread_context_switch` existentes, sem consumir slot da tabela
+de processos. O `process_yield()` identifica uma thread de serviço kernel e
+devolve o controle ao scheduler de threads antes de retornar ao scheduler de
+processos; assim não há troca de processo usando a stack da kworker.
+
+O supervisor publica `THREAD` para a kworker e `PROCESS` para System, Shell e
+Desktop. A identidade é revalidada por geração antes de binding, despacho,
+poll e restart. Se a criação falhar, o estado `DEGRADED` e o fallback são
+publicados; a sessão de aceite exige thread `READY`, `worker_pid=0`, filas
+drenadas e nenhum processo kworker. O algoritmo de seleção, quantum,
+prioridades, PID 0, ABI, syscalls, bootloader e `switch.asm` permanecem
+inalterados.
 
 ## Isolamento ring 3
 
@@ -1131,10 +1149,13 @@ Agendamento durante `RUNNING` solicita uma unica reexecucao;
 `schedule_delayed_work()` preserva o prazo mais proximo. `cancel_work()` remove
 entradas prontas/atrasadas e cancela a reexecucao de callback ja iniciado.
 
-A `Zephyr kworker` e um processo ring0 bloqueado na Wait Queue `KWORKER`. Ela
-despacha Bottom-Halves e timers com prioridade alta e rede/sockets e indice com
-prioridade normal. System e o loop principal usam a mesma API somente como
-fallback. A migracao futura para `thread_t` esta registrada em `DT100-002`.
+Na implementacao anterior a PERF6, a `Zephyr kworker` era um processo ring0
+bloqueado na Wait Queue `KWORKER`. A implementacao atual usa uma `thread_t`
+kernel; a descricao historica abaixo permanece para contextualizar a DT100-002.
+A workqueue despachava Bottom-Halves e timers com prioridade alta e rede/sockets
+e indice com prioridade normal. System e o loop principal usavam a mesma API
+somente como fallback. A migracao para `thread_t` esta descrita na secao PERF6;
+os criterios de aceite continuam registrados em `DT100-002`.
 
 `workq status|list|check`, `health check` e `regcheck full` expoem metricas,
 contexto, saturacao, falhas de wake e invariantes. Duracao sub-tick permanece

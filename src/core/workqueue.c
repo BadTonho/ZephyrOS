@@ -6,12 +6,21 @@
 #include "core/timer.h"
 #include "core/wait.h"
 #include "process/process.h"
+#include "process/thread.h"
 
 #define WORKQUEUE_EFLAGS_INTERRUPT (1U << 9U)
 #define WORKQUEUE_SELF_TEST_CASE_COUNT 12U
 #define WORKQUEUE_TEST_ROLLOVER_DEADLINE 0x10U
 #if defined(ZEPHYROS_HOST_TEST)
 #define WORKQUEUE_HOST_WORKER_ITERATIONS 4U
+__attribute__((weak)) thread_t* thread_get_current(void) {
+    return 0;
+}
+
+__attribute__((weak)) thread_t* thread_get_by_id(uint32_t id) {
+    (void)id;
+    return 0;
+}
 #endif
 
 typedef struct {
@@ -28,10 +37,13 @@ typedef struct {
     work_struct_t probe_work;
     uint32_t probe_generation;
     uint32_t probe_pid;
+    uint32_t probe_tid;
     uint32_t probe_worker_generation;
+    uint32_t probe_thread_generation;
     uint8_t probe_interrupts_enabled;
     uint8_t power_quiescing;
     uint32_t worker_generation;
+    uint32_t worker_thread_generation;
     workqueue_stats_t stats;
 } workqueue_service_t;
 
@@ -39,6 +51,9 @@ typedef struct {
     workqueue_service_t* service;
     uint32_t observed_generation;
     uint32_t worker_generation;
+    uint32_t worker_tid;
+    uint32_t worker_thread_generation;
+    workqueue_worker_target_t worker_target;
 } workqueue_probe_wait_t;
 
 typedef struct {
@@ -613,19 +628,55 @@ static int workqueue_validate_on(const workqueue_service_t* service) {
         service->stats.running > 1U) {
         return workqueue_internal_result(ERR_STATE);
     }
-    if ((!service->stats.worker_bound &&
-         (service->stats.worker_pid || service->worker_generation)) ||
-        (service->stats.worker_bound &&
-         (!service->stats.worker_pid || !service->worker_generation))) {
+    if (!service->stats.worker_bound &&
+        (service->stats.worker_pid || service->worker_generation ||
+         service->stats.worker_process_generation ||
+         service->stats.worker_tid || service->stats.worker_thread_generation ||
+         service->worker_thread_generation ||
+         service->stats.worker_target != WORKER_TARGET_NONE)) {
+        return workqueue_internal_result(ERR_STATE);
+    }
+    if (service->stats.worker_bound &&
+        service->stats.worker_target == WORKER_TARGET_PROCESS &&
+         (!service->stats.worker_pid || !service->worker_generation ||
+         service->stats.worker_process_generation !=
+             service->worker_generation ||
+         service->stats.worker_tid || service->stats.worker_thread_generation ||
+         service->worker_thread_generation)) {
+        return workqueue_internal_result(ERR_STATE);
+    }
+    if (service->stats.worker_bound &&
+        service->stats.worker_target == WORKER_TARGET_THREAD &&
+        (!service->stats.worker_tid ||
+         !service->stats.worker_thread_generation ||
+         service->stats.worker_process_generation ||
+         service->stats.worker_pid || service->worker_generation)) {
+        return workqueue_internal_result(ERR_STATE);
+    }
+    if (service->stats.worker_bound &&
+        service->stats.worker_target != WORKER_TARGET_PROCESS &&
+        service->stats.worker_target != WORKER_TARGET_THREAD) {
         return workqueue_internal_result(ERR_STATE);
     }
     if (service == &workqueue_service && service->stats.worker_bound) {
-        process_t* worker = process_get_by_pid(service->stats.worker_pid);
+        if (service->stats.worker_target == WORKER_TARGET_THREAD) {
+            thread_t* worker = thread_get_by_id(service->stats.worker_tid);
 
-        if (!worker || worker->event_generation != service->worker_generation ||
-            worker->state == PROCESS_STATE_UNUSED ||
-            worker->state == PROCESS_STATE_ZOMBIE) {
-            return workqueue_internal_result(ERR_STATE);
+            if (!worker || worker->generation !=
+                             service->worker_thread_generation ||
+                !worker->kernel_service ||
+                (worker->state != THREAD_RUNNING &&
+                 worker->state != THREAD_BLOCKED)) {
+                return workqueue_internal_result(ERR_STATE);
+            }
+        } else {
+            process_t* worker = process_get_by_pid(service->stats.worker_pid);
+
+            if (!worker || worker->event_generation != service->worker_generation ||
+                worker->state == PROCESS_STATE_UNUSED ||
+                worker->state == PROCESS_STATE_ZOMBIE) {
+                return workqueue_internal_result(ERR_STATE);
+            }
         }
     }
     for (uint32_t priority = 0U;
@@ -791,14 +842,19 @@ static int workqueue_probe_condition(void* context, uint8_t* out_ready) {
 static int workqueue_probe_callback(void* context) {
     workqueue_service_t* service = (workqueue_service_t*)context;
     process_t* current_process;
+    thread_t* current_thread;
     uint32_t woken = 0U;
     int result;
 
     if (!service) return workqueue_internal_result(ERR_NULL);
     current_process = process_get_current();
+    current_thread = thread_get_current();
     service->probe_pid = process_get_current_pid();
     service->probe_worker_generation = current_process ?
                                        current_process->event_generation : 0U;
+    service->probe_tid = current_thread ? current_thread->id : 0U;
+    service->probe_thread_generation = current_thread ?
+                                       current_thread->generation : 0U;
     service->probe_interrupts_enabled = workqueue_interrupts_enabled();
     service->probe_generation++;
     if (!service->probe_generation) service->probe_generation = 1U;
@@ -990,6 +1046,7 @@ int workqueue_dispatch(uint32_t high_budget, uint32_t normal_budget,
     uint32_t flags;
     uint32_t current_pid;
     process_t* current_process;
+    thread_t* current_thread;
     uint8_t invalid_context = 0U;
     int result;
 
@@ -1007,12 +1064,24 @@ int workqueue_dispatch(uint32_t high_budget, uint32_t normal_budget,
     }
     current_pid = process_get_current_pid();
     current_process = process_get_current();
+    current_thread = thread_get_current();
     flags = workqueue_irq_save();
-    if (workqueue_service.stats.worker_pid &&
-        current_pid == workqueue_service.stats.worker_pid &&
-        current_process &&
-        current_process->event_generation ==
-            workqueue_service.worker_generation) {
+    if (workqueue_service.stats.worker_target == WORKER_TARGET_THREAD &&
+        workqueue_service.stats.worker_tid && current_thread &&
+        current_thread->id == workqueue_service.stats.worker_tid &&
+        current_thread->generation ==
+            workqueue_service.worker_thread_generation &&
+        current_thread->kernel_service) {
+        workqueue_service.stats.execution_context = WORK_CONTEXT_KWORKER;
+        workqueue_service.stats.worker_active = 1U;
+        workqueue_service.stats.fallback_active = 0U;
+    } else if (workqueue_service.stats.worker_target ==
+                   WORKER_TARGET_PROCESS &&
+               workqueue_service.stats.worker_pid &&
+               current_pid == workqueue_service.stats.worker_pid &&
+               current_process &&
+               current_process->event_generation ==
+                   workqueue_service.worker_generation) {
         workqueue_service.stats.execution_context = WORK_CONTEXT_KWORKER;
         workqueue_service.stats.worker_active = 1U;
         workqueue_service.stats.fallback_active = 0U;
@@ -1062,7 +1131,50 @@ int workqueue_bind_worker(uint32_t pid) {
     }
     flags = workqueue_irq_save();
     workqueue_service.stats.worker_pid = pid;
+    workqueue_service.stats.worker_tid = 0U;
+    workqueue_service.stats.worker_thread_generation = 0U;
+    workqueue_service.stats.worker_process_generation =
+        worker->event_generation;
+    workqueue_service.stats.worker_target = WORKER_TARGET_PROCESS;
     workqueue_service.worker_generation = worker->event_generation;
+    workqueue_service.worker_thread_generation = 0U;
+    workqueue_service.stats.worker_bound = 1U;
+    workqueue_service.stats.fallback_active = 0U;
+    workqueue_irq_restore(flags);
+    return OK;
+}
+
+int workqueue_bind_thread(uint32_t tid, uint32_t generation) {
+    thread_t* worker;
+    uint32_t flags;
+
+    if (!workqueue_service.stats.initialized) {
+        LOG_ERROR("KERNEL", "Vinculo da kworker antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!tid || !generation) {
+        LOG_ERROR("KERNEL", "Identidade invalida ao vincular thread kworker");
+        return ERR_INVALID;
+    }
+    worker = thread_get_by_id(tid);
+    if (!worker) {
+        LOG_ERROR("KERNEL", "Thread da kworker nao encontrada");
+        return ERR_NOT_FOUND;
+    }
+    if (worker->generation != generation || !worker->kernel_service ||
+        (worker->state != THREAD_RUNNING &&
+         worker->state != THREAD_BLOCKED)) {
+        LOG_ERROR("KERNEL", "Identidade invalida ao vincular thread kworker");
+        return ERR_STATE;
+    }
+    flags = workqueue_irq_save();
+    workqueue_service.stats.worker_pid = 0U;
+    workqueue_service.stats.worker_tid = tid;
+    workqueue_service.stats.worker_thread_generation = generation;
+    workqueue_service.stats.worker_process_generation = 0U;
+    workqueue_service.stats.worker_target = WORKER_TARGET_THREAD;
+    workqueue_service.worker_generation = 0U;
+    workqueue_service.worker_thread_generation = generation;
     workqueue_service.stats.worker_bound = 1U;
     workqueue_service.stats.fallback_active = 0U;
     workqueue_irq_restore(flags);
@@ -1084,6 +1196,7 @@ int workqueue_set_fallback(uint8_t active) {
 
 int workqueue_needs_fallback(uint8_t* out_required) {
     process_t* worker;
+    thread_t* thread_worker;
     uint32_t flags;
 
     if (!out_required) {
@@ -1098,12 +1211,22 @@ int workqueue_needs_fallback(uint8_t* out_required) {
         *out_required = 1U;
         return OK;
     }
-    worker = process_get_by_pid(workqueue_service.stats.worker_pid);
-    *out_required = !worker ||
-                    worker->event_generation !=
-                        workqueue_service.worker_generation ||
-                    worker->state == PROCESS_STATE_UNUSED ||
-                    worker->state == PROCESS_STATE_ZOMBIE;
+    if (workqueue_service.stats.worker_target == WORKER_TARGET_THREAD) {
+        thread_worker = thread_get_by_id(workqueue_service.stats.worker_tid);
+        *out_required = !thread_worker ||
+                        thread_worker->generation !=
+                            workqueue_service.worker_thread_generation ||
+                        !thread_worker->kernel_service ||
+                        (thread_worker->state != THREAD_RUNNING &&
+                         thread_worker->state != THREAD_BLOCKED);
+    } else {
+        worker = process_get_by_pid(workqueue_service.stats.worker_pid);
+        *out_required = !worker ||
+                        worker->event_generation !=
+                            workqueue_service.worker_generation ||
+                        worker->state == PROCESS_STATE_UNUSED ||
+                        worker->state == PROCESS_STATE_ZOMBIE;
+    }
     if (*out_required) {
         flags = workqueue_irq_save();
         workqueue_service.stats.worker_active = 0U;
@@ -1249,7 +1372,16 @@ int workqueue_probe_worker(uint32_t timeout_ticks) {
         LOG_ERROR("KERNEL", "Parametros invalidos na prova da kworker");
         return ERR_INVALID;
     }
-    if (process_get_current_pid() == workqueue_service.stats.worker_pid) {
+    if (workqueue_service.stats.worker_target == WORKER_TARGET_THREAD &&
+        thread_get_current() &&
+        thread_get_current()->id == workqueue_service.stats.worker_tid &&
+        thread_get_current()->generation ==
+            workqueue_service.worker_thread_generation) {
+        LOG_ERROR("KERNEL", "Kworker nao pode aguardar a propria prova");
+        return ERR_STATE;
+    }
+    if (workqueue_service.stats.worker_target == WORKER_TARGET_PROCESS &&
+        process_get_current_pid() == workqueue_service.stats.worker_pid) {
         LOG_ERROR("KERNEL", "Kworker nao pode aguardar a propria prova");
         return ERR_STATE;
     }
@@ -1257,6 +1389,10 @@ int workqueue_probe_worker(uint32_t timeout_ticks) {
     probe.service = &workqueue_service;
     probe.observed_generation = workqueue_service.probe_generation;
     probe.worker_generation = workqueue_service.worker_generation;
+    probe.worker_tid = workqueue_service.stats.worker_tid;
+    probe.worker_thread_generation =
+        workqueue_service.worker_thread_generation;
+    probe.worker_target = workqueue_service.stats.worker_target;
     workqueue_irq_restore(flags);
     result = schedule_work(&workqueue_service.probe_work);
     if (result != OK) return result;
@@ -1271,10 +1407,15 @@ int workqueue_probe_worker(uint32_t timeout_ticks) {
     if (reason != WAIT_REASON_EVENT) {
         (void)cancel_work(&workqueue_service.probe_work);
     }
-    if (reason != WAIT_REASON_EVENT ||
-        workqueue_service.probe_pid != workqueue_service.stats.worker_pid ||
-        workqueue_service.probe_worker_generation != probe.worker_generation ||
-        !workqueue_service.probe_interrupts_enabled) {
+    if (reason != WAIT_REASON_EVENT || !workqueue_service.probe_interrupts_enabled ||
+        (probe.worker_target == WORKER_TARGET_PROCESS &&
+         (workqueue_service.probe_pid != workqueue_service.stats.worker_pid ||
+          workqueue_service.probe_worker_generation !=
+              probe.worker_generation)) ||
+        (probe.worker_target == WORKER_TARGET_THREAD &&
+         (workqueue_service.probe_tid != probe.worker_tid ||
+          workqueue_service.probe_thread_generation !=
+              probe.worker_thread_generation))) {
         LOG_ERROR("KERNEL", "Prova de contexto da kworker falhou");
         return ERR_STATE;
     }
@@ -1458,5 +1599,11 @@ const char* workqueue_state_name(work_state_t state) {
 const char* workqueue_context_name(work_context_t context) {
     if (context == WORK_CONTEXT_KWORKER) return "KWORKER";
     if (context == WORK_CONTEXT_SYSTEM_FALLBACK) return "SYSTEM_FALLBACK";
+    return "NONE";
+}
+
+const char* workqueue_worker_target_name(workqueue_worker_target_t target) {
+    if (target == WORKER_TARGET_PROCESS) return "PROCESS";
+    if (target == WORKER_TARGET_THREAD) return "THREAD";
     return "NONE";
 }

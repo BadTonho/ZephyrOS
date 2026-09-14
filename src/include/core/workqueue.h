@@ -31,6 +31,12 @@ typedef enum {
     WORK_CONTEXT_SYSTEM_FALLBACK
 } work_context_t;
 
+typedef enum {
+    WORKER_TARGET_NONE = 0,
+    WORKER_TARGET_PROCESS,
+    WORKER_TARGET_THREAD
+} workqueue_worker_target_t;
+
 typedef int (*work_func_t)(void* context);
 
 typedef struct work_struct work_struct_t;
@@ -94,6 +100,10 @@ typedef struct {
     uint32_t dispatch_latency_samples;
     uint32_t dispatch_latency_total_ticks;
     uint32_t max_dispatch_latency_ticks;
+    uint32_t worker_tid;
+    uint32_t worker_thread_generation;
+    uint32_t worker_process_generation;
+    workqueue_worker_target_t worker_target;
 } workqueue_stats_t;
 
 typedef struct {
@@ -142,6 +152,7 @@ int cancel_work(work_struct_t* work);
 int workqueue_dispatch(uint32_t high_budget, uint32_t normal_budget,
                        uint32_t* out_executed);
 int workqueue_bind_worker(uint32_t pid);
+int workqueue_bind_thread(uint32_t tid, uint32_t generation);
 int workqueue_set_fallback(uint8_t active);
 int workqueue_needs_fallback(uint8_t* out_required);
 void workqueue_worker_main(void);
@@ -156,5 +167,6 @@ int workqueue_power_set_quiescing(uint8_t active);
 const char* workqueue_priority_name(work_priority_t priority);
 const char* workqueue_state_name(work_state_t state);
 const char* workqueue_context_name(work_context_t context);
+const char* workqueue_worker_target_name(workqueue_worker_target_t target);
 
 #endif

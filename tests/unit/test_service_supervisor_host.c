@@ -7,6 +7,7 @@
 #include "core/service_supervisor.h"
 #include "core/string.h"
 #include "process/process.h"
+#include "process/thread.h"
 
 #define HOST_COVERAGE_CAPACITY 1024U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -32,6 +33,9 @@ static uint32_t fake_create_order_count;
 static uint32_t fake_fallback_count[SERVICE_SUPERVISOR_ID_COUNT];
 static uint8_t fake_fallback_active[SERVICE_SUPERVISOR_ID_COUNT];
 static recovery_state_t fake_recovery_state[RECOVERY_COMPONENT_COUNT];
+static thread_t fake_kworker_thread;
+static thread_t* fake_current_thread;
+static uint32_t fake_next_thread_generation;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -139,6 +143,19 @@ void process_destroy(process_t* process) {
     kmemset(process, 0, sizeof(*process));
 }
 
+thread_t* thread_get_by_id(uint32_t id) {
+    return fake_kworker_thread.id == id ? &fake_kworker_thread : 0;
+}
+
+thread_t* thread_get_current(void) {
+    return fake_current_thread;
+}
+
+void thread_destroy(thread_t* thread) {
+    if (!thread || thread == fake_current_thread) return;
+    kmemset(thread, 0, sizeof(*thread));
+}
+
 static process_t* fake_create(service_supervisor_id_t id) {
     process_t* process;
     uint32_t table_index;
@@ -175,6 +192,17 @@ static process_t* fake_create_kworker(void) {
     return fake_create(SERVICE_SUPERVISOR_KWORKER);
 }
 
+static thread_t* fake_create_kworker_thread(void) {
+    kmemset(&fake_kworker_thread, 0, sizeof(fake_kworker_thread));
+    fake_kworker_thread.id = 77U;
+    fake_kworker_thread.generation = fake_next_thread_generation++;
+    fake_kworker_thread.state = THREAD_RUNNING;
+    fake_kworker_thread.kernel_service = 1U;
+    fake_create_order[fake_create_order_count++] =
+        SERVICE_SUPERVISOR_KWORKER;
+    return &fake_kworker_thread;
+}
+
 static process_t* fake_create_system(void) {
     return fake_create(SERVICE_SUPERVISOR_SYSTEM);
 }
@@ -198,6 +226,15 @@ static int fake_prepare(service_supervisor_id_t id, process_t* process) {
 
 static int fake_prepare_kworker(process_t* process) {
     return fake_prepare(SERVICE_SUPERVISOR_KWORKER, process);
+}
+
+static int fake_prepare_kworker_thread(thread_t* thread) {
+    if (!thread) return ERR_NULL;
+    if (fake_prepare_failures[SERVICE_SUPERVISOR_KWORKER]) {
+        fake_prepare_failures[SERVICE_SUPERVISOR_KWORKER]--;
+        return ERR_STATE;
+    }
+    return OK;
 }
 
 static int fake_prepare_system(process_t* process) {
@@ -262,6 +299,9 @@ static void fixture_reset(void) {
     kmemset(fake_fallback_active, 0, sizeof(fake_fallback_active));
     kmemset(fake_recovery_state, 0, sizeof(fake_recovery_state));
     fake_current = &fake_processes[0];
+    kmemset(&fake_kworker_thread, 0, sizeof(fake_kworker_thread));
+    fake_current_thread = 0;
+    fake_next_thread_generation = 700U;
     fake_current->pid = 1U;
     fake_current->event_generation = 1U;
     fake_current->state = PROCESS_STATE_RUNNING;
@@ -273,21 +313,54 @@ static void fixture_reset(void) {
     if (service_supervisor_init() != OK) return;
 }
 
+static int configure_thread_kworker(void) {
+    service_supervisor_definition_t definition = {
+        SERVICE_SUPERVISOR_KWORKER, "kworker", RECOVERY_COMPONENT_COUNT,
+        0, 0, fake_dependency_kworker, fake_fallback_kworker,
+        SERVICE_SUPERVISOR_TARGET_THREAD, fake_create_kworker_thread,
+        fake_prepare_kworker_thread
+    };
+    service_supervisor_definition_t definitions[3] = {
+        {SERVICE_SUPERVISOR_SYSTEM, "System", RECOVERY_COMPONENT_SYSTEM_PROCESS,
+         fake_create_system, fake_prepare_system,
+         fake_dependency_system, fake_fallback_system,
+         SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0},
+        {SERVICE_SUPERVISOR_SHELL, "Shell", RECOVERY_COMPONENT_SHELL,
+         fake_create_shell, fake_prepare_shell,
+         fake_dependency_shell, 0,
+         SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0},
+        {SERVICE_SUPERVISOR_DESKTOP, "Desktop", RECOVERY_COMPONENT_DESKTOP,
+         fake_create_desktop, fake_prepare_desktop,
+         fake_dependency_desktop, 0,
+         SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0}
+    };
+
+    if (service_supervisor_configure(&definition) != OK) return 0;
+    for (uint32_t index = 0U; index < 3U; index++) {
+        if (service_supervisor_configure(&definitions[index]) != OK) return 0;
+    }
+    return 1;
+}
+
 static int configure_all(void) {
     service_supervisor_definition_t definitions[
         SERVICE_SUPERVISOR_ID_COUNT] = {
         {SERVICE_SUPERVISOR_KWORKER, "kworker", RECOVERY_COMPONENT_COUNT,
          fake_create_kworker, fake_prepare_kworker,
-         fake_dependency_kworker, fake_fallback_kworker},
+         fake_dependency_kworker, fake_fallback_kworker,
+         SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0},
         {SERVICE_SUPERVISOR_SYSTEM, "System", RECOVERY_COMPONENT_SYSTEM_PROCESS,
          fake_create_system, fake_prepare_system,
-         fake_dependency_system, fake_fallback_system},
+         fake_dependency_system, fake_fallback_system,
+         SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0},
         {SERVICE_SUPERVISOR_SHELL, "Shell", RECOVERY_COMPONENT_SHELL,
          fake_create_shell, fake_prepare_shell,
-         fake_dependency_shell, 0},
+         fake_dependency_shell, 0,
+         SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0},
         {SERVICE_SUPERVISOR_DESKTOP, "Desktop", RECOVERY_COMPONENT_DESKTOP,
          fake_create_desktop, fake_prepare_desktop,
-         fake_dependency_desktop, 0}
+         fake_dependency_desktop, 0,
+         SERVICE_SUPERVISOR_TARGET_PROCESS, 0, 0}
     };
 
     for (uint32_t index = 0U; index < SERVICE_SUPERVISOR_ID_COUNT; index++) {
@@ -473,6 +546,44 @@ static int check_quiescence_and_generation_contract(void) {
     return 0;
 }
 
+static int check_thread_target_contract(void) {
+    service_supervisor_snapshot_t snapshot;
+    uint32_t tid = 0U;
+    uint32_t generation = 0U;
+    uint32_t process_count_before;
+    uint32_t stale_generation;
+
+    fixture_reset();
+    process_count_before = fake_process_count;
+    if (!configure_thread_kworker() || service_supervisor_start() != OK) {
+        return 1;
+    }
+    if (service_supervisor_get_thread_identity(
+            SERVICE_SUPERVISOR_KWORKER, &tid, &generation) != OK ||
+        tid != fake_kworker_thread.id || generation != fake_kworker_thread.generation) {
+        return 2;
+    }
+    if (service_supervisor_snapshot_copy(SERVICE_SUPERVISOR_KWORKER,
+                                         &snapshot) != OK ||
+        snapshot.target != SERVICE_SUPERVISOR_TARGET_THREAD ||
+        snapshot.pid != 0U || snapshot.tid != tid ||
+        snapshot.thread_generation != generation) return 3;
+    if (fake_process_count != process_count_before + 3U ||
+        service_supervisor_get_identity(SERVICE_SUPERVISOR_KWORKER,
+                                        &tid, &generation) != ERR_STATE) {
+        return 4;
+    }
+    stale_generation = fake_kworker_thread.generation;
+    fake_kworker_thread.generation++;
+    if (service_supervisor_poll() != OK ||
+        service_supervisor_get_thread_identity(
+            SERVICE_SUPERVISOR_KWORKER, &tid, &generation) != OK ||
+        generation == stale_generation ||
+        generation != fake_kworker_thread.generation) return 5;
+    if (service_supervisor_validate_state() != OK) return 6;
+    return 0;
+}
+
 int main(void) {
     int result;
 
@@ -481,6 +592,7 @@ int main(void) {
     if (!result) result = check_retry_and_failure_contract();
     if (!result) result = check_cleanup_failure_contract();
     if (!result) result = check_quiescence_and_generation_contract();
+    if (!result) result = check_thread_target_contract();
     coverage_active = 0U;
     coverage_emit(result);
     if (result) {

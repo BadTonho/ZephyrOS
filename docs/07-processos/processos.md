@@ -437,7 +437,8 @@ invariantes; `health check` denuncia contexto salvo órfão ou vínculo inválid
 
 ## Trabalho assincrono do kernel (R4 / SYNC3)
 
-A `Zephyr kworker` e um processo ring0 dedicado que usa a Wait Queue
+Na linha de base anterior a PERF6, a `Zephyr kworker` era um processo ring0
+dedicado que usava a Wait Queue
 `KWORKER`. Quando as filas `HIGH` e `NORMAL` estao vazias, ele permanece
 bloqueado ate um novo agendamento ou o prazo absoluto mais proximo. Um wake
 somente o torna `READY`; a troca de contexto continua pertencendo ao
@@ -449,9 +450,9 @@ os callbacks executam fora de IRQ com interrupcoes habilitadas. System e o
 loop principal drenam a mesma fila apenas se a kworker estiver ausente ou
 morta.
 
-Nesta etapa a kworker ainda consome um slot e uma stack de processo e nao
-participa do scheduler independente de `thread_t`. Essa limitacao aceita esta
-registrada como `DT100-002` e deve ser quitada pela K5 antes da v1.0.0.
+Esse trecho registra a limitacao aceita como `DT100-002` antes da PERF6: a
+kworker consumia um slot e uma stack de processo e nao participava do scheduler
+independente de `thread_t`. A situacao atual e descrita na secao PERF6 abaixo.
 O comando `workq check` inclui um percurso real Shell -> Wait Queue -> kworker
 -> wake, alem da fixture privada das filas.
 
@@ -658,6 +659,26 @@ nos tres perfis e tres iteracoes por perfil. Os ajustes permaneceram locais ao
 fluxo diagnostico de espera e a drenagem cooperativa da kworker; nao houve
 alteracao na selecao do scheduler, quantum, prioridades ou contrato de
 `thread_t`. A divida `DT100-002` permanece `ACEITA`.
+
+### PERF6 - kworker como thread kernel
+
+A PERF6 cria a `Zephyr kworker` com `thread_create_kernel()` e valida a
+identidade `(tid, generation)` por `thread_get_identity()` e
+`workqueue_bind_thread()`. A thread é marcada como serviço kernel, não ocupa
+slot em `process_t` e não aparece em `procs`; `threads`, `workq status`, o
+supervisor e `kmetrics machine` repetem a mesma identidade. System, Shell e
+Desktop continuam processos e a seleção de processos não foi unificada com o
+scheduler de threads.
+
+Enquanto a kworker estiver ativa, `process_yield()` retorna pelo scheduler de
+threads e não tenta trocar processos usando a stack da thread. Wait Queue,
+timeout, cancelamento, wakeup e a sequência de `thread_context_switch` são
+reutilizados. A falha de criação ou binding ativa fallback `DEGRADED` e é
+publicada; a aceitação exige fallback inativo, serviço `READY`, `worker_pid=0`
+e filas drenadas.
+
+A implementação está pendente da validação QEMU 9/9, reboot/fallback e
+auditoria do release `0.1.0`; por isso `DT100-002` permanece `ACEITA`.
 
 ## TSS (Task State Segment)
 

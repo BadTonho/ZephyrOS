@@ -29,7 +29,7 @@ uma etapa.
 | ID | Estado | Origem | Responsavel | Alvo |
 |---|---|---|---|---|
 | `DT100-001` | QUITADA | SYNC1 | Roadmap 23 / PERF2 | v1.0.0 |
-| `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 23 / PERF3 | v1.0.0 |
+| `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 23 / PERF6 | v1.0.0 |
 | `DT100-003` | ACEITA | SEC4 | Roadmap 19 / SEC4 | v1.0.0 |
 | `DT100-004` | ACEITA | STO6 | Roadmap 20 / STO6 | v1.0.0 |
 | `DT100-005` | ACEITA | SHELL3 | Roadmap 22 / SHELL3 | v1.0.0 |
@@ -240,7 +240,7 @@ validacao final e seu horario estao registrados em
 - **Estado:** `ACEITA`.
 - **Aceita em:** 2026-08-27 17:09 (America/Sao_Paulo).
 - **Origem:** SYNC3 / R4 - Kernel Workqueues.
-- **Responsavel:** [Roadmap 23 - PERF3](../roadmaps/23-desempenho-e-dividas-v1.0.md#perf3--scheduler-idle-e-kworker).
+- **Responsavel:** [Roadmap 23 - PERF6](../roadmaps/23-desempenho-e-dividas-v1.0.md#perf6--quita%C3%A7%C3%A3o-e-release).
 - **Versao limite:** v1.0.0.
 
 ### Motivo da aceitacao
@@ -251,12 +251,27 @@ Integrar os dois schedulers ampliaria a SYNC3 para uma troca do modelo de
 execucao. O usuario aceitou concluir a workqueue com uma `Zephyr kworker`
 ring0 e transferir essa unificacao para a K5.
 
+### Atualizacao da PERF6
+
+A implementacao da PERF6 foi preparada para substituir o processo dedicado por
+uma `thread_t` kernel com identidade geracional `(tid, generation)`. O
+supervisor agora distingue alvos `PROCESS` e `THREAD`; somente a kworker usa
+`THREAD`, enquanto System, Shell e Desktop continuam processos. A workqueue
+preserva as APIs legadas e aceita binding por thread, com fallback explicito e
+estado `DEGRADED` quando a criacao nao for possivel.
+
+Esta atualizacao ainda nao altera o estado de aceite. A evidencia necessaria e
+o relatorio `build/test-results/perf6-kworker-release/perf6-kworker-release.json`
+com 9/9 sessoes `PASS`, identidade thread valida, nenhum processo kworker,
+filas drenadas, reboot/fallback verificados e release `0.1.0` auditado. Ate
+essa execucao, `DT100-002` permanece `ACEITA`.
+
 ### Impacto conhecido
 
-A `kworker` consome um slot da tabela de processos e uma stack nativa de 16
-KiB. Ela aparece em `procs`, usa o scheduler cooperativo de processos e nao
-exercita o ciclo de vida real de `thread_t`. A execucao continua bloqueante
-por Wait Queue, sem busy-wait e sem callbacks na IRQ.
+Antes da PERF6, a `kworker` consumia um slot da tabela de processos e uma
+stack nativa de 16 KiB. A implementacao em validacao usa a stack de
+`thread_t`, nao publica processo kworker e mantem a espera por Wait Queue,
+sem busy-wait e sem callbacks na IRQ.
 
 ### Evidencia de referencia
 

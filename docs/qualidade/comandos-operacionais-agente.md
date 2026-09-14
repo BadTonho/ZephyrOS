@@ -2557,6 +2557,43 @@ timeout, prompt ausente, janela residual ou screenshot VESA ausente reprova.
 Nao considerar a PERF5 concluida sem os gates e 9/9 sessoes `PASS`; nenhuma
 divida tecnica deve ser marcada como quitada nesta etapa.
 
+## PERF6: kworker como thread e release 0.1.0
+
+Depois de atualizar o kernel, o supervisor, a workqueue ou o runner, execute
+os gates na mesma árvore e na mesma imagem:
+
+```text
+make q3check
+make clean
+make
+make catalog-test
+make test-perf6-host
+make test-perf6-qemu
+make perf6-release
+```
+
+`test-perf6-qemu` executa nove sessões isoladas do caso
+`qemu:tst5:perf6-kworker-thread`: `baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, três iterações por perfil. O runner valida as fases
+`boot`, `baseline`, `pressure`, `cancel`, `diagnostics` e `final`, além de
+`procs`, `threads`, `workq status`, `workq check`, `wait check`, `schedcheck`,
+`regcheck full`, `health check`, prompt restaurado e filas drenadas. A falha
+de suporte QEMU é `BLOCKED`; envelope incompleto, identidade `ND`, processo
+kworker, fallback ativo, erro permanente ou fila residual é `FAIL`.
+
+O relatório fica em
+`build/test-results/perf6-kworker-release/perf6-kworker-release.json` e usa o
+schema `zephyros-perf6-kworker-release-v1`. Cada sessão preserva
+`manifest.json`, `serial.log`, `input.log`, `qmp-events.log` e o relatório
+individual; o coletor do processo QEMU registra amostras a cada 250 ms e usa
+`ND` quando a plataforma não oferece CPU/RSS.
+
+`perf6-release` audita a imagem com `tools/updater.py`, exige a versão
+`0.1.0` e não cria chaves ou formatos novos. `v0.1.0-rc1` é somente a tag
+operacional padrão até aprovação do release. Não marcar `DT100-002` como
+`QUITADA` sem 9/9 `PASS`, reboot/fallback verificados, identidade thread
+válida e o relatório auditável.
+
 ## Traces Assembly de boot e recuperacao
 
 Os traces QEMU de Assembly devem ser executados individualmente, com um ID de

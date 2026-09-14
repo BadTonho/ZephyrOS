@@ -1934,8 +1934,16 @@ static void cmd_workq_status(void) {
     video_print(workqueue_context_name(stats.execution_context),
                 stats.execution_context == WORK_CONTEXT_KWORKER ?
                 0x0A : 0x0E);
+    video_print(" alvo=", 0x07);
+    video_print(workqueue_worker_target_name(stats.worker_target), 0x07);
     video_print(" worker_pid=", 0x07);
     shell_command_print_num(stats.worker_pid);
+    video_print(" worker_tid=", 0x07);
+    shell_command_print_num(stats.worker_tid);
+    video_print(" gen=", 0x07);
+    shell_command_print_num(stats.worker_target == WORKER_TARGET_THREAD ?
+                            stats.worker_thread_generation :
+                            stats.worker_process_generation);
     video_print(" ativo=", 0x07);
     shell_command_print_num(stats.worker_active);
     video_print(" fallback=", stats.fallback_active ? 0x0E : 0x07);

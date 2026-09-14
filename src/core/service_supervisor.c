@@ -4,6 +4,21 @@
 #include "core/log.h"
 #include "core/string.h"
 
+#if defined(ZEPHYROS_HOST_TEST)
+__attribute__((weak)) thread_t* thread_get_by_id(uint32_t id) {
+    (void)id;
+    return 0;
+}
+
+__attribute__((weak)) thread_t* thread_get_current(void) {
+    return 0;
+}
+
+__attribute__((weak)) void thread_destroy(thread_t* thread) {
+    (void)thread;
+}
+#endif
+
 typedef struct {
     service_supervisor_definition_t definition;
     char name[SERVICE_SUPERVISOR_NAME_LENGTH];
@@ -86,6 +101,55 @@ static int service_supervisor_process_live_values(uint32_t pid,
     return 1;
 }
 
+static int service_supervisor_thread_live_values(uint32_t tid,
+                                                 uint32_t generation,
+                                                 thread_t** output) {
+    thread_t* thread;
+
+    if (output) *output = 0;
+    if (!tid || !generation) return 0;
+    thread = thread_get_by_id(tid);
+    if (!thread || thread->id != tid || thread->generation != generation ||
+        !thread->kernel_service ||
+        (thread->state != THREAD_RUNNING &&
+         thread->state != THREAD_BLOCKED)) {
+        return 0;
+    }
+    if (output) *output = thread;
+    return 1;
+}
+
+static int service_supervisor_identity_live(
+    const service_supervisor_entry_t* entry, uint32_t identity,
+    uint32_t generation, process_t** process, thread_t** thread) {
+    if (process) *process = 0;
+    if (thread) *thread = 0;
+    if (!entry) return 0;
+    if (entry->definition.target == SERVICE_SUPERVISOR_TARGET_THREAD) {
+        return service_supervisor_thread_live_values(identity, generation,
+                                                     thread);
+    }
+    return service_supervisor_process_live_values(identity, generation,
+                                                  process);
+}
+
+static int service_supervisor_identity_exists(
+    const service_supervisor_entry_t* entry, uint32_t identity,
+    uint32_t generation) {
+    thread_t* thread;
+    process_t* process;
+
+    if (!entry || !identity || !generation) return 0;
+    if (entry->definition.target == SERVICE_SUPERVISOR_TARGET_THREAD) {
+        thread = thread_get_by_id(identity);
+        return thread && thread->generation == generation &&
+               thread->kernel_service &&
+               thread->state != THREAD_UNUSED;
+    }
+    process = process_get_by_pid(identity);
+    return process && process->event_generation == generation;
+}
+
 static int service_supervisor_created_process_cleanup(process_t* process) {
     process_t* current;
     uint32_t pid;
@@ -113,12 +177,65 @@ static int service_supervisor_created_process_cleanup(process_t* process) {
     return OK;
 }
 
-static int service_supervisor_cleanup_identity(uint32_t pid,
-                                               uint32_t generation) {
-    process_t* process;
+static int service_supervisor_created_thread_cleanup(thread_t* thread) {
+    uint32_t tid;
 
-    if (!pid || !generation) return OK;
-    process = process_get_by_pid(pid);
+    if (!thread || !thread->id || !thread->generation) {
+        LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
+                       "Invalid created service thread");
+        return ERR_STATE;
+    }
+    if (thread->state == THREAD_UNUSED) return OK;
+    if (thread == thread_get_current()) {
+        LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
+                       "Service thread cleanup rejected");
+        return ERR_STATE;
+    }
+    tid = thread->id;
+    thread_destroy(thread);
+    if (thread_get_by_id(tid)) {
+        LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
+                       "Service thread survived cleanup");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int service_supervisor_cleanup_identity(
+    const service_supervisor_entry_t* entry, uint32_t identity,
+    uint32_t generation) {
+    process_t* process;
+    thread_t* thread;
+
+    if (!entry || !identity || !generation) return OK;
+    if (entry->definition.target == SERVICE_SUPERVISOR_TARGET_THREAD) {
+        thread = thread_get_by_id(identity);
+        if (!thread || thread->generation != generation) return OK;
+        if (!thread->kernel_service) {
+            LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
+                           "Thread nao-kernel associada a servico");
+            return ERR_STATE;
+        }
+        if (thread == thread_get_current()) {
+            LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
+                           "Service thread identity cannot be destroyed");
+            return ERR_STATE;
+        }
+        if (thread->state < THREAD_UNUSED ||
+            thread->state > THREAD_FINISHED) {
+            LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
+                           "Service identity has invalid thread state");
+            return ERR_STATE;
+        }
+        thread_destroy(thread);
+        if (thread_get_by_id(identity)) {
+            LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
+                           "Service thread identity survived cleanup");
+            return ERR_STATE;
+        }
+        return OK;
+    }
+    process = process_get_by_pid(identity);
     if (!process || process->event_generation != generation) return OK;
     if (process->pid == 0U || process == process_get_current()) {
         LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
@@ -131,7 +248,7 @@ static int service_supervisor_cleanup_identity(uint32_t pid,
         return ERR_STATE;
     }
     process_destroy(process);
-    if (process_get_by_pid(pid)) {
+    if (process_get_by_pid(identity)) {
         LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
                        "Service identity survived cleanup");
         return ERR_STATE;
@@ -206,12 +323,16 @@ static void service_supervisor_finish_failure(
 static int service_supervisor_attempt_once(
     service_supervisor_entry_t* entry) {
     process_t* process;
+    thread_t* thread;
     uint32_t pid;
     uint32_t generation;
     int result;
 
-    if (!entry || !entry->configured || !entry->definition.create ||
-        !entry->definition.dependency) {
+    if (!entry || !entry->configured || !entry->definition.dependency ||
+        (entry->definition.target == SERVICE_SUPERVISOR_TARGET_PROCESS &&
+         !entry->definition.create) ||
+        (entry->definition.target == SERVICE_SUPERVISOR_TARGET_THREAD &&
+         !entry->definition.create_thread)) {
         LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_STATE,
                        "Invalid service startup entry");
         return ERR_STATE;
@@ -224,48 +345,92 @@ static int service_supervisor_attempt_once(
                        "Service dependency rejected startup");
         return result;
     }
-    process = entry->definition.create();
-    if (!process) {
-        LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_MEM,
-                       "Service process creation failed");
-        return ERR_MEM;
-    }
-    pid = process->pid;
-    generation = process->event_generation;
-    if (!pid || pid == 0U || !generation ||
-        process_get_by_pid(pid) != process ||
-        !service_supervisor_process_state_valid(process->state) ||
-        process->state == PROCESS_STATE_ZOMBIE) {
-        result = service_supervisor_created_process_cleanup(process);
-        if (result != OK && pid && generation) {
-            entry->pid = pid;
-            entry->generation = generation;
-            entry->cleanup_failed = 1U;
+    if (entry->definition.target == SERVICE_SUPERVISOR_TARGET_THREAD) {
+        thread = entry->definition.create_thread();
+        if (!thread) {
+            LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_MEM,
+                           "Service thread creation failed");
+            return ERR_MEM;
         }
-        LOG_ERROR_CODE("SERVICE_SUPERVISOR",
-                       result == OK ? ERR_STATE : result,
-                       "Created service process has invalid identity");
-        return result == OK ? ERR_STATE : result;
-    }
-    if (entry->definition.prepare) {
-        result = entry->definition.prepare(process);
-        if (result != OK) {
-            int cleanup_result = service_supervisor_created_process_cleanup(
-                process);
-
-            if (cleanup_result != OK) {
+        pid = thread->id;
+        generation = thread->generation;
+        if (!pid || !generation || thread_get_by_id(pid) != thread ||
+            !thread->kernel_service ||
+            (thread->state != THREAD_RUNNING &&
+             thread->state != THREAD_BLOCKED)) {
+            result = service_supervisor_created_thread_cleanup(thread);
+            if (result != OK && pid && generation) {
                 entry->pid = pid;
                 entry->generation = generation;
                 entry->cleanup_failed = 1U;
             }
             LOG_ERROR_CODE("SERVICE_SUPERVISOR",
-                           cleanup_result == OK ? result : cleanup_result,
-                           "Service preparation failed");
-            return cleanup_result == OK ? result : cleanup_result;
+                           result == OK ? ERR_STATE : result,
+                           "Created service thread has invalid identity");
+            return result == OK ? ERR_STATE : result;
+        }
+        if (entry->definition.prepare_thread) {
+            result = entry->definition.prepare_thread(thread);
+            if (result != OK) {
+                int cleanup_result = service_supervisor_created_thread_cleanup(
+                    thread);
+
+                if (cleanup_result != OK) {
+                    entry->pid = pid;
+                    entry->generation = generation;
+                    entry->cleanup_failed = 1U;
+                }
+                LOG_ERROR_CODE("SERVICE_SUPERVISOR",
+                               cleanup_result == OK ? result : cleanup_result,
+                               "Service thread preparation failed");
+                return cleanup_result == OK ? result : cleanup_result;
+            }
+        }
+    } else {
+        process = entry->definition.create();
+        if (!process) {
+            LOG_ERROR_CODE("SERVICE_SUPERVISOR", ERR_MEM,
+                           "Service process creation failed");
+            return ERR_MEM;
+        }
+        pid = process->pid;
+        generation = process->event_generation;
+        if (!pid || pid == 0U || !generation ||
+            process_get_by_pid(pid) != process ||
+            !service_supervisor_process_state_valid(process->state) ||
+            process->state == PROCESS_STATE_ZOMBIE) {
+            result = service_supervisor_created_process_cleanup(process);
+            if (result != OK && pid && generation) {
+                entry->pid = pid;
+                entry->generation = generation;
+                entry->cleanup_failed = 1U;
+            }
+            LOG_ERROR_CODE("SERVICE_SUPERVISOR",
+                           result == OK ? ERR_STATE : result,
+                           "Created service process has invalid identity");
+            return result == OK ? ERR_STATE : result;
+        }
+        if (entry->definition.prepare) {
+            result = entry->definition.prepare(process);
+            if (result != OK) {
+                int cleanup_result = service_supervisor_created_process_cleanup(
+                    process);
+
+                if (cleanup_result != OK) {
+                    entry->pid = pid;
+                    entry->generation = generation;
+                    entry->cleanup_failed = 1U;
+                }
+                LOG_ERROR_CODE("SERVICE_SUPERVISOR",
+                               cleanup_result == OK ? result : cleanup_result,
+                               "Service preparation failed");
+                return cleanup_result == OK ? result : cleanup_result;
+            }
         }
     }
-    if (!service_supervisor_process_live_values(pid, generation, &process)) {
-        result = service_supervisor_cleanup_identity(pid, generation);
+    if (!service_supervisor_identity_live(entry, pid, generation,
+                                          &process, &thread)) {
+        result = service_supervisor_cleanup_identity(entry, pid, generation);
         if (result != OK) {
             entry->pid = pid;
             entry->generation = generation;
@@ -390,8 +555,12 @@ int service_supervisor_configure(
         return ERR_STATE;
     }
     if (!service_supervisor_valid_id(definition->id) || !definition->name ||
-        !definition->name[0] || !definition->create ||
-        !definition->dependency ||
+        !definition->name[0] || !definition->dependency ||
+        (definition->target == SERVICE_SUPERVISOR_TARGET_PROCESS &&
+         !definition->create) ||
+        (definition->target == SERVICE_SUPERVISOR_TARGET_THREAD &&
+         !definition->create_thread) ||
+        definition->target > SERVICE_SUPERVISOR_TARGET_THREAD ||
         definition->recovery_component > RECOVERY_COMPONENT_COUNT) {
         LOG_ERROR("SERVICE_SUPERVISOR", "Invalid service definition");
         return ERR_INVALID;
@@ -451,11 +620,13 @@ int service_supervisor_poll(void) {
         uint32_t pid;
         uint32_t generation;
         process_t* process;
+        thread_t* thread;
         int result;
 
         if (entry->state == SERVICE_SUPERVISOR_STOPPED &&
             !service_supervisor_quiescing) {
             result = service_supervisor_cleanup_identity(
+                entry,
                 entry->stopped_pid, entry->stopped_generation);
             if (result != OK) {
                 service_supervisor_record_cleanup_failure(
@@ -471,6 +642,7 @@ int service_supervisor_poll(void) {
         if (entry->state == SERVICE_SUPERVISOR_FAILED &&
             entry->cleanup_failed && entry->pid && entry->generation) {
             result = service_supervisor_cleanup_identity(
+                entry,
                 entry->pid, entry->generation);
             if (result != OK) {
                 if (first_error == OK) first_error = result;
@@ -488,7 +660,7 @@ int service_supervisor_poll(void) {
         if (service_supervisor_test_failures[index]) {
             service_supervisor_test_failures[index] = 0U;
             if (service_supervisor_quiescing) continue;
-            result = service_supervisor_cleanup_identity(pid, generation);
+            result = service_supervisor_cleanup_identity(entry, pid, generation);
             if (result != OK) {
                 entry->pid = pid;
                 entry->generation = generation;
@@ -497,8 +669,8 @@ int service_supervisor_poll(void) {
                 if (first_error == OK) first_error = result;
                 continue;
             }
-        } else if (service_supervisor_process_live_values(
-                       pid, generation, &process)) {
+        } else if (service_supervisor_identity_live(
+                       entry, pid, generation, &process, &thread)) {
             continue;
         }
         if (service_supervisor_quiescing) {
@@ -510,7 +682,7 @@ int service_supervisor_poll(void) {
             service_supervisor_finish_failure(entry, SERVICE_SUPERVISOR_STOPPED);
             continue;
         }
-        result = service_supervisor_cleanup_identity(pid, generation);
+        result = service_supervisor_cleanup_identity(entry, pid, generation);
         if (result != OK) {
             entry->pid = pid;
             entry->generation = generation;
@@ -564,12 +736,44 @@ int service_supervisor_get_identity(service_supervisor_id_t id,
     }
     if (!service_supervisor_valid_id(id)) return ERR_INVALID;
     entry = &service_entries[id];
+    if (entry->definition.target != SERVICE_SUPERVISOR_TARGET_PROCESS) {
+        return ERR_STATE;
+    }
     if (entry->state != SERVICE_SUPERVISOR_READY ||
         !service_supervisor_process_live_values(entry->pid,
                                                 entry->generation, 0)) {
         return ERR_NOT_FOUND;
     }
     *pid = entry->pid;
+    *generation = entry->generation;
+    return OK;
+}
+
+int service_supervisor_get_thread_identity(service_supervisor_id_t id,
+                                           uint32_t* tid,
+                                           uint32_t* generation) {
+    service_supervisor_entry_t* entry;
+
+    if (!tid || !generation) {
+        LOG_ERROR("SERVICE_SUPERVISOR", "Null thread identity output");
+        return ERR_NULL;
+    }
+    *tid = 0U;
+    *generation = 0U;
+    if (!service_supervisor_initialized || !service_supervisor_started) {
+        return ERR_STATE;
+    }
+    if (!service_supervisor_valid_id(id)) return ERR_INVALID;
+    entry = &service_entries[id];
+    if (entry->definition.target != SERVICE_SUPERVISOR_TARGET_THREAD) {
+        return ERR_STATE;
+    }
+    if (entry->state != SERVICE_SUPERVISOR_READY ||
+        !service_supervisor_thread_live_values(entry->pid,
+                                               entry->generation, 0)) {
+        return ERR_NOT_FOUND;
+    }
+    *tid = entry->pid;
     *generation = entry->generation;
     return OK;
 }
@@ -589,8 +793,17 @@ int service_supervisor_snapshot_copy(
     output->id = id;
     service_supervisor_copy_name(output->name, entry->definition.name);
     output->state = entry->state;
-    output->pid = entry->pid;
-    output->generation = entry->generation;
+    output->target = entry->definition.target;
+    output->pid = entry->definition.target ==
+                          SERVICE_SUPERVISOR_TARGET_PROCESS ? entry->pid : 0U;
+    output->generation = entry->definition.target ==
+                                 SERVICE_SUPERVISOR_TARGET_PROCESS ?
+                             entry->generation : 0U;
+    output->tid = entry->definition.target ==
+                          SERVICE_SUPERVISOR_TARGET_THREAD ? entry->pid : 0U;
+    output->thread_generation = entry->definition.target ==
+                                        SERVICE_SUPERVISOR_TARGET_THREAD ?
+                                    entry->generation : 0U;
     output->restart_attempts = entry->restart_attempts;
     output->failures = entry->failures;
     output->last_error = entry->last_error;
@@ -630,7 +843,12 @@ int service_supervisor_validate_state(void) {
 
         if (!entry->configured || entry->definition.id != index ||
             !entry->definition.name || !entry->definition.name[0] ||
-            !entry->definition.create || !entry->definition.dependency ||
+            !entry->definition.dependency ||
+            entry->definition.target > SERVICE_SUPERVISOR_TARGET_THREAD ||
+            (entry->definition.target == SERVICE_SUPERVISOR_TARGET_PROCESS &&
+             !entry->definition.create) ||
+            (entry->definition.target == SERVICE_SUPERVISOR_TARGET_THREAD &&
+             !entry->definition.create_thread) ||
             entry->definition.recovery_component > RECOVERY_COMPONENT_COUNT ||
             entry->state < SERVICE_SUPERVISOR_STARTING ||
             entry->state > SERVICE_SUPERVISOR_STOPPED) {
@@ -642,14 +860,16 @@ int service_supervisor_validate_state(void) {
             return ERR_STATE;
         }
         if (entry->state == SERVICE_SUPERVISOR_READY) {
-            if (!service_supervisor_process_live_values(
-                    entry->pid, entry->generation, 0) ||
+            if (!service_supervisor_identity_live(
+                    entry, entry->pid, entry->generation, 0, 0) ||
                 entry->fallback_active) {
                 LOG_ERROR("SERVICE_SUPERVISOR", "Ready service identity is invalid");
                 return ERR_STATE;
             }
             for (uint32_t other = 0U; other < index; other++) {
                 if (service_entries[other].state == SERVICE_SUPERVISOR_READY &&
+                    service_entries[other].definition.target ==
+                        entry->definition.target &&
                     service_entries[other].pid == entry->pid &&
                     service_entries[other].generation == entry->generation) {
                     LOG_ERROR("SERVICE_SUPERVISOR", "Duplicate service identity");
@@ -658,8 +878,8 @@ int service_supervisor_validate_state(void) {
             }
         } else if (entry->pid || entry->generation) {
             if (!entry->cleanup_failed ||
-                !service_supervisor_process_live_values(
-                    entry->pid, entry->generation, 0)) {
+                !service_supervisor_identity_exists(
+                    entry, entry->pid, entry->generation)) {
                 LOG_ERROR("SERVICE_SUPERVISOR",
                           "Inactive service retains invalid identity");
                 return ERR_STATE;

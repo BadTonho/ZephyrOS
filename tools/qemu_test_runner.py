@@ -403,7 +403,7 @@ def validate_input_step(step: Any, identifier: str) -> None:
     if operation == "phase":
         if step.get("phase") not in {
                 "boot", "baseline", "idle", "load", "ui", "diagnostics",
-                "cleanup", "final"}:
+                "cleanup", "pressure", "cancel", "final"}:
             raise RunnerError(f"fase_entrada_invalida:{identifier}",
                               "catalog_error", True)
         return
@@ -691,6 +691,9 @@ class QemuSession:
         self.qmp_events: list[dict[str, Any]] = []
         self.input_trace: list[dict[str, Any]] = []
         self.input_trace_sequence = 0
+        self.awaiting_ready_after_reset = False
+        self.restart_waiting = False
+        self.restart_detected = False
         self.input_stress_hook: Any = None
         self.host_sample_hook: Any = None
         self.input_stress_cycles = 0
@@ -1031,6 +1034,7 @@ class QemuSession:
         self.guest_sequence = 0
         self.input_trace_sequence = 0
         self.last_heartbeat = None
+        self.awaiting_ready_after_reset = True
 
     def _read_serial(self) -> None:
         if not self.serial:
@@ -1058,6 +1062,15 @@ class QemuSession:
             except ValueError as error:
                 self.protocol_errors.append(str(error))
                 continue
+            if self.restart_waiting and event.get("event") == "READY" and \
+                    event.get("seq") == "1":
+                self.restart_detected = True
+                continue
+            if self.awaiting_ready_after_reset:
+                if event.get("event") != "READY" or \
+                        event.get("seq") != "1":
+                    continue
+                self.awaiting_ready_after_reset = False
             if not sequence_valid(event.get("seq", ""), self.guest_sequence):
                 self.protocol_errors.append("sequencia_guest_invalida")
                 continue
@@ -1285,15 +1298,28 @@ def wait_for_restart(session: QemuSession, run_id: str,
                      timeout: float) -> dict[str, Any]:
     deadline = time.monotonic() + timeout
     session.progress.mark_state(PROGRESS_RESTART_WAIT)
-    while time.monotonic() < deadline:
-        for event in session.poll_qmp_events():
-            if event.get("event") == "RESET":
+    session.restart_waiting = True
+    session.restart_detected = False
+    try:
+        while time.monotonic() < deadline:
+            for event in session.poll_qmp_events():
+                if event.get("event") == "RESET":
+                    session.restart_waiting = False
+                    wait_for_ready(session, run_id, reset_protocol=True)
+                    return {"status": "PASS", "event": "RESET",
+                            "handshake": "HELLO_READY_HEARTBEAT"}
+            session._read_serial()
+            if session.restart_detected:
+                session.restart_waiting = False
+                session.restart_detected = False
                 wait_for_ready(session, run_id, reset_protocol=True)
-                return {"status": "PASS", "event": "RESET",
+                return {"status": "PASS", "event": "SERIAL_READY",
                         "handshake": "HELLO_READY_HEARTBEAT"}
-        if session.process and session.process.poll() is not None:
-            raise RunnerError("reboot_qemu_exit", "qemu_exit")
-        time.sleep(0.01)
+            if session.process and session.process.poll() is not None:
+                raise RunnerError("reboot_qemu_exit", "qemu_exit")
+            time.sleep(0.01)
+    finally:
+        session.restart_waiting = False
     raise RunnerError("reboot_event_timeout", "timeout")
 
 

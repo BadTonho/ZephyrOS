@@ -11,6 +11,7 @@
 #include "memory/slab.h"
 #include "memory/vma.h"
 #include "process/process.h"
+#include "process/thread.h"
 
 #define HOST_COVERAGE_CAPACITY 4096U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -28,6 +29,8 @@ static uint8_t fake_paging_ready;
 static uint8_t fake_user_mode_enabled;
 static uint32_t fake_focus_pid;
 static uint32_t fake_owned_threads;
+static thread_t* fake_current_thread;
+static uint32_t fake_thread_yield_calls;
 static uint8_t fake_cache_storage[64U];
 static page_directory_t fake_directory;
 static page_directory_t foreign_directory;
@@ -244,7 +247,12 @@ uint32_t thread_get_count_by_owner(uint32_t owner_pid) {
     return owner_pid == PROCESS_FIXTURE_PID ? fake_owned_threads : 0U;
 }
 
+thread_t* thread_get_current(void) {
+    return fake_current_thread;
+}
+
 void thread_yield(void) {
+    fake_thread_yield_calls++;
 }
 
 int process_signal_init(void) {
@@ -437,6 +445,8 @@ static void reset_fixture(void) {
     fake_user_mode_enabled = 0U;
     fake_focus_pid = 0U;
     fake_owned_threads = 0U;
+    fake_current_thread = NULL;
+    fake_thread_yield_calls = 0U;
 }
 
 static void process_entry_fixture(void) {
@@ -561,6 +571,19 @@ static int test_creation_guards(void) {
                                   0U, PAGE_SIZE, 0, &pid) != ERR_MEM ||
         processes[1] != NULL || process_get_by_pid(1U) != NULL ||
         process_get_count() != 0U) return 12;
+    return 0;
+}
+
+static int test_kernel_thread_yield_stays_in_thread_scheduler(void) {
+    thread_t kernel_thread;
+
+    reset_fixture();
+    memset(&kernel_thread, 0, sizeof(kernel_thread));
+    kernel_thread.kernel_service = 1U;
+    fake_current_thread = &kernel_thread;
+    process_yield();
+    if (fake_thread_yield_calls != 1U) return 1;
+    fake_current_thread = NULL;
     return 0;
 }
 
@@ -859,6 +882,7 @@ int main(void) {
     coverage_active = 1U;
     if (!result) result = test_initial_state();
     if (!result) result = test_creation_guards();
+    if (!result) result = test_kernel_thread_yield_stays_in_thread_scheduler();
     if (!result) result = test_scheduler_selection_guards();
     if (!result) result = test_scheduler_and_snapshots();
     if (!result) result = test_process_transitions();

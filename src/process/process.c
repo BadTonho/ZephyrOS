@@ -2609,6 +2609,12 @@ static void scheduler_yield_internal(void) {
 }
 
 void process_yield(void) {
+    thread_t* active_thread = thread_get_current();
+
+    if (active_thread && active_thread->kernel_service) {
+        thread_yield();
+        return;
+    }
     /* O timer pode disparar antes do bootstrap do Idle; isso nao e falha. */
     if (!current_process) return;
     if (current_process->state < PROCESS_STATE_READY ||
@@ -2910,6 +2916,13 @@ int scheduler_get_runtime_stats(scheduler_runtime_stats_t* stats) {
     stats->blocked_peak = scheduler_blocked_peak;
     stats->current_pid = current_process ? current_process->pid : 0U;
     stats->last_error = scheduler_last_error;
+    stats->current_tid = thread_get_current() ?
+                         thread_get_current()->id : 0U;
+    stats->current_thread_generation = thread_get_current() ?
+                                      thread_get_current()->generation : 0U;
+    stats->current_thread_kernel_service = thread_get_current() ?
+                                           thread_get_current()->kernel_service :
+                                           0U;
     process_wait_irq_restore(flags);
     return OK;
 }

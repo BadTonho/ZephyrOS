@@ -522,6 +522,18 @@ static int shell_kmetrics_emit_scheduler(
                             current->scheduler_runtime.current_pid, 0U,
                             runtime_available, "pid", SHELL_KMETRICS_KIND_STATE,
                             "scheduler", "kernel");
+    SHELL_KMETRICS_EMIT_U32("scheduler_current_tid",
+                            current->scheduler_runtime.current_tid, 0U,
+                            runtime_available, "tid", SHELL_KMETRICS_KIND_STATE,
+                            "scheduler", "thread");
+    SHELL_KMETRICS_EMIT_U32("scheduler_current_thread_generation",
+                            current->scheduler_runtime.current_thread_generation,
+                            0U, runtime_available, "generation",
+                            SHELL_KMETRICS_KIND_STATE, "scheduler", "thread");
+    SHELL_KMETRICS_EMIT_U32("scheduler_current_thread_kernel_service",
+                            current->scheduler_runtime.current_thread_kernel_service,
+                            0U, runtime_available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "scheduler", "thread");
     SHELL_KMETRICS_EMIT_U32("scheduler_last_error",
                             (uint32_t)current->scheduler_runtime.last_error, 0U,
                             runtime_available, "code", SHELL_KMETRICS_KIND_STATE,
@@ -928,6 +940,20 @@ static int shell_kmetrics_emit_work(
                             "workqueue", "fallback");
     SHELL_KMETRICS_EMIT_U32("workqueue_worker_pid", work->worker_pid, 0U,
                             available, "pid", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_worker_tid", work->worker_tid, 0U,
+                            available, "tid", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_worker_thread_generation",
+                            work->worker_thread_generation, 0U, available,
+                            "generation", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_worker_process_generation",
+                            work->worker_process_generation, 0U, available,
+                            "generation", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_worker_target", work->worker_target,
+                            0U, available, "enum", SHELL_KMETRICS_KIND_STATE,
                             "workqueue", "kworker");
     SHELL_KMETRICS_EMIT_U32("workqueue_execution_context",
                             work->execution_context, 0U, available, "enum",
@@ -1984,6 +2010,23 @@ static int shell_kmetrics_emit_system(
                 "service_", index, "_state", current->services[index].state,
                 0U, 0U, service_available, "enum",
                 SHELL_KMETRICS_KIND_STATE, "supervisor", "system") != OK ||
+            shell_kmetrics_emit_indexed_u32(
+                "service_", index, "_target", current->services[index].target,
+                0U, 0U, service_available, "enum",
+                SHELL_KMETRICS_KIND_STATE, "supervisor", "system") != OK ||
+            shell_kmetrics_emit_indexed_u32(
+                "service_", index, "_pid", current->services[index].pid,
+                0U, 0U, service_available, "pid",
+                SHELL_KMETRICS_KIND_GAUGE, "supervisor", "system") != OK ||
+            shell_kmetrics_emit_indexed_u32(
+                "service_", index, "_tid", current->services[index].tid,
+                0U, 0U, service_available, "tid",
+                SHELL_KMETRICS_KIND_GAUGE, "supervisor", "system") != OK ||
+            shell_kmetrics_emit_indexed_u32(
+                "service_", index, "_thread_generation",
+                current->services[index].thread_generation, 0U, 0U,
+                service_available, "generation", SHELL_KMETRICS_KIND_GAUGE,
+                "supervisor", "system") != OK ||
             shell_kmetrics_emit_indexed_u32(
                 "service_", index, "_failures", current->services[index].failures,
                 baseline && index < baseline->service_count ?

@@ -8,6 +8,7 @@
 #include "core/workqueue.h"
 #include "drivers/serial.h"
 #include "process/process.h"
+#include "process/thread.h"
 
 #define HOST_COVERAGE_CAPACITY 8192U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -27,6 +28,8 @@ static uint32_t wake_calls;
 static uint32_t signal_calls;
 static uint32_t wait_calls;
 static uint32_t fake_ticks = 100U;
+static thread_t worker_thread;
+static thread_t* current_thread;
 
 process_t* processes[MAX_PROCESSES];
 uint32_t process_count;
@@ -123,6 +126,14 @@ process_t* process_get_current(void) {
     return 0;
 }
 
+thread_t* thread_get_current(void) {
+    return current_thread;
+}
+
+thread_t* thread_get_by_id(uint32_t id) {
+    return worker_thread.id == id ? &worker_thread : 0;
+}
+
 void process_yield(void) {
     yield_calls++;
 }
@@ -208,6 +219,12 @@ static void fixture_reset(void) {
     processes[1] = &current_process;
     process_count = 2U;
     current_pid = CURRENT_PID;
+    kmemset(&worker_thread, 0, sizeof(worker_thread));
+    worker_thread.id = 7U;
+    worker_thread.generation = 3U;
+    worker_thread.state = THREAD_RUNNING;
+    worker_thread.kernel_service = 1U;
+    current_thread = 0;
     callback_calls = 0U;
     callback_result = OK;
     yield_calls = 0U;
@@ -348,6 +365,13 @@ static int check_fallback_and_power(void) {
     if (workqueue_power_set_quiescing(0U) != OK) return 14;
     if (work_destroy(&work) != OK) return 15;
     if (workqueue_set_fallback(1U) != OK) return 16;
+    if (workqueue_bind_thread(0U, 1U) != ERR_INVALID) return 19;
+    if (workqueue_bind_thread(worker_thread.id,
+                              worker_thread.generation) != OK) return 20;
+    if (workqueue_needs_fallback(&required) != OK || required) return 21;
+    worker_thread.kernel_service = 0U;
+    if (workqueue_needs_fallback(&required) != OK || !required) return 22;
+    worker_thread.kernel_service = 1U;
     return 0;
 }
 
@@ -360,7 +384,8 @@ static int check_worker(void) {
     if (work_init(&work, "Worker", WORK_PRIORITY_HIGH, callback, &marker) !=
         OK) return 1;
     if (schedule_work(&work) != OK) return 2;
-    current_pid = WORKER_PID;
+    current_pid = CURRENT_PID;
+    current_thread = &worker_thread;
     workqueue_worker_main();
     if (callback_calls == 0U || marker == 0U || work.state != WORK_STATE_IDLE) {
         return 3;
@@ -369,6 +394,7 @@ static int check_worker(void) {
     if (workqueue_get_stats(&stats) != OK || stats.sleeps == 0U) return 5;
     if (work_destroy(&work) != OK) return 6;
     if (workqueue_validate_state() != OK) return 7;
+    current_thread = 0;
     return 0;
 }
 

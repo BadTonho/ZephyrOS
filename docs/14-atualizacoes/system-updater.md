@@ -187,6 +187,19 @@ rede/TLS, escrita, sync, cancelamento e reinicio preservam a versao ativa.
 HTTP nao e usado nesse caminho de producao, exceto em fixtures locais
 explicitamente configuradas.
 
+## PERF6 - preparação do release 0.1.0
+
+A preparação da PERF6 mantém a versão ativa `0.1.0` e usa `v0.1.0-rc1` como
+tag operacional padrão durante o congelamento. A auditoria da imagem reutiliza
+`tools/updater.py audit-image`; verificação, rollback, estado A/B, hashes,
+assinaturas e formatos permanecem os contratos existentes. Nenhuma chave
+privada é armazenada no repositório e nenhum formato novo é criado.
+
+O relatório `perf6-kworker-release` registra a imagem auditada, a versão, a
+verificação de reboot/fallback e o estado da preparação. A ausência de um
+artefato assinado final mantém `signed_verification` como `PENDING` até a
+aprovação do release, sem alterar a versão para `1.0.0`.
+
 ## STO6 - recuperacao transacional
 
 A recuperacao valida estado e journal redundantes por sequencia antes de

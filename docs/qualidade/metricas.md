@@ -291,6 +291,40 @@ make test-perf5-qemu
 make perf5-video-ui
 ```
 
+## PERF6 - kworker como thread e release 0.1.0
+
+Na PERF6, `kmetrics machine` publica a identidade da kworker por
+`workqueue_worker_tid` e `workqueue_worker_thread_generation`. O alvo
+`workqueue_worker_target` usa `PROCESS=1` e `THREAD=2`; a implementação
+aprovada deve publicar `THREAD`, `worker_pid=0` e
+`worker_process_generation=0`. O supervisor repete a identidade em
+`service_0_target`, `service_0_tid` e `service_0_thread_generation`. Estados,
+alvos e identidades são gauges; contadores de falhas e latências continuam
+com delta e `overflow=wrap_u32`. Identidade ausente, thread obsoleta, fallback
+ativo ou serviço não `READY` publicam falha da sessão, e não zero sintético.
+
+`process_yield()` entrega uma execução ativa de serviço kernel ao scheduler de
+threads; o scheduler de processos permanece responsável por processos,
+quantum, prioridades e PID 0. `workqueue_worker_main()` continua usando a
+Wait Queue existente, timeout, cancelamento e budgets atuais. A criação da
+thread falha de forma observável e ativa o fallback `DEGRADED`, sem consumir
+slot de processo.
+
+O caso `qemu:tst5:perf6-kworker-thread` executa nove sessões isoladas nos
+perfis `baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`, três
+iterações por perfil. As fases são `boot`, `baseline`, `pressure`, `cancel`,
+`diagnostics` e `final`; cada sessão valida `procs`, `threads`, `workq status`,
+`workq check`, `wait check`, `schedcheck`, `regcheck full`, `health check`,
+prompt e drenagem. O host é amostrado a cada 250 ms e indisponibilidade fica
+como `ND`.
+
+O schema é `zephyros-perf6-kworker-release-v1` e o relatório agregado fica em
+`build/test-results/perf6-kworker-release/perf6-kworker-release.json`. A
+versão continua `0.1.0`, com `v0.1.0-rc1` como tag operacional padrão; a
+verificação criptográfica usa `tools/updater.py` e os formatos assinados
+existentes. A matriz e o release permanecem pendentes até a execução dos
+gates; nenhuma dívida é quitada por instrumentação ou inferência.
+
 ## Registros
 
 ### 2026-08-30 - PWR1, Idle arquitetural com HLT
