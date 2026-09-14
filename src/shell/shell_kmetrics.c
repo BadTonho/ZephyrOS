@@ -326,6 +326,12 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     snapshot->vesa_available = vesa_get_mode() != NULL &&
                               vesa_get_mode()->initialized;
     snapshot->vesa_backbuffer = vesa_has_backbuffer() ? 1U : 0U;
+    snapshot->video_result = video_get_metrics(&snapshot->video);
+    snapshot->mouse_render_result =
+        mouse_get_render_metrics(&snapshot->mouse_render);
+    snapshot->taskbar_result = taskbar_get_metrics(&snapshot->taskbar);
+    snapshot->desktop_result = desktop_get_metrics(&snapshot->desktop);
+    snapshot->wm_result = wm_get_metrics(&snapshot->wm);
     snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_VIDEO;
     memory_get_heap_stats(&snapshot->heap);
     memory_get_pmm_stats(&snapshot->pmm);
@@ -2048,6 +2054,258 @@ static int shell_kmetrics_emit_video(
     SHELL_KMETRICS_EMIT_U32("vesa_max_copy_ticks", video->max_copy_ticks, 0U,
                             available, "tick", SHELL_KMETRICS_KIND_DURATION,
                             "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_last_region_x", video->last_region_x, 0U,
+                            available, "pixel", SHELL_KMETRICS_KIND_GAUGE,
+                            "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_last_region_y", video->last_region_y, 0U,
+                            available, "pixel", SHELL_KMETRICS_KIND_GAUGE,
+                            "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_last_region_width", video->last_region_width,
+                            0U, available, "pixel", SHELL_KMETRICS_KIND_GAUGE,
+                            "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_last_region_height",
+                            video->last_region_height, 0U, available, "pixel",
+                            SHELL_KMETRICS_KIND_GAUGE, "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_last_region_pixels",
+                            video->last_region_pixels, 0U, available, "pixel",
+                            SHELL_KMETRICS_KIND_GAUGE, "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_partial_pixels", video->partial_pixels,
+                            base ? base->partial_pixels : 0U,
+                            baseline_valid && available, "pixel",
+                            SHELL_KMETRICS_KIND_COUNTER, "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_max_region_pixels",
+                            video->max_region_pixels, 0U, available, "pixel",
+                            SHELL_KMETRICS_KIND_GAUGE, "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_backbuffer_width",
+                            video->backbuffer_width, 0U, available, "pixel",
+                            SHELL_KMETRICS_KIND_GAUGE, "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_backbuffer_height",
+                            video->backbuffer_height, 0U, available, "pixel",
+                            SHELL_KMETRICS_KIND_GAUGE, "vesa", "video");
+    SHELL_KMETRICS_EMIT_U32("vesa_backbuffer_bytes",
+                            video->backbuffer_bytes, 0U, available, "byte",
+                            SHELL_KMETRICS_KIND_GAUGE, "vesa", "video");
+
+    {
+        const video_metrics_t* terminal = &current->video;
+        const video_metrics_t* base_terminal = baseline ? &baseline->video : 0;
+        uint8_t terminal_available = current->video_result == OK;
+        uint8_t base_terminal_available = baseline &&
+                                          baseline->video_result == OK;
+
+        SHELL_KMETRICS_EMIT_U32("video_full_redraws", terminal->full_redraws,
+                                base_terminal ? base_terminal->full_redraws : 0U,
+                                baseline_valid && terminal_available &&
+                                    base_terminal_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "video", "video");
+        SHELL_KMETRICS_EMIT_U32("video_partial_redraws",
+                                terminal->partial_redraws,
+                                base_terminal ? base_terminal->partial_redraws : 0U,
+                                baseline_valid && terminal_available &&
+                                    base_terminal_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "video", "video");
+        SHELL_KMETRICS_EMIT_U32("video_dirty_regions", terminal->dirty_regions,
+                                base_terminal ? base_terminal->dirty_regions : 0U,
+                                baseline_valid && terminal_available &&
+                                    base_terminal_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "video", "video");
+        SHELL_KMETRICS_EMIT_U32("video_last_dirty_x", terminal->last_dirty_x,
+                                0U, terminal_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "video", "video");
+        SHELL_KMETRICS_EMIT_U32("video_last_dirty_y", terminal->last_dirty_y,
+                                0U, terminal_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "video", "video");
+        SHELL_KMETRICS_EMIT_U32("video_last_dirty_width",
+                                terminal->last_dirty_width, 0U,
+                                terminal_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "video", "video");
+        SHELL_KMETRICS_EMIT_U32("video_last_dirty_height",
+                                terminal->last_dirty_height, 0U,
+                                terminal_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "video", "video");
+    }
+
+    {
+        const mouse_render_metrics_t* cursor = &current->mouse_render;
+        const mouse_render_metrics_t* base_cursor = baseline ?
+            &baseline->mouse_render : 0;
+        uint8_t cursor_available = current->mouse_render_result == OK;
+        uint8_t base_cursor_available = baseline &&
+                                        baseline->mouse_render_result == OK;
+
+        SHELL_KMETRICS_EMIT_U32("cursor_invalidations",
+                                cursor->cursor_invalidations,
+                                base_cursor ? base_cursor->cursor_invalidations : 0U,
+                                baseline_valid && cursor_available &&
+                                    base_cursor_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "mouse", "video");
+        SHELL_KMETRICS_EMIT_U32("cursor_draws", cursor->cursor_draws,
+                                base_cursor ? base_cursor->cursor_draws : 0U,
+                                baseline_valid && cursor_available &&
+                                    base_cursor_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "mouse", "video");
+        SHELL_KMETRICS_EMIT_U32("cursor_presentations",
+                                cursor->cursor_presentations,
+                                base_cursor ? base_cursor->cursor_presentations : 0U,
+                                baseline_valid && cursor_available &&
+                                    base_cursor_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "mouse", "video");
+        SHELL_KMETRICS_EMIT_U32("cursor_last_region_x", cursor->last_region_x,
+                                0U, cursor_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "mouse", "video");
+        SHELL_KMETRICS_EMIT_U32("cursor_last_region_y", cursor->last_region_y,
+                                0U, cursor_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "mouse", "video");
+        SHELL_KMETRICS_EMIT_U32("cursor_last_region_width",
+                                cursor->last_region_width, 0U,
+                                cursor_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "mouse", "video");
+        SHELL_KMETRICS_EMIT_U32("cursor_last_region_height",
+                                cursor->last_region_height, 0U,
+                                cursor_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "mouse", "video");
+    }
+
+    {
+        const taskbar_metrics_t* taskbar = &current->taskbar;
+        const taskbar_metrics_t* base_taskbar = baseline ? &baseline->taskbar : 0;
+        uint8_t taskbar_available = current->taskbar_result == OK;
+        uint8_t base_taskbar_available = baseline &&
+                                         baseline->taskbar_result == OK;
+
+        SHELL_KMETRICS_EMIT_U32("taskbar_redraws", taskbar->redraws,
+                                base_taskbar ? base_taskbar->redraws : 0U,
+                                baseline_valid && taskbar_available &&
+                                    base_taskbar_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "taskbar", "ui");
+        SHELL_KMETRICS_EMIT_U32("taskbar_clock_updates",
+                                taskbar->clock_updates,
+                                base_taskbar ? base_taskbar->clock_updates : 0U,
+                                baseline_valid && taskbar_available &&
+                                    base_taskbar_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "taskbar", "ui");
+        SHELL_KMETRICS_EMIT_U32("taskbar_menu_draws", taskbar->menu_draws,
+                                base_taskbar ? base_taskbar->menu_draws : 0U,
+                                baseline_valid && taskbar_available &&
+                                    base_taskbar_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "taskbar", "ui");
+        SHELL_KMETRICS_EMIT_U32("taskbar_menu_open", taskbar->menu_open, 0U,
+                                taskbar_available, "bool",
+                                SHELL_KMETRICS_KIND_STATE, "taskbar", "ui");
+        SHELL_KMETRICS_EMIT_U32("taskbar_last_region_x",
+                                taskbar->last_region_x, 0U, taskbar_available,
+                                "pixel", SHELL_KMETRICS_KIND_GAUGE,
+                                "taskbar", "ui");
+        SHELL_KMETRICS_EMIT_U32("taskbar_last_region_y",
+                                taskbar->last_region_y, 0U, taskbar_available,
+                                "pixel", SHELL_KMETRICS_KIND_GAUGE,
+                                "taskbar", "ui");
+        SHELL_KMETRICS_EMIT_U32("taskbar_last_region_width",
+                                taskbar->last_region_width, 0U,
+                                taskbar_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "taskbar", "ui");
+        SHELL_KMETRICS_EMIT_U32("taskbar_last_region_height",
+                                taskbar->last_region_height, 0U,
+                                taskbar_available, "pixel",
+                                SHELL_KMETRICS_KIND_GAUGE, "taskbar", "ui");
+    }
+
+    {
+        const desktop_metrics_t* desktop = &current->desktop;
+        const desktop_metrics_t* base_desktop = baseline ? &baseline->desktop : 0;
+        uint8_t desktop_available = current->desktop_result == OK;
+        uint8_t base_desktop_available = baseline &&
+                                         baseline->desktop_result == OK;
+
+        SHELL_KMETRICS_EMIT_U32("desktop_redraws", desktop->redraws,
+                                base_desktop ? base_desktop->redraws : 0U,
+                                baseline_valid && desktop_available &&
+                                    base_desktop_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "desktop", "ui");
+        SHELL_KMETRICS_EMIT_U32("desktop_workspace_redraws",
+                                desktop->workspace_redraws,
+                                base_desktop ? base_desktop->workspace_redraws : 0U,
+                                baseline_valid && desktop_available &&
+                                    base_desktop_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "desktop", "ui");
+        SHELL_KMETRICS_EMIT_U32("desktop_icon_redraws",
+                                desktop->icon_redraws,
+                                base_desktop ? base_desktop->icon_redraws : 0U,
+                                baseline_valid && desktop_available &&
+                                    base_desktop_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "desktop", "ui");
+        SHELL_KMETRICS_EMIT_U32("desktop_icon_count", desktop->icon_count, 0U,
+                                desktop_available, "count",
+                                SHELL_KMETRICS_KIND_GAUGE, "desktop", "ui");
+        SHELL_KMETRICS_EMIT_U32("desktop_selected_icon",
+                                (uint32_t)desktop->selected_icon, 0U,
+                                desktop_available, "index",
+                                SHELL_KMETRICS_KIND_STATE, "desktop", "ui");
+        SHELL_KMETRICS_EMIT_U32("desktop_active", desktop->active, 0U,
+                                desktop_available, "bool",
+                                SHELL_KMETRICS_KIND_STATE, "desktop", "ui");
+        SHELL_KMETRICS_EMIT_U32("desktop_mode", desktop->mode, 0U,
+                                desktop_available, "enum",
+                                SHELL_KMETRICS_KIND_STATE, "desktop", "ui");
+    }
+
+    {
+        const wm_metrics_t* manager = &current->wm;
+        const wm_metrics_t* base_manager = baseline ? &baseline->wm : 0;
+        uint8_t manager_available = current->wm_result == OK;
+        uint8_t base_manager_available = baseline && baseline->wm_result == OK;
+
+        SHELL_KMETRICS_EMIT_U32("wm_redraws", manager->redraws,
+                                base_manager ? base_manager->redraws : 0U,
+                                baseline_valid && manager_available &&
+                                    base_manager_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_window_redraws", manager->window_redraws,
+                                base_manager ? base_manager->window_redraws : 0U,
+                                baseline_valid && manager_available &&
+                                    base_manager_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_focus_changes", manager->focus_changes,
+                                base_manager ? base_manager->focus_changes : 0U,
+                                baseline_valid && manager_available &&
+                                    base_manager_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_minimize_operations",
+                                manager->minimize_operations,
+                                base_manager ? base_manager->minimize_operations : 0U,
+                                baseline_valid && manager_available &&
+                                    base_manager_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_maximize_operations",
+                                manager->maximize_operations,
+                                base_manager ? base_manager->maximize_operations : 0U,
+                                baseline_valid && manager_available &&
+                                    base_manager_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_move_operations", manager->move_operations,
+                                base_manager ? base_manager->move_operations : 0U,
+                                baseline_valid && manager_available &&
+                                    base_manager_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_resize_operations",
+                                manager->resize_operations,
+                                base_manager ? base_manager->resize_operations : 0U,
+                                baseline_valid && manager_available &&
+                                    base_manager_available, "count",
+                                SHELL_KMETRICS_KIND_COUNTER, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_visible_windows", manager->visible_windows,
+                                0U, manager_available, "count",
+                                SHELL_KMETRICS_KIND_GAUGE, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_window_count", manager->window_count, 0U,
+                                manager_available, "count",
+                                SHELL_KMETRICS_KIND_GAUGE, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_focused_id", (uint32_t)manager->focused_id,
+                                0U, manager_available, "id",
+                                SHELL_KMETRICS_KIND_STATE, "wm", "ui");
+        SHELL_KMETRICS_EMIT_U32("wm_active", manager->active, 0U,
+                                manager_available, "bool",
+                                SHELL_KMETRICS_KIND_STATE, "wm", "ui");
+    }
     return OK;
 }
 

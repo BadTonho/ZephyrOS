@@ -930,6 +930,7 @@ VIDEO_BINARY = ROOT / "build" / "tests" / "test_video_host.exe"
 VIDEO_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_video_host.c",
     ROOT / "src" / "drivers" / "video.c",
+    ROOT / "src" / "core" / "string.c",
 )
 ACPI_RESULT_DIR = ROOT / "build" / "test-results" / "acpi-host"
 ACPI_BINARY = ROOT / "build" / "tests" / "test_acpi_host.exe"

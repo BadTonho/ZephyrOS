@@ -109,6 +109,7 @@ static int prev_x = 0;
 static int prev_y = 0;
 static vesa_color_t bg_buffer[CURSOR_W * CURSOR_H];
 static int cursor_visible = 1;
+static mouse_render_metrics_t mouse_render_metrics;
 
 /* Estado dos botoes para detectar press/release */
 static uint8_t prev_buttons = 0;
@@ -298,6 +299,7 @@ static void erase_cursor(void) {
 }
 
 void mouse_invalidate_cursor(void) {
+    mouse_render_metrics.cursor_invalidations++;
     if (cursor_drawn) {
         vesa_frame_mark_region((uint32_t)prev_x, (uint32_t)prev_y,
                                CURSOR_W, CURSOR_H);
@@ -344,6 +346,7 @@ static void draw_cursor(void) {
     }
 
     cursor_drawn = 1;
+    mouse_render_metrics.cursor_draws++;
     prev_x = cursor_x;
     prev_y = cursor_y;
 }
@@ -393,6 +396,11 @@ static mouse_damage_region_t mouse_damage_region_union(
 }
 
 static void mouse_present_damage_region(const mouse_damage_region_t* region) {
+    mouse_render_metrics.cursor_presentations++;
+    mouse_render_metrics.last_region_x = region->x;
+    mouse_render_metrics.last_region_y = region->y;
+    mouse_render_metrics.last_region_width = region->width;
+    mouse_render_metrics.last_region_height = region->height;
     vesa_flip_region(region->x, region->y, region->width, region->height);
 }
 
@@ -796,6 +804,13 @@ static void mouse_reset_state(void) {
     press_event_count = 0U;
     release_event_count = 0U;
     wheel_event_count = 0U;
+    mouse_render_metrics.cursor_invalidations = 0U;
+    mouse_render_metrics.cursor_draws = 0U;
+    mouse_render_metrics.cursor_presentations = 0U;
+    mouse_render_metrics.last_region_x = 0U;
+    mouse_render_metrics.last_region_y = 0U;
+    mouse_render_metrics.last_region_width = 0U;
+    mouse_render_metrics.last_region_height = 0U;
     queue_overflow_logged = 0;
     prev_buttons = 0;
     current_buttons = 0;
@@ -1067,6 +1082,19 @@ int mouse_get_flow_metrics(mouse_flow_metrics_t* metrics) {
     metrics->release_events = release_event_count;
     metrics->wheel_events = wheel_event_count;
     mouse_restore_interrupts(flags);
+    return OK;
+}
+
+int mouse_get_render_metrics(mouse_render_metrics_t* metrics) {
+    if (!metrics) {
+        LOG_ERROR("MOUSE", "Destino nulo nas metricas de renderizacao");
+        return ERR_NULL;
+    }
+    if (!input_sink_ready) {
+        LOG_WARN("MOUSE", "Metricas de renderizacao antes da inicializacao");
+        return ERR_UNAVAILABLE;
+    }
+    *metrics = mouse_render_metrics;
     return OK;
 }
 

@@ -585,6 +585,22 @@ usa nearest-neighbor durante o desenho, sem nova alocação, para produzir
 
 O comando Shell `icons` mostra o estado do filesystem e se cada um dos três
 ícones de Desktop está em modo `BMP` ou `FALLBACK`.
+
+## Métricas PERF5 de vídeo e interface
+
+As interfaces publicam getters diagnósticos append-only para VESA, vídeo do
+terminal, cursor, Taskbar, Desktop e Window Manager. Eles registram redraws,
+regiões sujas/apresentadas, capacidade do backbuffer, cursor, relógio, menus,
+workspace, ícones, foco e operações de janelas sem alterar o desenho ou o
+roteamento de entrada. Contadores são lidos por `kmetrics machine` com delta
+de `uint32_t`; dimensões, regiões e estados permanecem valores atuais.
+
+O modo Simple continua sendo o fallback quando VESA ou backbuffer não estão
+disponíveis. Nesse lane, screenshots são `ND` esperado, enquanto serial,
+prompt, modo Simple e estados de fallback continuam obrigatórios. No Classic,
+a aceitação exige screenshots por fase, nenhuma janela residual e retorno ao
+prompt após diagnósticos e cancelamento.
+
 ## Compatibilidade SHELL6
 
 A validacao final da interface usa os dois modos existentes. Classic exige

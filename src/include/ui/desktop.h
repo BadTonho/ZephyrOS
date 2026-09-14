@@ -45,6 +45,16 @@ typedef struct {
     int selected;
 } desktop_icon_t;
 
+typedef struct {
+    uint32_t redraws;
+    uint32_t workspace_redraws;
+    uint32_t icon_redraws;
+    uint32_t icon_count;
+    int32_t selected_icon;
+    uint8_t active;
+    desktop_mode_t mode;
+} desktop_metrics_t;
+
 void desktop_init(void);
 void desktop_draw(void);
 void desktop_draw_workspace(void);
@@ -59,5 +69,6 @@ int  desktop_set_mode(desktop_mode_t mode);
 desktop_mode_t desktop_get_mode(void);
 int  desktop_handle_mouse(mouse_event_t* event);
 int  desktop_handle_click(int px, int py);
+int  desktop_get_metrics(desktop_metrics_t* metrics);
 
 #endif

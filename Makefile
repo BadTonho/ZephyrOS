@@ -2309,6 +2309,15 @@ perf4-memory-storage-network: $(OS_IMG) tools\perf4_memory_storage_network.py to
 
 test-perf4-qemu: perf4-memory-storage-network
 
+test-perf5-host: test-vesa-host test-video-host test-mouse-host test-display-host test-taskbar-host test-desktop-host test-wm-host test-taskmanager-host test-filemanager-host test-settings-icons-host test-shell-diagnostics-host test-blackbox-host tools\perf5_video_ui.py tools\perf1_metrics.py tests\unit\test_perf5_video_ui.py tests\unit\test_qemu_test_runner.py
+	python -m unittest tests.unit.test_perf5_video_ui tests.unit.test_qemu_test_runner
+
+perf5-video-ui: $(OS_IMG) tools\perf5_video_ui.py tools\perf1_metrics.py tools\qemu_test_runner.py tests\catalog.json tests\coverage\registry.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\perf5_video_ui.py --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-perf5-qemu: perf5-video-ui
+
 test-shell-commands-wifi-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_wifi_host.c tests\catalog.json src\shell\shell_commands_wifi.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\wifi_manager.h src\include\core\usb_manager.h
 	python tools\core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
@@ -2485,7 +2494,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
-.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

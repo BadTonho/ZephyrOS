@@ -254,6 +254,13 @@ static void test_32bpp_drawing(void) {
     EXPECT(metrics.partial_presentations >= 1U);
     EXPECT(metrics.bytes_copied > 0U);
     EXPECT(metrics.last_copy_bytes > 0U);
+    EXPECT(metrics.last_region_width > 0U);
+    EXPECT(metrics.last_region_height > 0U);
+    EXPECT(metrics.last_region_pixels > 0U);
+    EXPECT(metrics.max_region_pixels >= metrics.last_region_pixels);
+    EXPECT(metrics.backbuffer_width == 64U);
+    EXPECT(metrics.backbuffer_height == 48U);
+    EXPECT(metrics.backbuffer_bytes > 0U);
     vesa_set_mode(800U, 600U, VESA_BPP_32);
 }
 

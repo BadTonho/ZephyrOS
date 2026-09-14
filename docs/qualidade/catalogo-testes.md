@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7734**
-- Casos de teste: **199**
+- Superfícies ativas: **7745**
+- Casos de teste: **200**
 - Superfícies aposentadas: **61**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1659 |
+| `api_function` | 1664 |
 | `asm_entry` | 101 |
-| `c_function` | 5854 |
+| `c_function` | 5860 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7640 |
+| `COVERED` | 7658 |
 | `MANUAL` | 0 |
-| `PENDING` | 94 |
+| `PENDING` | 87 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 199 |
+| `AUTOMATED` | 200 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,9 +37,9 @@
 | `apps` | 175 |
 | `appstore` | 98 |
 | `boot` | 146 |
-| `core` | 2902 |
-| `desktop` | 40 |
-| `drivers` | 981 |
+| `core` | 2904 |
+| `desktop` | 41 |
+| `drivers` | 984 |
 | `filemanager` | 93 |
 | `fs` | 1054 |
 | `gui` | 30 |
@@ -49,11 +49,11 @@
 | `process` | 336 |
 | `settings` | 62 |
 | `shell` | 1127 |
-| `taskbar` | 47 |
+| `taskbar` | 48 |
 | `thread` | 36 |
-| `ui` | 149 |
+| `ui` | 152 |
 | `updater` | 91 |
-| `wm` | 81 |
+| `wm` | 82 |
 
 ## Superfícies
 
@@ -861,6 +861,7 @@
 | `api:src/include/core/video.h:video_flush_updates` | `src/include/core/video.h` | `video_flush_updates` | `core` | `COVERED` | 4 |
 | `api:src/include/core/video.h:video_get_cursor_x` | `src/include/core/video.h` | `video_get_cursor_x` | `core` | `COVERED` | 4 |
 | `api:src/include/core/video.h:video_get_cursor_y` | `src/include/core/video.h` | `video_get_cursor_y` | `core` | `COVERED` | 4 |
+| `api:src/include/core/video.h:video_get_metrics` | `src/include/core/video.h` | `video_get_metrics` | `core` | `COVERED` | 5 |
 | `api:src/include/core/video.h:video_init` | `src/include/core/video.h` | `video_init` | `core` | `COVERED` | 4 |
 | `api:src/include/core/video.h:video_newline` | `src/include/core/video.h` | `video_newline` | `core` | `COVERED` | 4 |
 | `api:src/include/core/video.h:video_power_quiesce` | `src/include/core/video.h` | `video_power_quiesce` | `core` | `COVERED` | 4 |
@@ -1006,6 +1007,7 @@
 | `api:src/include/drivers/mouse.h:mouse_get_buttons` | `src/include/drivers/mouse.h` | `mouse_get_buttons` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_config` | `src/include/drivers/mouse.h` | `mouse_get_config` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_flow_metrics` | `src/include/drivers/mouse.h` | `mouse_get_flow_metrics` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_get_render_metrics` | `src/include/drivers/mouse.h` | `mouse_get_render_metrics` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/mouse.h:mouse_get_status` | `src/include/drivers/mouse.h` | `mouse_get_status` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_x` | `src/include/drivers/mouse.h` | `mouse_get_x` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_y` | `src/include/drivers/mouse.h` | `mouse_get_y` | `drivers` | `COVERED` | 4 |
@@ -1107,7 +1109,7 @@
 | `api:src/include/drivers/vesa.h:vesa_frame_begin_region` | `src/include/drivers/vesa.h` | `vesa_frame_begin_region` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_frame_end` | `src/include/drivers/vesa.h` | `vesa_frame_end` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_frame_mark_region` | `src/include/drivers/vesa.h` | `vesa_frame_mark_region` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_get_metrics` | `src/include/drivers/vesa.h` | `vesa_get_metrics` | `drivers` | `COVERED` | 5 |
+| `api:src/include/drivers/vesa.h:vesa_get_metrics` | `src/include/drivers/vesa.h` | `vesa_get_metrics` | `drivers` | `COVERED` | 6 |
 | `api:src/include/drivers/vesa.h:vesa_get_mode` | `src/include/drivers/vesa.h` | `vesa_get_mode` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/vesa.h:vesa_get_pixel` | `src/include/drivers/vesa.h` | `vesa_get_pixel` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_has_backbuffer` | `src/include/drivers/vesa.h` | `vesa_has_backbuffer` | `drivers` | `COVERED` | 4 |
@@ -1584,6 +1586,7 @@
 | `api:src/include/ui/desktop.h:desktop_draw` | `src/include/ui/desktop.h` | `desktop_draw` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/desktop.h:desktop_draw_icons` | `src/include/ui/desktop.h` | `desktop_draw_icons` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/desktop.h:desktop_draw_workspace` | `src/include/ui/desktop.h` | `desktop_draw_workspace` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_get_metrics` | `src/include/ui/desktop.h` | `desktop_get_metrics` | `ui` | `COVERED` | 4 |
 | `api:src/include/ui/desktop.h:desktop_get_mode` | `src/include/ui/desktop.h` | `desktop_get_mode` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/desktop.h:desktop_get_selected_app` | `src/include/ui/desktop.h` | `desktop_get_selected_app` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/desktop.h:desktop_handle_click` | `src/include/ui/desktop.h` | `desktop_handle_click` | `ui` | `COVERED` | 3 |
@@ -1654,6 +1657,7 @@
 | `api:src/include/ui/taskbar.h:taskbar_draw_config_menu` | `src/include/ui/taskbar.h` | `taskbar_draw_config_menu` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/taskbar.h:taskbar_get_bounds` | `src/include/ui/taskbar.h` | `taskbar_get_bounds` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/taskbar.h:taskbar_get_config` | `src/include/ui/taskbar.h` | `taskbar_get_config` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_get_metrics` | `src/include/ui/taskbar.h` | `taskbar_get_metrics` | `ui` | `COVERED` | 4 |
 | `api:src/include/ui/taskbar.h:taskbar_get_work_area` | `src/include/ui/taskbar.h` | `taskbar_get_work_area` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/taskbar.h:taskbar_handle_click` | `src/include/ui/taskbar.h` | `taskbar_handle_click` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/taskbar.h:taskbar_handle_config_key` | `src/include/ui/taskbar.h` | `taskbar_handle_config_key` | `ui` | `COVERED` | 3 |
@@ -1698,6 +1702,7 @@
 | `api:src/include/ui/wm.h:wm_get_config` | `src/include/ui/wm.h` | `wm_get_config` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/wm.h:wm_get_focused` | `src/include/ui/wm.h` | `wm_get_focused` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/wm.h:wm_get_focused_id` | `src/include/ui/wm.h` | `wm_get_focused_id` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_get_metrics` | `src/include/ui/wm.h` | `wm_get_metrics` | `ui` | `COVERED` | 4 |
 | `api:src/include/ui/wm.h:wm_get_window` | `src/include/ui/wm.h` | `wm_get_window` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/wm.h:wm_handle_click` | `src/include/ui/wm.h` | `wm_handle_click` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/wm.h:wm_handle_key` | `src/include/ui/wm.h` | `wm_handle_key` | `ui` | `COVERED` | 3 |
@@ -2825,32 +2830,33 @@
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector` | `src/core/kernel_tests_assembly.c` | `kernel_tests_trigger_vector` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_interrupt_return` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_interrupt_return` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_vectors` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_contains_prompt` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains_prompt` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 3 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_find` | `src/core/kernel_tests_blackbox.c` | `blackbox_find` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete` | `src/core/kernel_tests_blackbox.c` | `blackbox_hw6_observation_complete` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_hw6_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf3_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_find` | `src/core/kernel_tests_blackbox.c` | `blackbox_find` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete` | `src/core/kernel_tests_blackbox.c` | `blackbox_hw6_observation_complete` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_hw6_case` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf3_case` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf4_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf4_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_sec6_case` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 3 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker_completed` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf5_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf5_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_sec6_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker_completed` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_report_hw6_missing` | `src/core/kernel_tests_blackbox.c` | `blackbox_report_hw6_missing` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing` | `src/core/kernel_tests_blackbox.c` | `blackbox_report_krn6_missing` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt` | `src/core/kernel_tests_blackbox.c` | `blackbox_requires_prompt` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_hw6_observation` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing` | `src/core/kernel_tests_blackbox.c` | `blackbox_report_krn6_missing` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt` | `src/core/kernel_tests_blackbox.c` | `blackbox_requires_prompt` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_hw6_observation` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_krn6_observation` | `core` | `COVERED` | 2 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_sec6_observation` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 3 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_hw6_output` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_krn6_output` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_sec6_output` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 3 |
-| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_sec6_observation` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_hw6_output` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_krn6_output` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_sec6_output` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_execution.c:execution_check_ipc` | `src/core/kernel_tests_execution.c` | `execution_check_ipc` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_execution.c:execution_check_processes` | `src/core/kernel_tests_execution.c` | `execution_check_processes` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_execution.c:execution_check_signal` | `src/core/kernel_tests_execution.c` | `execution_check_signal` | `core` | `COVERED` | 2 |
@@ -2916,7 +2922,7 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 29 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 30 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
@@ -2925,7 +2931,7 @@
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 25 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 29 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 30 |
 | `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_level_str` | `src/core/log.c` | `log_level_str` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
@@ -4223,6 +4229,7 @@
 | `c:src/desktop/desktop.c:desktop_find_nearest_slot` | `src/desktop/desktop.c` | `desktop_find_nearest_slot` | `desktop` | `COVERED` | 1 |
 | `c:src/desktop/desktop.c:desktop_find_slot_by_grid` | `src/desktop/desktop.c` | `desktop_find_slot_by_grid` | `desktop` | `COVERED` | 3 |
 | `c:src/desktop/desktop.c:desktop_get_icon_entry` | `src/desktop/desktop.c` | `desktop_get_icon_entry` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_get_metrics` | `src/desktop/desktop.c` | `desktop_get_metrics` | `desktop` | `PENDING` | 0 |
 | `c:src/desktop/desktop.c:desktop_get_mode` | `src/desktop/desktop.c` | `desktop_get_mode` | `desktop` | `COVERED` | 3 |
 | `c:src/desktop/desktop.c:desktop_get_selected_app` | `src/desktop/desktop.c` | `desktop_get_selected_app` | `desktop` | `COVERED` | 1 |
 | `c:src/desktop/desktop.c:desktop_handle_click` | `src/desktop/desktop.c` | `desktop_handle_click` | `desktop` | `COVERED` | 1 |
@@ -4535,8 +4542,8 @@
 | `c:src/drivers/mouse.c:mouse_apply_movement` | `src/drivers/mouse.c` | `mouse_apply_movement` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_bottom_half` | `src/drivers/mouse.c` | `mouse_bottom_half` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_collect_event_batch` | `src/drivers/mouse.c` | `mouse_collect_event_batch` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/mouse.c:mouse_damage_region_area` | `src/drivers/mouse.c` | `mouse_damage_region_area` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/mouse.c:mouse_damage_region_union` | `src/drivers/mouse.c` | `mouse_damage_region_union` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_damage_region_area` | `src/drivers/mouse.c` | `mouse_damage_region_area` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/mouse.c:mouse_damage_region_union` | `src/drivers/mouse.c` | `mouse_damage_region_union` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/mouse.c:mouse_decode_wheel` | `src/drivers/mouse.c` | `mouse_decode_wheel` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_delta_magnitude` | `src/drivers/mouse.c` | `mouse_delta_magnitude` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_dispatch_event` | `src/drivers/mouse.c` | `mouse_dispatch_event` | `drivers` | `COVERED` | 1 |
@@ -4544,7 +4551,8 @@
 | `c:src/drivers/mouse.c:mouse_enqueue_packet` | `src/drivers/mouse.c` | `mouse_enqueue_packet` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_get_buttons` | `src/drivers/mouse.c` | `mouse_get_buttons` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_get_config` | `src/drivers/mouse.c` | `mouse_get_config` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/mouse.c:mouse_get_flow_metrics` | `src/drivers/mouse.c` | `mouse_get_flow_metrics` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/mouse.c:mouse_get_flow_metrics` | `src/drivers/mouse.c` | `mouse_get_flow_metrics` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_get_render_metrics` | `src/drivers/mouse.c` | `mouse_get_render_metrics` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/mouse.c:mouse_get_status` | `src/drivers/mouse.c` | `mouse_get_status` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_get_x` | `src/drivers/mouse.c` | `mouse_get_x` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_get_y` | `src/drivers/mouse.c` | `mouse_get_y` | `drivers` | `COVERED` | 1 |
@@ -4556,14 +4564,14 @@
 | `c:src/drivers/mouse.c:mouse_invalidate_cursor` | `src/drivers/mouse.c` | `mouse_invalidate_cursor` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_make_damage_region` | `src/drivers/mouse.c` | `mouse_make_damage_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_map_buttons` | `src/drivers/mouse.c` | `mouse_map_buttons` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/mouse.c:mouse_prepare_event_batch` | `src/drivers/mouse.c` | `mouse_prepare_event_batch` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/mouse.c:mouse_prepare_event_batch` | `src/drivers/mouse.c` | `mouse_prepare_event_batch` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_present_cursor` | `src/drivers/mouse.c` | `mouse_present_cursor` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_present_damage_region` | `src/drivers/mouse.c` | `mouse_present_damage_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_process_events` | `src/drivers/mouse.c` | `mouse_process_events` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_process_raw_byte` | `src/drivers/mouse.c` | `mouse_process_raw_byte` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/mouse.c:mouse_queue_count` | `src/drivers/mouse.c` | `mouse_queue_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_raw_queue_count` | `src/drivers/mouse.c` | `mouse_raw_queue_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_raw_queue_pending` | `src/drivers/mouse.c` | `mouse_raw_queue_pending` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/mouse.c:mouse_queue_count` | `src/drivers/mouse.c` | `mouse_queue_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_raw_queue_count` | `src/drivers/mouse.c` | `mouse_raw_queue_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_raw_queue_pending` | `src/drivers/mouse.c` | `mouse_raw_queue_pending` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_read` | `src/drivers/mouse.c` | `mouse_read` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:mouse_report_queue_overflow` | `src/drivers/mouse.c` | `mouse_report_queue_overflow` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/mouse.c:mouse_reset_state` | `src/drivers/mouse.c` | `mouse_reset_state` | `drivers` | `COVERED` | 1 |
@@ -4971,6 +4979,7 @@
 | `c:src/drivers/video.c:video_flush_updates` | `src/drivers/video.c` | `video_flush_updates` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_get_cursor_x` | `src/drivers/video.c` | `video_get_cursor_x` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_get_cursor_y` | `src/drivers/video.c` | `video_get_cursor_y` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_get_metrics` | `src/drivers/video.c` | `video_get_metrics` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/video.c:video_init` | `src/drivers/video.c` | `video_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_newline` | `src/drivers/video.c` | `video_newline` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:video_power_quiesce` | `src/drivers/video.c` | `video_power_quiesce` | `drivers` | `COVERED` | 1 |
@@ -7312,11 +7321,11 @@
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_system` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_system` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_u32` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_u32` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_update` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_update` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_video` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_video` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_work` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_work` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_kind_name` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_kind_name` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_line_start` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_line_start` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_take_snapshot` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_take_snapshot` | `shell` | `COVERED` | 4 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished` | `src/shell/shell_pipeline.c` | `shell_pipeline_all_finished` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_fd` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_resources` | `shell` | `COVERED` | 1 |
@@ -7454,6 +7463,7 @@
 | `c:src/taskbar/taskbar.c:taskbar_get_clock_rect` | `src/taskbar/taskbar.c` | `taskbar_get_clock_rect` | `taskbar` | `COVERED` | 3 |
 | `c:src/taskbar/taskbar.c:taskbar_get_config` | `src/taskbar/taskbar.c` | `taskbar_get_config` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_get_menu_bounds` | `src/taskbar/taskbar.c` | `taskbar_get_menu_bounds` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_get_metrics` | `src/taskbar/taskbar.c` | `taskbar_get_metrics` | `taskbar` | `PENDING` | 0 |
 | `c:src/taskbar/taskbar.c:taskbar_get_work_area` | `src/taskbar/taskbar.c` | `taskbar_get_work_area` | `taskbar` | `COVERED` | 3 |
 | `c:src/taskbar/taskbar.c:taskbar_handle_click` | `src/taskbar/taskbar.c` | `taskbar_handle_click` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_handle_click_gui` | `src/taskbar/taskbar.c` | `taskbar_handle_click_gui` | `taskbar` | `COVERED` | 1 |
@@ -7621,6 +7631,7 @@
 | `c:src/wm/wm.c:wm_get_config` | `src/wm/wm.c` | `wm_get_config` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_get_focused` | `src/wm/wm.c` | `wm_get_focused` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_get_focused_id` | `src/wm/wm.c` | `wm_get_focused_id` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_get_metrics` | `src/wm/wm.c` | `wm_get_metrics` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_get_window` | `src/wm/wm.c` | `wm_get_window` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_gui_begin_drag` | `src/wm/wm.c` | `wm_gui_begin_drag` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_gui_begin_resize` | `src/wm/wm.c` | `wm_gui_begin_resize` | `wm` | `COVERED` | 1 |
@@ -7987,6 +7998,7 @@
 | `qemu:tst5:perf2-input-responsiveness` | `qemu` | `smoke` | `qemu:tst5:perf2-input-responsiveness` | `AUTOMATED` | 240 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com input-send-event, serial, QMP e dispositivo PS/2 disponiveis | selecionar o Shell, capturar baseline, executar diagnosticos somente leitura durante carga QMP de teclado e mouse, cancelar regcheck com F11 e capturar amostra final | cada sessao retorna o prompt e o marcador TST5; o envelope guest tem tres amostras completas; press, release e roda preservam a contagem enviada; descartes e rejeicoes permanecem zero; o relatorio registra host e input.log | QMP sem suporte a input-send-event, envelope ausente ou truncado, chave duplicada, metricas guest ND, descarte, overflow, rejeicao deferred, timeout, prompt preso ou diagnostico negativo | somente eventos QMP, snapshots de metricas e diagnosticos observacionais; o estresse nao existe como comando produtivo e update/recovery permanecem sem mutacao | encerrar cada QEMU isolado e preservar serial, QMP, input.log, amostras host e relatorio JSON |
 | `qemu:tst5:perf3-scheduler-idle` | `qemu` | `smoke` | `qemu:tst5:perf3-scheduler-idle` | `AUTOMATED` | 180 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com serial, QMP e scheduler guest disponiveis | capturar boot, aguardar Idle, executar regcheck full por janela fixa, limpar com F11 e validar scheduler/workqueue | tres amostras guest completas, contabilidade Idle/ativo consistente, kworker vinculada e prompt restaurado | envelope ausente ou incompleto, metricas scheduler ND, timeout, protocolo, fila residual, erro workqueue ou schedcheck negativo | somente diagnosticos observacionais, amostras guest/host e cancelamento do job de teste | encerrar cada QEMU isolado e preservar serial, fases, amostras host e relatorio JSON |
 | `qemu:tst5:perf4-memory-storage-network` | `qemu` | `smoke` | `qemu:tst5:perf4-memory-storage-network` | `AUTOMATED` | 180 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com serial, QMP, rede e getters de diagnostico disponiveis | capturar boot, resetar metricas, aguardar idle e executar diagnosticos deterministas de memoria, VFS, bloco, cache e rede | tres amostras guest completas, invariantes de memoria coerentes, filas drenadas e prompt restaurado | envelope ausente ou incompleto, chaves duplicadas, protocolo, timeout, recurso residual, erro permanente, fila nao drenada ou metrica guest ND | somente diagnosticos observacionais, amostras guest/host e encerramento de cada QEMU isolado | encerrar cada QEMU isolado e preservar serial, fases, amostras host e relatorio JSON |
+| `qemu:tst5:perf5-video-ui` | `qemu` | `smoke` | `qemu:tst5:perf5-video-ui` | `AUTOMATED` | 240 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com serial, QMP e suporte de screendump quando VESA estiver disponivel | capturar video e exercitar taskbar, Desktop, aplicativos, cursor e Window Manager com diagnosticos observacionais | amostras guest completas, regioes coerentes, fallback explicito, screenshots VESA e prompt restaurado | envelope ausente ou incompleto, chaves duplicadas, protocolo, timeout, prompt ausente, screenshot obrigatorio ausente ou janela residual | somente diagnosticos observacionais, entrada QMP, screenshots e encerramento de cada QEMU isolado | encerrar cada QEMU isolado e preservar manifest, serial, input, QMP, screenshots e relatorio JSON |
 | `qemu:tst5:poweroff` | `qemu` | `smoke` | `qemu:tst5:poweroff` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e suporte de poweroff do guest disponivel | confirmar caminho do Shell e enviar poweroff somente apos PASS | o caso publica PASS e QMP observa SHUTDOWN ou a saida esperada do QEMU | poweroff antes do PASS, reset inesperado, timeout, protocolo ou QEMU | encerra somente a instancia QEMU em snapshot | fechar sockets e preservar logs mesmo apos a saida do guest |
 | `qemu:tst5:processes` | `qemu` | `smoke` | `qemu:tst5:processes` | `AUTOMATED` | 75 | 15 | `snapshot` | `quality` | `qemu` | processos, threads, scheduler e Shell estao READY | consultar processos e threads por teclado externo | os diagnosticos terminam e o marcador confirma o retorno ao prompt | processo residual, diagnostico preso, timeout, protocolo ou QEMU | somente consultas de estado do guest em snapshot | encerrar o QEMU e preservar historico de entrada |
 | `qemu:tst5:reboot` | `qemu` | `smoke` | `qemu:tst5:reboot` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e caminho de reboot do guest disponivel | confirmar o terminal, enviar reboot apos PASS e aguardar novo HELLO/READY | QMP publica RESET e uma segunda sessao publica READY e HEARTBEAT | reset prematuro, handshake ausente, timeout, protocolo ou QEMU | reinicia somente a instancia QEMU em snapshot | encerrar a segunda sessao via QMP e preservar as duas fases |
@@ -8037,16 +8049,7 @@
 - `c:src/boot/recovery_loader.c:recovery_out16`
 - `c:src/boot/recovery_loader.c:recovery_out8`
 - `c:src/core/input.c:input_get_flow_metrics`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_find`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_report_hw6_missing`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output`
 - `c:src/core/kernel_tests_tst6.c:tst6_run_usb_storage_ehci`
 - `c:src/core/update_system.c:any_nonzero`
 - `c:src/core/update_system.c:update_system_base_equal`
@@ -8080,19 +8083,19 @@
 - `c:src/core/update_system.c:update_system_verify_file_internal`
 - `c:src/core/update_system.c:update_system_verify_signature`
 - `c:src/core/update_system.c:update_system_version_compare`
+- `c:src/desktop/desktop.c:desktop_get_metrics`
 - `c:src/drivers/ehci.c:ehci_dma_layout_valid`
 - `c:src/drivers/ehci.c:ehci_dma_pointer_phys`
 - `c:src/drivers/ehci.c:ehci_schedule_valid`
 - `c:src/drivers/keyboard.c:keyboard_get_flow_metrics`
-- `c:src/drivers/mouse.c:mouse_get_flow_metrics`
-- `c:src/drivers/mouse.c:mouse_prepare_event_batch`
-- `c:src/drivers/mouse.c:mouse_queue_count`
-- `c:src/drivers/mouse.c:mouse_raw_queue_count`
-- `c:src/drivers/mouse.c:mouse_raw_queue_pending`
+- `c:src/drivers/mouse.c:mouse_damage_region_area`
+- `c:src/drivers/mouse.c:mouse_damage_region_union`
+- `c:src/drivers/mouse.c:mouse_get_render_metrics`
 - `c:src/drivers/usb_msc.c:msc_bulk_transfer`
 - `c:src/drivers/usb_msc.c:msc_control_request`
 - `c:src/drivers/usb_msc.c:msc_reset_bulk_toggles`
 - `c:src/drivers/vesa.c:vesa_bytes_per_pixel`
+- `c:src/drivers/video.c:video_get_metrics`
 - `c:src/fs/fat32.c:cluster_to_lba`
 - `c:src/fs/storage.c:storage_clear_directory_slots`
 - `c:src/fs/storage.c:storage_release_selected_fat32_clusters`
@@ -8116,6 +8119,8 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready`
 - `c:src/shell/shell_hosted.c:shell_hosted_release`
 - `c:src/shell/shell_hosted.c:shell_runtime_close_hosted`
+- `c:src/taskbar/taskbar.c:taskbar_get_metrics`
+- `c:src/wm/wm.c:wm_get_metrics`
 
 ## Aposentadas
 

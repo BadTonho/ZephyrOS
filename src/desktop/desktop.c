@@ -46,6 +46,7 @@ static int desktop_drag_start_x = 0;
 static int desktop_drag_start_y = 0;
 static int desktop_drag_active = 0;
 static int desktop_drag_preview_slot = -1;
+static desktop_metrics_t desktop_metrics;
 
 static icon_entry_t* desktop_get_icon_entry(desktop_app_type_t type) {
     switch (type) {
@@ -347,12 +348,14 @@ static void draw_single_icon_classic(desktop_icon_t* icon) {
 }
 
 static void desktop_draw_icons_simple(void) {
+    desktop_metrics.icon_redraws++;
     for (int i = 0; i < icon_count; i++) {
         draw_single_icon_simple(&desktop_icons[i]);
     }
 }
 
 static void desktop_draw_icons_classic(void) {
+    desktop_metrics.icon_redraws++;
     for (int i = 0; i < icon_count; i++) {
         draw_single_icon_classic(&desktop_icons[i]);
     }
@@ -384,6 +387,8 @@ static int desktop_draw_classic_workspace(void) {
     vesa_clear(background);
     desktop_layout_classic();
     desktop_draw_icons_classic();
+
+    desktop_metrics.workspace_redraws++;
 
     return 1;
 }
@@ -510,6 +515,9 @@ void desktop_init(void) {
     last_click_icon = -1;
     last_click_ticks = 0;
     desktop_reset_drag();
+    desktop_metrics.redraws = 0U;
+    desktop_metrics.workspace_redraws = 0U;
+    desktop_metrics.icon_redraws = 0U;
     for (int i = 0; i < DESKTOP_MAX_ICONS; i++) {
         desktop_icon_slots[i] = -1;
     }
@@ -530,6 +538,7 @@ void desktop_init(void) {
 }
 
 void desktop_draw(void) {
+    desktop_metrics.redraws++;
     vesa_frame_begin();
 
     if (desktop_mode == DESKTOP_MODE_CLASSIC) {
@@ -742,6 +751,21 @@ int desktop_set_mode(desktop_mode_t mode) {
 
 desktop_mode_t desktop_get_mode(void) {
     return desktop_mode;
+}
+
+int desktop_get_metrics(desktop_metrics_t* metrics) {
+    if (!metrics) {
+        LOG_ERROR("DESKTOP", "Destino nulo ao consultar metricas");
+        return ERR_NULL;
+    }
+    metrics->redraws = desktop_metrics.redraws;
+    metrics->workspace_redraws = desktop_metrics.workspace_redraws;
+    metrics->icon_redraws = desktop_metrics.icon_redraws;
+    metrics->icon_count = (uint32_t)icon_count;
+    metrics->selected_icon = (int32_t)selected_icon;
+    metrics->active = desktop_active ? 1U : 0U;
+    metrics->mode = desktop_mode;
+    return OK;
 }
 
 int desktop_handle_mouse(mouse_event_t* event) {

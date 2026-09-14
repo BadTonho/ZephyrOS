@@ -113,6 +113,20 @@ typedef struct {
     int resize_win_id;
 } wm_manager_t;
 
+typedef struct {
+    uint32_t redraws;
+    uint32_t window_redraws;
+    uint32_t focus_changes;
+    uint32_t minimize_operations;
+    uint32_t maximize_operations;
+    uint32_t move_operations;
+    uint32_t resize_operations;
+    uint32_t visible_windows;
+    uint32_t window_count;
+    int32_t focused_id;
+    uint8_t active;
+} wm_metrics_t;
+
 void wm_init(void);
 void wm_draw_all(void);
 void wm_draw_window(int id);
@@ -157,5 +171,6 @@ void wm_set_btn_position(wm_btn_position_t pos);
 void wm_set_btn_order(wm_btn_order_t order);
 void wm_set_show_title(int show);
 void wm_set_border_style(int style);
+int  wm_get_metrics(wm_metrics_t* metrics);
 
 #endif

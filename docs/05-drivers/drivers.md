@@ -1260,5 +1260,22 @@ operacoes de socket e buscas de rota sao contadores ou bytes com wraparound
 adiciona logging a IRQ, polling, alocacao ou caminho por pacote. A rede da
 matriz usa `user,model=e1000,restrict=on` sem acesso externo; ausencia de uma
 camada publica `ND` e nao e convertida em zero.
+
+## PERF5: observabilidade de video e interfaces
+
+Os contratos diagnosticos `vesa_get_metrics()`, `video_get_metrics()`,
+`mouse_get_render_metrics()`, `taskbar_get_metrics()`, `desktop_get_metrics()`
+e `wm_get_metrics()` sao append-only e lidos somente por `kmetrics machine`.
+VESA publica a regiao apresentada, pixels parciais e capacidade do backbuffer;
+video, cursor e interfaces publicam redraws, regioes, foco, janelas, menus,
+relogio e operacoes de janela. Contadores usam delta `uint32_t` com
+`overflow=wrap_u32`; regioes, dimensoes, capacidades e estados sao valores
+atuais.
+
+Nenhum getter registra em IRQ, alocador, lock ou caminho por pixel. O perfil
+`no-vesa` preserva o fallback VGA/Simple e serial; screenshots ficam `ND`
+esperado, sem transformar indisponibilidade em zero. A instrumentacao nao
+altera ABI, syscalls, scheduler, capacidade de filas, formatos ou
+`src/boot/boot.asm`.
 | `usb-storage-ehci` | EHCI e MSC somente leitura | status e leitura do dispositivo | escrita recusada e perda degradada |
 | hardware fisico | nao validado nesta fase | nenhum suporte declarado | `PENDING` |

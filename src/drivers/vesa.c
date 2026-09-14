@@ -92,6 +92,8 @@ static void vesa_metrics_record_copy(uint32_t x, uint32_t y,
                                      uint32_t width, uint32_t height,
                                      uint32_t bytes, uint32_t start_ticks) {
     uint32_t elapsed = timer_get_ticks() - start_ticks;
+    uint32_t pixels = width > VESA_METRICS_MAX_VALUE / height ?
+                      VESA_METRICS_MAX_VALUE : width * height;
 
     vesa_metrics_add(&vesa_metrics.presentations, 1U);
     if (x == 0 && y == 0 && width == current_mode.width &&
@@ -103,6 +105,18 @@ static void vesa_metrics_record_copy(uint32_t x, uint32_t y,
     vesa_metrics_add(&vesa_metrics.bytes_copied, bytes);
     vesa_metrics.last_copy_bytes = bytes;
     vesa_metrics.last_copy_ticks = elapsed;
+    vesa_metrics.last_region_x = x;
+    vesa_metrics.last_region_y = y;
+    vesa_metrics.last_region_width = width;
+    vesa_metrics.last_region_height = height;
+    vesa_metrics.last_region_pixels = pixels;
+    if (x != 0U || y != 0U || width != current_mode.width ||
+        height != current_mode.height) {
+        vesa_metrics_add(&vesa_metrics.partial_pixels, pixels);
+    }
+    if (pixels > vesa_metrics.max_region_pixels) {
+        vesa_metrics.max_region_pixels = pixels;
+    }
     if (elapsed > vesa_metrics.max_copy_ticks) {
         vesa_metrics.max_copy_ticks = elapsed;
     }
@@ -218,6 +232,8 @@ void vesa_init(uint32_t boot_info_addr) {
         return;
     }
     current_mode.initialized = 1;
+    vesa_metrics.backbuffer_width = current_mode.width;
+    vesa_metrics.backbuffer_height = current_mode.height;
 
     LOG_INFO("VESA", "Framebuffer detectado");
 }
@@ -242,6 +258,9 @@ int vesa_init_backbuffer(void) {
     uint32_t size = current_mode.height * current_mode.pitch;
     backbuffer = (uint8_t*)kmalloc(size);
     if (backbuffer) {
+        vesa_metrics.backbuffer_width = current_mode.width;
+        vesa_metrics.backbuffer_height = current_mode.height;
+        vesa_metrics.backbuffer_bytes = size;
         LOG_INFO("VESA", "Backbuffer alocado com sucesso");
         return OK;
     }
@@ -255,6 +274,7 @@ void vesa_disable(void) {
         kfree(backbuffer);
         backbuffer = NULL;
     }
+    vesa_metrics.backbuffer_bytes = 0U;
     vesa_reset_clip_rect();
     frame_depth = 0U;
     frame_dirty = 0U;

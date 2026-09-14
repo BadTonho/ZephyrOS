@@ -1248,3 +1248,14 @@ das zonas fisicas e validada no relatorio, enquanto contadores usam delta com
 wraparound `uint32_t` e estados indisponiveis permanecem `ND`. A coleta nao
 entra em IRQ, page fault, alocador, lock ou caminho de I/O; nao ha novo ABI,
 syscall, formato ou capacidade de fila.
+
+## PERF5: snapshot de video e interfaces
+
+`kmetrics machine` tambem copia, sob demanda, os getters de VESA, video do
+terminal, cursor, taskbar, Desktop e Window Manager. As metricas de regiao,
+backbuffer, redraw, foco, janelas e apresentacao sao observacionais e nao
+entram em IRQ, scheduler, alocador, lock ou caminho de desenho por pixel.
+Contadores usam delta com wraparound `uint32_t`; dimensoes, regioes e estados
+sao valores atuais. Sem VESA, o getter publica indisponibilidade e o Shell
+mantem o fallback Simple; nao ha nova syscall, ABI, formato ou alteracao no
+bootloader.

@@ -2530,6 +2530,33 @@ Na validacao de 2026-09-14, o relatorio registrou `PASS` em 9/9 sessoes,
 com a imagem SHA-256
 `19052f96819368e6180bd1b295281be6b1c961f7c0fe1ecc5ea17f4b8e3b7073`.
 
+## PERF5: video e interfaces
+
+Depois dos gates de build e do catalogo, execute:
+
+```text
+make test-perf5-host
+make test-perf5-qemu
+make perf5-video-ui
+```
+
+O alvo QEMU gera nove sessoes isoladas em `baseline/Simple`,
+`baseline/Classic` e `no-vesa/Simple fallback`, tres iteracoes por perfil.
+Cada sessao captura screenshots de boot, baseline, Desktop, UI, diagnosticos e
+final nos lanes VESA; no lane `no-vesa`, o screenshot e `ND` esperado. As
+fases declarativas sao `boot`, `baseline`, `ui`, `diagnostics`, `cleanup` e
+`final`. O runner preserva `manifest.json`, `serial.log`, `input.log`,
+`qmp-events.log`, screenshots e amostras do processo QEMU a cada 250 ms.
+
+O relatorio agregado fica em
+`build/test-results/perf5-video-ui/perf5-video-ui.json`, com schema
+`zephyros-perf5-video-ui-v1`. O host registra wall time, CPU user/system, RSS,
+pico, quantidade e intervalo; falha do coletor host vira `ND`. Falha de
+suporte QMP e `BLOCKED`; envelope incompleto, chave duplicada, protocolo,
+timeout, prompt ausente, janela residual ou screenshot VESA ausente reprova.
+Nao considerar a PERF5 concluida sem os gates e 9/9 sessoes `PASS`; nenhuma
+divida tecnica deve ser marcada como quitada nesta etapa.
+
 ## Traces Assembly de boot e recuperacao
 
 Os traces QEMU de Assembly devem ser executados individualmente, com um ID de

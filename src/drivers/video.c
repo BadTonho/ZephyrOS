@@ -6,6 +6,7 @@
 #include "drivers/mouse.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/string.h"
 
 #define TERMINAL_TAB_WIDTH 8
 #define TERMINAL_RESERVED_ROWS 2 /* rodape e margem acima da taskbar */
@@ -52,6 +53,7 @@ static uint32_t terminal_output_batch_depth = 0;
 static uint8_t terminal_output_batch_redraw = 0;
 static uint8_t terminal_output_batch_hosted_dirty = 0;
 static uint32_t terminal_generation = 0;
+static video_metrics_t video_metrics;
 
 static void terminal_append_number(char* text, int* pos, uint32_t value);
 
@@ -94,7 +96,23 @@ static int video_can_batch_updates(void) {
 }
 
 static void video_present_region(int x, int y, int width, int height) {
+    vesa_mode_t* mode;
+
     if (!use_framebuffer || width <= 0 || height <= 0) return;
+
+    mode = vesa_get_mode();
+    video_metrics.dirty_regions++;
+    video_metrics.last_dirty_x = (uint32_t)x;
+    video_metrics.last_dirty_y = (uint32_t)y;
+    video_metrics.last_dirty_width = (uint32_t)width;
+    video_metrics.last_dirty_height = (uint32_t)height;
+    if (mode && mode->initialized && (uint32_t)x == 0U &&
+        (uint32_t)y == 0U && (uint32_t)width == mode->width &&
+        (uint32_t)height == mode->height) {
+        video_metrics.full_redraws++;
+    } else {
+        video_metrics.partial_redraws++;
+    }
 
     vesa_flip_region((uint32_t)x, (uint32_t)y,
                      (uint32_t)width, (uint32_t)height);
@@ -712,6 +730,7 @@ void video_init(void) {
     LOG_INFO("VIDEO", "Inicializando video");
     spinlock_init(&video_lock);
     video_update_depth = 0;
+    kmemset(&video_metrics, 0, sizeof(video_metrics));
     vesa_mode_t* mode = vesa_get_mode();
     use_framebuffer = (mode && mode->initialized) ? 1 : 0;
 
@@ -1334,6 +1353,10 @@ int video_terminal_present_hosted_dirty(void) {
     vesa_mode_t* mode = vesa_get_mode();
     vesa_color_t background;
     int full_redraw;
+    int presented_x;
+    int presented_y;
+    int presented_width;
+    int presented_height;
 
     spinlock_acquire(&video_lock);
     if (!terminal_hosted_dirty) {
@@ -1373,10 +1396,30 @@ int video_terminal_present_hosted_dirty(void) {
             terminal_hosted_dirty_x, terminal_hosted_dirty_y,
             terminal_hosted_dirty_width, terminal_hosted_dirty_height);
     }
+    presented_x = terminal_hosted_dirty_x;
+    presented_y = terminal_hosted_dirty_y;
+    presented_width = terminal_hosted_dirty_width;
+    presented_height = terminal_hosted_dirty_height;
     terminal_hosted_dirty = 0;
     terminal_hosted_dirty_width = 0;
     terminal_hosted_dirty_height = 0;
     spinlock_release(&video_lock);
+    video_metrics.dirty_regions++;
+    video_metrics.last_dirty_x = (uint32_t)presented_x;
+    video_metrics.last_dirty_y = (uint32_t)presented_y;
+    video_metrics.last_dirty_width = (uint32_t)presented_width;
+    video_metrics.last_dirty_height = (uint32_t)presented_height;
+    if (full_redraw) video_metrics.full_redraws++;
+    else video_metrics.partial_redraws++;
     vesa_frame_end();
+    return OK;
+}
+
+int video_get_metrics(video_metrics_t* metrics) {
+    if (!metrics) {
+        LOG_ERROR("VIDEO", "Destino nulo ao consultar metricas de video");
+        return ERR_NULL;
+    }
+    *metrics = video_metrics;
     return OK;
 }

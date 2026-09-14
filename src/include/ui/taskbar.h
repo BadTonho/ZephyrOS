@@ -57,6 +57,17 @@ typedef struct {
     int height;
 } tb_config_t;
 
+typedef struct {
+    uint32_t redraws;
+    uint32_t clock_updates;
+    uint32_t menu_draws;
+    uint32_t last_region_x;
+    uint32_t last_region_y;
+    uint32_t last_region_width;
+    uint32_t last_region_height;
+    uint8_t menu_open;
+} taskbar_metrics_t;
+
 void taskbar_init(void);
 void taskbar_draw(void);
 void taskbar_redraw_menu(void);
@@ -80,5 +91,6 @@ int  taskbar_get_work_area(tb_rect_t* area);
 void taskbar_draw_config_menu(void);
 int  taskbar_handle_config_key(uint8_t scancode);
 int  taskbar_handle_click(int px, int py);
+int  taskbar_get_metrics(taskbar_metrics_t* metrics);
 
 #endif

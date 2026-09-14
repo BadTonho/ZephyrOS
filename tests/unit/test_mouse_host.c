@@ -321,6 +321,7 @@ static int check_before_init(void) {
     mouse_config_t config;
     mouse_status_t status;
     mouse_flow_metrics_t flow_metrics;
+    mouse_render_metrics_t render_metrics;
 
     host_reset_fixture();
     if (mouse_has_wheel() != 0) return 1;
@@ -330,7 +331,8 @@ static int check_before_init(void) {
         return 4;
     }
     if (mouse_get_config(0) != ERR_NULL || mouse_get_status(0) != ERR_NULL ||
-        mouse_get_flow_metrics(0) != ERR_NULL) {
+        mouse_get_flow_metrics(0) != ERR_NULL ||
+        mouse_get_render_metrics(0) != ERR_NULL) {
         return 5;
     }
     if (mouse_get_config(&config) != OK ||
@@ -338,7 +340,8 @@ static int check_before_init(void) {
         config.primary_button != MOUSE_PRIMARY_LEFT) return 6;
     if (mouse_get_status(&status) != OK || status.initialized != 0U ||
         status.last_error != ERR_UNAVAILABLE ||
-        mouse_get_flow_metrics(&flow_metrics) != ERR_UNAVAILABLE) return 7;
+        mouse_get_flow_metrics(&flow_metrics) != ERR_UNAVAILABLE ||
+        mouse_get_render_metrics(&render_metrics) != ERR_UNAVAILABLE) return 7;
     if (mouse_get_x() != 0 || mouse_get_y() != 0 ||
         mouse_get_buttons() != 0U) return 8;
     mouse_process_events();
@@ -351,6 +354,7 @@ static int check_initialization_and_events(void) {
     mouse_config_t config;
     mouse_status_t status;
     mouse_flow_metrics_t flow_metrics;
+    mouse_render_metrics_t render_metrics;
     uint32_t initial_x;
     uint32_t initial_y;
 
@@ -415,7 +419,14 @@ static int check_initialization_and_events(void) {
         flow_metrics.release_events == 0U ||
         flow_metrics.wheel_events == 0U ||
         flow_metrics.move_events == 0U) return 33;
+    if (mouse_get_render_metrics(&render_metrics) != OK ||
+        render_metrics.cursor_draws == 0U ||
+        render_metrics.cursor_presentations == 0U ||
+        render_metrics.last_region_width == 0U ||
+        render_metrics.last_region_height == 0U) return 34;
     mouse_invalidate_cursor();
+    if (mouse_get_render_metrics(&render_metrics) != OK ||
+        render_metrics.cursor_invalidations == 0U) return 35;
     if (host_flip_count == 0U || host_frame_count == 0U ||
         host_pixel_writes == 0U || host_schedule_count == 0U ||
         host_pointer_publish_count < 3U) return 32;

@@ -176,15 +176,34 @@ escopo.
 
 ### PERF5 — Vídeo e interfaces
 
-- [ ] Medir regiões VESA, cursor, backbuffer, taskbar, relógio, WM e janelas
+- [x] Medir regiões VESA, cursor, backbuffer, taskbar, relógio, WM e janelas
   Classic.
-- [ ] Preservar fallback VGA/Simple e evitar repaint completo quando uma região
+- [x] Preservar fallback VGA/Simple e evitar repaint completo quando uma região
   menor for suficiente.
-- [ ] Medir latência de entrada e custo de apresentação em vez de inferir
+- [x] Medir latência de entrada e custo de apresentação em vez de inferir
   desempenho apenas pelo tamanho do código.
-- [ ] Confirmar que Task Manager, Explorer, Settings e Desktop permaneçam
+- [x] Confirmar que Task Manager, Explorer, Settings e Desktop permaneçam
   responsivos durante jobs e diagnósticos.
-- [ ] Registrar ganhos e regressões por perfil de hardware.
+- [x] Registrar ganhos e regressões por perfil de hardware.
+
+Implementação PERF5 entregue: `kmetrics machine` agora agrega as métricas
+append-only de VESA, vídeo, cursor, Taskbar, Desktop e Window Manager. O
+runner recebeu fases declarativas, screenshots, operações QMP, amostras do
+processo QEMU e o caso `qemu:tst5:perf5-video-ui`, com nove sessões executadas
+em `baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`. O
+catálogo, manifesto de cobertura, testes host/Python, Makefiles e documentos
+operacionais foram atualizados. Nenhuma otimização A/B foi mantida sem ganho
+reprodutível e `src/boot/boot.asm`, ABI, syscalls, scheduler e IRQs ficaram
+inalterados.
+
+Validação da PERF5 concluída com `make q3check`, `make clean && make`,
+`make catalog-test`, `make test-perf5-host` e matriz QEMU 9/9 `PASS`. O relatório
+`build/test-results/perf5-video-ui/perf5-video-ui.json` registrou as três
+iterações de `baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`,
+com imagem de 268435456 bytes e SHA-256
+`12dd01cdbf9dd046b69c50c7249d61b784cfc15ea83afb9eeefe6af7f85eb069`. Nenhuma
+otimização A/B foi solicitada ou mantida; a etapa entregou instrumentação e
+evidência. Nenhuma dívida técnica será quitada nesta fase.
 
 ### PERF6 — Quitação e release
 

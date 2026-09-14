@@ -7658,3 +7658,26 @@ dívida.
   Estado: PERF3 `PENDING`; `DT100-002` permanece `ACEITA`. O backlog observado
   sob VESA precisa ser resolvido ou aceito explicitamente antes de considerar
   a matriz 9/9 e a etapa concluidas.
+
+- PERF5 - video e interfaces - implementacao registrada em 2026-09-14
+  (America/Sao_Paulo). `vesa_metrics_t` foi estendida com regioes, pixels
+  parciais e capacidade do backbuffer; foram adicionados getters diagnosticos
+  append-only para video, cursor, taskbar, Desktop e Window Manager. O
+  `kmetrics machine` preserva deltas `uint32_t`, estados atuais e
+  `value=ND status=unavailable` no fallback sem VESA.
+
+  O caso `qemu:tst5:perf5-video-ui`, o schema
+  `zephyros-perf5-video-ui-v1`, fases declarativas, screenshots por fase,
+  coleta host/QEMU, catalogo, manifesto, testes host/Python e alvos
+  Windows/Linux foram adicionados. A validacao host direcionada passou com
+  VESA, video, mouse, display, taskbar, Desktop, WM, aplicacoes e
+  diagnosticos; os testes Python passaram com 27 casos. Os gates
+  `make q3check`, `make clean && make`, `make catalog-test` e
+  `make test-perf5-host` passaram. A matriz QEMU foi executada com 9/9 `PASS`
+  no relatorio `build/test-results/perf5-video-ui/perf5-video-ui.json`, usando
+  a imagem de 268435456 bytes com SHA-256
+  `12dd01cdbf9dd046b69c50c7249d61b784cfc15ea83afb9eeefe6af7f85eb069`.
+  Todas as sessoes geraram envelope, logs, screenshots VESA ou `ND` esperado
+  no fallback e amostras host; nenhuma otimização A/B foi mantida sem ganho.
+
+  Estado: PERF5 `PASS`; nenhuma divida tecnica foi quitada.

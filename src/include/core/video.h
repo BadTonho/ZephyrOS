@@ -13,6 +13,16 @@
 #define SCREEN_COLS 128
 #define SCREEN_ROWS 48
 
+typedef struct {
+    uint32_t full_redraws;
+    uint32_t partial_redraws;
+    uint32_t dirty_regions;
+    uint32_t last_dirty_x;
+    uint32_t last_dirty_y;
+    uint32_t last_dirty_width;
+    uint32_t last_dirty_height;
+} video_metrics_t;
+
 #define VGA_COLOR_BLACK 0
 #define VGA_COLOR_BLUE 1
 #define VGA_COLOR_GREEN 2
@@ -69,5 +79,6 @@ int  video_terminal_is_hosted(void);
 int  video_terminal_draw(int x, int y, int width, int height);
 int  video_terminal_take_hosted_dirty(void);
 int  video_terminal_present_hosted_dirty(void);
+int  video_get_metrics(video_metrics_t* metrics);
 
 #endif

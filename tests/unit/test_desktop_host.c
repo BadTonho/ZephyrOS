@@ -296,8 +296,10 @@ void video_print_at(int x, int y, const char* text, uint8_t color) {
 
 static void test_simple_mode(void) {
     mouse_event_t event;
+    desktop_metrics_t metrics;
 
     reset_fixture();
+    EXPECT(desktop_get_metrics(0) == ERR_NULL);
     desktop_init();
     EXPECT(desktop_get_mode() == DESKTOP_MODE_SIMPLE);
     EXPECT(desktop_get_selected_app() == DESKTOP_APP_SHELL);
@@ -319,6 +321,9 @@ static void test_simple_mode(void) {
     desktop_draw();
     desktop_draw_workspace();
     desktop_draw_icons();
+    EXPECT(desktop_get_metrics(&metrics) == OK);
+    EXPECT(metrics.redraws > 0U && metrics.icon_redraws > 0U);
+    EXPECT(metrics.icon_count >= 3U && metrics.mode == DESKTOP_MODE_SIMPLE);
     EXPECT(desktop_handle_click(16, 32) == DESKTOP_APP_SHELL);
     EXPECT(desktop_handle_click(0, 0) == 0);
     EXPECT(desktop_handle_key(0x48U) == 0);
@@ -344,6 +349,7 @@ static void test_simple_mode(void) {
 
 static void test_classic_mode_and_mouse(void) {
     mouse_event_t event;
+    desktop_metrics_t metrics;
 
     reset_fixture();
     fake_mode.initialized = 1U;
@@ -355,6 +361,8 @@ static void test_classic_mode_and_mouse(void) {
     desktop_draw();
     desktop_draw_workspace();
     desktop_draw_icons();
+    EXPECT(desktop_get_metrics(&metrics) == OK);
+    EXPECT(metrics.workspace_redraws > 0U && metrics.mode == DESKTOP_MODE_CLASSIC);
     EXPECT(fake_frame_calls > 0U);
     EXPECT(desktop_handle_click(16, 32) == 0);
 

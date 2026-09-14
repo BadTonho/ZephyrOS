@@ -19,6 +19,7 @@ static int config_menu_open = 0;
 static int config_selection = 0;
 static uint32_t last_second = 0;
 static int pending_window_id = -1;
+static taskbar_metrics_t taskbar_metrics;
 
 static tb_config_t config = {
     .position = TB_POS_BOTTOM,
@@ -253,6 +254,14 @@ void taskbar_init(void) {
     config_selection = 0;
     last_second = 0;
     pending_window_id = -1;
+    taskbar_metrics.redraws = 0U;
+    taskbar_metrics.clock_updates = 0U;
+    taskbar_metrics.menu_draws = 0U;
+    taskbar_metrics.last_region_x = 0U;
+    taskbar_metrics.last_region_y = 0U;
+    taskbar_metrics.last_region_width = 0U;
+    taskbar_metrics.last_region_height = 0U;
+    taskbar_metrics.menu_open = 0U;
 
     update_dimensions();
     taskbar_prepare_glass_background();
@@ -411,9 +420,14 @@ static void taskbar_draw_gui(void) {
 }
 
 void taskbar_draw(void) {
+    taskbar_metrics.redraws++;
     if (taskbar_uses_gui()) {
         tb_rect_t bounds;
         if (!taskbar_get_bounds(&bounds)) return;
+        taskbar_metrics.last_region_x = (uint32_t)bounds.x;
+        taskbar_metrics.last_region_y = (uint32_t)bounds.y;
+        taskbar_metrics.last_region_width = (uint32_t)bounds.width;
+        taskbar_metrics.last_region_height = (uint32_t)bounds.height;
         vesa_frame_begin_region(bounds.x, bounds.y, bounds.width, bounds.height);
         taskbar_draw_gui();
         taskbar_redraw_menu();
@@ -422,6 +436,10 @@ void taskbar_draw(void) {
     }
 
     vesa_frame_begin();
+    taskbar_metrics.last_region_x = 0U;
+    taskbar_metrics.last_region_y = 0U;
+    taskbar_metrics.last_region_width = SCREEN_COLS * FONT_WIDTH;
+    taskbar_metrics.last_region_height = SCREEN_ROWS * FONT_HEIGHT;
 
     int row = get_row();
     int col = get_col();
@@ -505,6 +523,7 @@ void taskbar_update_clock(void) {
 
     if (current_second == last_second) return;
     last_second = current_second;
+    taskbar_metrics.clock_updates++;
 
     char time_str[6];
     taskbar_format_time(current_second, time_str);
@@ -638,6 +657,8 @@ static void taskbar_draw_menu(void) {
         return;
     }
 
+    taskbar_metrics.menu_draws++;
+
     if (taskbar_uses_gui()) {
         taskbar_draw_menu_gui();
         return;
@@ -765,6 +786,8 @@ static void taskbar_close_menu(void) {
 void taskbar_draw_config_menu(void) {
     int item_count;
     int menu_h;
+
+    taskbar_metrics.menu_draws++;
 
     vesa_frame_begin();
     mouse_invalidate_cursor();
@@ -978,6 +1001,16 @@ void taskbar_set_custom_position(int x, int y) {
 
 tb_config_t* taskbar_get_config(void) {
     return &config;
+}
+
+int taskbar_get_metrics(taskbar_metrics_t* metrics) {
+    if (!metrics) {
+        LOG_ERROR("TASKBAR", "Destino nulo ao consultar metricas");
+        return ERR_NULL;
+    }
+    taskbar_metrics.menu_open = taskbar_is_menu_open() ? 1U : 0U;
+    *metrics = taskbar_metrics;
+    return OK;
 }
 
 static int taskbar_handle_click_gui(int px, int py) {

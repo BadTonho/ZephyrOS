@@ -11351,6 +11351,26 @@
       }
     },
     {
+      "id": "perf5-video-ui-coverage",
+      "domain": "video-ui",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": ["qemu:tst5:perf5-video-ui"],
+      "surface_ids": [
+        "api:src/include/drivers/vesa.h:vesa_get_metrics",
+        "api:src/include/core/video.h:video_get_metrics",
+        "api:src/include/drivers/mouse.h:mouse_get_render_metrics",
+        "api:src/include/ui/taskbar.h:taskbar_get_metrics",
+        "api:src/include/ui/desktop.h:desktop_get_metrics",
+        "api:src/include/ui/wm.h:wm_get_metrics",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf5_case",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot"
+      ],
+      "evidence": "PASS: q3check, clean build, catalog-test, test-perf5-host e matriz QEMU 9/9; build/test-results/perf5-video-ui/perf5-video-ui.json; imagem SHA-256 12dd01cdbf9dd046b69c50c7249d61b784cfc15ea83afb9eeefe6af7f85eb069"
+    },
+    {
       "id": "perf4-memory-storage-network-coverage",
       "domain": "memory-vfs-storage-network",
       "owner": "quality",

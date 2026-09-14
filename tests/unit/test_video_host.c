@@ -217,8 +217,10 @@ static void init_video_fixture(void) {
 static void test_output_and_drawing(void) {
     uint32_t fill_calls;
     uint32_t pixel_calls;
+    video_metrics_t metrics;
 
     init_video_fixture();
+    EXPECT(video_get_metrics(0) == ERR_NULL);
     EXPECT(video_get_cursor_x() == 0);
     EXPECT(video_get_cursor_y() == 0);
     video_set_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLUE);
@@ -256,6 +258,9 @@ static void test_output_and_drawing(void) {
     EXPECT(fake_fill_calls > fill_calls);
     EXPECT(fake_cursor_x <= VGA_WIDTH - 1U);
     EXPECT(fake_cursor_y <= VGA_HEIGHT - 1U);
+    EXPECT(video_get_metrics(&metrics) == OK);
+    EXPECT(metrics.dirty_regions > 0U);
+    EXPECT(metrics.partial_redraws > 0U);
 }
 
 static void test_terminal_history(void) {

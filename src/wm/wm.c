@@ -16,6 +16,7 @@
 
 static wm_manager_t wm;
 static int wm_active = 0;
+static wm_metrics_t wm_metrics;
 
 #define WM_GUI_WINDOW_COUNT WM_MAX_WINDOWS
 #define WM_GUI_ID_BASE 100
@@ -237,6 +238,7 @@ static void wm_gui_focus(int index) {
     wm_gui_windows[index].focused = 1;
     wm_gui_windows[index].z_order = wm_gui_z_counter++;
     wm_gui_focused = index;
+    wm_metrics.focus_changes++;
     wm_gui_sync_taskbar();
 }
 
@@ -512,6 +514,7 @@ static void wm_gui_draw_window(const wm_gui_window_t* window) {
     display_metrics_t metrics;
 
     if (!window || display_get_metrics(&metrics) != OK) return;
+    wm_metrics.window_redraws++;
     wm_gui_draw_frame(window);
     wm_gui_draw_title(window, &metrics);
     for (int i = 0; i < WM_GUI_CONTROL_COUNT; i++) {
@@ -537,6 +540,7 @@ static void wm_gui_draw_all(void) {
 
     wm_gui_reflow_pending = 0;
     wm_gui_redraw_pending = 0;
+    wm_metrics.redraws++;
     vesa_frame_begin();
     mouse_invalidate_cursor();
     if (desktop_is_active()) desktop_draw_workspace();
@@ -559,6 +563,7 @@ static void wm_gui_minimize(int index) {
     wm_gui_windows[index].state = WM_STATE_MINIMIZED;
     wm_gui_windows[index].visible = 0;
     wm_gui_windows[index].focused = 0;
+    wm_metrics.minimize_operations++;
     if (wm_gui_focused == index) wm_gui_focused = -1;
     wm_gui_focus_next();
     wm_gui_sync_taskbar();
@@ -572,6 +577,7 @@ static void wm_gui_maximize_or_restore(int index) {
     if (index < 0 || index >= wm_gui_window_count ||
         !wm_gui_get_work_area(&work_area)) return;
     window = &wm_gui_windows[index];
+    wm_metrics.maximize_operations++;
     if (window->state == WM_STATE_MAXIMIZED) {
         window->x = window->restore_x;
         window->y = window->restore_y;
@@ -662,6 +668,7 @@ static void wm_gui_update_drag(wm_gui_window_t* window,
     if (y > max_y) y = max_y;
     window->x = x;
     window->y = y;
+    wm_metrics.move_operations++;
 }
 
 static void wm_gui_update_resize(wm_gui_window_t* window,
@@ -709,6 +716,7 @@ static void wm_gui_update_resize(wm_gui_window_t* window,
     window->y = top;
     window->width = right - left;
     window->height = bottom - top;
+    wm_metrics.resize_operations++;
 }
 
 static int wm_gui_update_interaction(const mouse_event_t* event) {
@@ -845,6 +853,13 @@ void wm_init(void) {
     wm.drag_active = 0;
     wm.resize_active = 0;
     wm_active = 0;
+    wm_metrics.redraws = 0U;
+    wm_metrics.window_redraws = 0U;
+    wm_metrics.focus_changes = 0U;
+    wm_metrics.minimize_operations = 0U;
+    wm_metrics.maximize_operations = 0U;
+    wm_metrics.move_operations = 0U;
+    wm_metrics.resize_operations = 0U;
 
     wm.config.btn_position = WM_BTNS_RIGHT;
     wm.config.btn_order = WM_BTN_MIN_MAX_CLOSE;
@@ -1218,6 +1233,7 @@ void wm_draw_title_bar(wm_window_t* win) {
 void wm_draw_window(int id) {
     wm_window_t* win = &wm.windows[id];
     if (!win->visible) return;
+    wm_metrics.window_redraws++;
 
     if (win->state == WM_STATE_MAXIMIZED) {
         win->x = 0;
@@ -1262,6 +1278,7 @@ void wm_draw_window(int id) {
 
 void wm_draw_all(void) {
     if (!wm_active) return;
+    wm_metrics.redraws++;
     if (wm_gui_enabled()) {
         wm_gui_draw_all();
         return;
@@ -1370,6 +1387,7 @@ void wm_focus_window(int id) {
     wm.windows[id].focused = 1;
     wm.windows[id].z_order = wm.z_counter++;
     wm.focused_id = id;
+    wm_metrics.focus_changes++;
 
     wm_draw_all();
 }
@@ -1427,6 +1445,7 @@ void wm_minimize_window(int id) {
     wm.windows[id].state = WM_STATE_MINIMIZED;
     wm.windows[id].visible = 0;
     wm.windows[id].focused = 0;
+    wm_metrics.minimize_operations++;
 
     if (wm.focused_id == id) {
         wm.focused_id = -1;
@@ -1439,6 +1458,7 @@ void wm_minimize_window(int id) {
 void wm_maximize_window(int id) {
     if (id < 0 || id >= wm.window_count) return;
     wm.windows[id].state = WM_STATE_MAXIMIZED;
+    wm_metrics.maximize_operations++;
     wm_draw_all();
 }
 
@@ -1454,6 +1474,7 @@ void wm_move_window(int id, int x, int y) {
     if (id < 0 || id >= wm.window_count) return;
     wm.windows[id].x = x;
     wm.windows[id].y = y;
+    wm_metrics.move_operations++;
     wm_draw_all();
 }
 
@@ -1463,6 +1484,7 @@ void wm_resize_window(int id, int w, int h) {
     if (h < wm.windows[id].min_height) h = wm.windows[id].min_height;
     wm.windows[id].width = w;
     wm.windows[id].height = h;
+    wm_metrics.resize_operations++;
     wm_draw_all();
 }
 
@@ -1733,4 +1755,38 @@ void wm_toggle_window(int id) {
         wm_gui_focus(index);
     }
     wm_gui_draw_all();
+}
+
+int wm_get_metrics(wm_metrics_t* metrics) {
+    int visible = 0;
+    int count;
+
+    if (!metrics) {
+        LOG_ERROR("WM", "Destino nulo ao consultar metricas");
+        return ERR_NULL;
+    }
+    if (wm_gui_enabled()) {
+        count = wm_gui_window_count;
+        for (int i = 0; i < count; i++) {
+            if (wm_gui_windows[i].visible) visible++;
+        }
+        metrics->focused_id = wm_gui_focused;
+    } else {
+        count = wm.window_count;
+        for (int i = 0; i < count; i++) {
+            if (wm.windows[i].visible) visible++;
+        }
+        metrics->focused_id = wm.focused_id;
+    }
+    metrics->redraws = wm_metrics.redraws;
+    metrics->window_redraws = wm_metrics.window_redraws;
+    metrics->focus_changes = wm_metrics.focus_changes;
+    metrics->minimize_operations = wm_metrics.minimize_operations;
+    metrics->maximize_operations = wm_metrics.maximize_operations;
+    metrics->move_operations = wm_metrics.move_operations;
+    metrics->resize_operations = wm_metrics.resize_operations;
+    metrics->visible_windows = (uint32_t)visible;
+    metrics->window_count = (uint32_t)count;
+    metrics->active = wm_active ? 1U : 0U;
+    return OK;
 }

@@ -243,6 +243,54 @@ make test-perf4-qemu
 make perf4-memory-storage-network
 ```
 
+## PERF5 - Video e interfaces
+
+A PERF5 adiciona ao snapshot interno de `kmetrics machine` as metricas
+append-only de VESA, video do terminal, cursor, taskbar, Desktop e Window
+Manager. Os getters `video_get_metrics()`, `mouse_get_render_metrics()`,
+`taskbar_get_metrics()`, `desktop_get_metrics()` e `wm_get_metrics()` sao
+diagnosticos host/guest; nao alteram syscalls, ABI, scheduler ou o caminho de
+IRQ. `vesa_get_metrics()` preserva seu contrato e agora tambem informa a
+ultima regiao, pixels parciais e capacidade do backbuffer.
+
+Apresentacoes, redraws, invalidacoes, desenhos, menus, relogio, foco,
+minimizacao, maximizacao, movimento e redimensionamento sao contadores e
+usam delta `uint32_t` com `overflow=wrap_u32`. Regioes, dimensoes, capacidades,
+quantidade de janelas, modo e estados sao gauges/estados atuais. Cada linha
+continua informando `unit`, `kind`, `source`, `context`, `resolution`,
+`overflow` e `status`; VESA ausente publica `value=ND status=unavailable` e o
+lane `no-vesa` exige apenas o fallback Simple, serial e prompt.
+
+O caso `qemu:tst5:perf5-video-ui` usa nove sessoes isoladas
+(`baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`, tres
+iteracoes cada). As fases sao `boot`, `baseline`, `ui`, `diagnostics`,
+`cleanup` e `final`; a entrada QMP, screenshots, marcadores de fase, logs
+seriais e o processo QEMU sao preservados por sessao. O host e amostrado a
+cada 250 ms, com wall time, CPU user/system, RSS, pico, quantidade e
+intervalo; indisponibilidade do coletor host e `ND`.
+
+O schema da sessao e `zephyros-perf5-video-ui-v1` e o agregado fica em
+`build/test-results/perf5-video-ui/perf5-video-ui.json`. Os artefatos incluem
+`manifest.json`, `serial.log`, `input.log`, `qmp-events.log` e screenshots.
+Screenshot e obrigatorio nos lanes VESA e `ND` esperado no lane `no-vesa`.
+Envelope incompleto, chave duplicada, protocolo invalido, timeout, prompt
+ausente, janela residual ou screenshot obrigatorio ausente reprova a sessao;
+falta de suporte QMP e `BLOCKED`. A matriz executada produziu 9/9 `PASS` no
+relatorio versionado; nao foi mantida nenhuma otimizacao A/B sem ganho mediano
+reproduzivel e nenhuma divida tecnica e quitada nesta etapa.
+
+Comandos da etapa:
+
+```text
+make q3check
+make clean
+make
+make catalog-test
+make test-perf5-host
+make test-perf5-qemu
+make perf5-video-ui
+```
+
 ## Registros
 
 ### 2026-08-30 - PWR1, Idle arquitetural com HLT

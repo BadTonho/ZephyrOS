@@ -21,6 +21,10 @@
 #include "drivers/idt.h"
 #include "drivers/mouse.h"
 #include "drivers/vesa.h"
+#include "core/video.h"
+#include "ui/desktop.h"
+#include "ui/taskbar.h"
+#include "ui/wm.h"
 #include "fs/block.h"
 #include "fs/block_cache.h"
 #include "fs/permissions.h"
@@ -77,6 +81,11 @@ typedef struct {
     workqueue_stats_t workqueue;
     shell_job_status_t job;
     vesa_metrics_t vesa;
+    video_metrics_t video;
+    mouse_render_metrics_t mouse_render;
+    taskbar_metrics_t taskbar;
+    desktop_metrics_t desktop;
+    wm_metrics_t wm;
     uint8_t vesa_available;
     uint8_t vesa_backbuffer;
     memory_heap_stats_t heap;
@@ -137,6 +146,11 @@ typedef struct {
     int resource_result;
     int stack_result;
     int scheduler_runtime_result;
+    int video_result;
+    int mouse_render_result;
+    int taskbar_result;
+    int desktop_result;
+    int wm_result;
     int update_capabilities_result;
     int update_status_result;
     int update_slots_result;

@@ -269,7 +269,10 @@ static int check_buttons(void) {
 }
 
 static int check_tui(void) {
+    taskbar_metrics_t metrics;
+
     reset_fixture();
+    if (check(taskbar_get_metrics(0) == ERR_NULL) != OK) return 1;
     taskbar_set_position(TB_POS_BOTTOM);
     taskbar_draw();
     fake_ticks = 50U;
@@ -304,6 +307,11 @@ static int check_tui(void) {
     taskbar_draw();
     taskbar_set_position(TB_POS_RIGHT);
     taskbar_draw();
+    if (check(taskbar_get_metrics(&metrics) == OK &&
+              metrics.redraws > 0U && metrics.clock_updates > 0U &&
+              metrics.menu_draws > 0U && metrics.last_region_height > 0U) != OK) {
+        return 12;
+    }
     return check(fake_draw_calls > 0U && fake_text_calls > 0U);
 }
 

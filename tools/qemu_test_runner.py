@@ -396,13 +396,22 @@ def validate_input_step(step: Any, identifier: str) -> None:
     if not isinstance(step, dict) or step.get("op") not in {
             "key", "keys", "text", "wait", "pointer_move",
             "pointer_button", "pointer_wheel", "pointer_drag", "stress",
-            "phase"}:
+            "phase", "screenshot"}:
         raise RunnerError(f"script_entrada_invalido:{identifier}",
                           "catalog_error", True)
     operation = step["op"]
     if operation == "phase":
-        if step.get("phase") not in {"boot", "idle", "load", "cleanup", "final"}:
+        if step.get("phase") not in {
+                "boot", "baseline", "idle", "load", "ui", "diagnostics",
+                "cleanup", "final"}:
             raise RunnerError(f"fase_entrada_invalida:{identifier}",
+                              "catalog_error", True)
+        return
+    if operation == "screenshot":
+        label = step.get("label")
+        if (not isinstance(label, str) or not label or
+                not token_valid(label) or len(label) > 48):
+            raise RunnerError(f"screenshot_invalido:{identifier}",
                               "catalog_error", True)
         return
     if operation == "wait":
@@ -681,6 +690,7 @@ class QemuSession:
         self.qmp_status: dict[str, Any] | None = None
         self.qmp_events: list[dict[str, Any]] = []
         self.input_trace: list[dict[str, Any]] = []
+        self.input_trace_sequence = 0
         self.input_stress_hook: Any = None
         self.host_sample_hook: Any = None
         self.input_stress_cycles = 0
@@ -841,6 +851,8 @@ class QemuSession:
 
     def _record_input(self, entry: dict[str, Any]) -> None:
         entry = dict(entry)
+        self.input_trace_sequence = getattr(self, "input_trace_sequence", 0) + 1
+        entry["seq"] = self.input_trace_sequence
         entry["time"] = round(time.monotonic(), 6)
         self.input_trace.append(entry)
         with (self.artifact_dir / "input.log").open(
@@ -981,6 +993,8 @@ class QemuSession:
                                    step["steps"])
         elif step["op"] == "stress":
             self.run_input_stress(step["seconds"], step.get("cycle_ms", 100))
+        elif step["op"] == "screenshot":
+            self.capture_screenshot(step["label"])
         else:
             deadline = time.monotonic() + float(step["seconds"])
             while time.monotonic() < deadline:
@@ -1002,7 +1016,11 @@ class QemuSession:
             self.qmp.command("screendump", {"filename": str(path)})
         except RunnerError as error:
             self.diagnostics.append(f"screenshot:{label}:{error.cause}")
+            self._record_input({"op": "screenshot", "label": label,
+                                "status": "ND", "error": error.cause})
             return None
+        self._record_input({"op": "screenshot", "label": label,
+                            "status": "ok", "path": path.name})
         return path
 
     def reset_protocol(self) -> None:
@@ -1011,6 +1029,7 @@ class QemuSession:
         self.deferred_events.clear()
         self.host_sequence = 0
         self.guest_sequence = 0
+        self.input_trace_sequence = 0
         self.last_heartbeat = None
 
     def _read_serial(self) -> None:

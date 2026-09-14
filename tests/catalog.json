@@ -19053,6 +19053,31 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "api:src/include/core/video.h:video_get_metrics",
+      "kind": "api_function",
+      "source": "src/include/core/video.h",
+      "symbol": "video_get_metrics",
+      "linkage": "public",
+      "owner": "core",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:platform",
+        "qemu:tst5:apps",
+        "qemu:tst5:perf5-video-ui",
+        "qemu:tst5:shell",
+        "qemu:tst6:matrix:baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "api:src/include/core/video.h:video_init",
       "kind": "api_function",
       "source": "src/include/core/video.h",
@@ -22493,6 +22518,31 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/drivers/mouse.h:mouse_get_render_metrics",
+      "kind": "api_function",
+      "source": "src/include/drivers/mouse.h",
+      "symbol": "mouse_get_render_metrics",
+      "linkage": "public",
+      "owner": "drivers",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse",
+        "qemu:tst5:apps",
+        "qemu:tst5:input",
+        "qemu:tst5:perf5-video-ui",
+        "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/drivers/mouse.h:mouse_get_status",
       "kind": "api_function",
       "source": "src/include/drivers/mouse.h",
@@ -24813,6 +24863,7 @@
         "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
+        "qemu:tst5:perf5-video-ui",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
@@ -36864,6 +36915,30 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/ui/desktop.h:desktop_get_metrics",
+      "kind": "api_function",
+      "source": "src/include/ui/desktop.h",
+      "symbol": "desktop_get_metrics",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop",
+        "qemu:tst5:apps",
+        "qemu:tst5:perf5-video-ui",
+        "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/ui/desktop.h:desktop_get_mode",
       "kind": "api_function",
       "source": "src/include/ui/desktop.h",
@@ -38446,6 +38521,30 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/ui/taskbar.h:taskbar_get_metrics",
+      "kind": "api_function",
+      "source": "src/include/ui/taskbar.h",
+      "symbol": "taskbar_get_metrics",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar",
+        "qemu:tst5:apps",
+        "qemu:tst5:perf5-video-ui",
+        "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/ui/taskbar.h:taskbar_get_work_area",
       "kind": "api_function",
       "source": "src/include/ui/taskbar.h",
@@ -39442,6 +39541,30 @@
       "case_ids": [
         "host:ui:wm",
         "qemu:tst5:apps",
+        "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/ui/wm.h:wm_get_metrics",
+      "kind": "api_function",
+      "source": "src/include/ui/wm.h",
+      "symbol": "wm_get_metrics",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:wm",
+        "qemu:tst5:apps",
+        "qemu:tst5:perf5-video-ui",
         "qemu:tst5:shell"
       ],
       "tags": [],
@@ -63418,6 +63541,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63462,6 +63586,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63483,9 +63608,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete",
@@ -63501,9 +63629,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
@@ -63521,6 +63652,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -63542,6 +63674,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -63563,6 +63696,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:perf3-scheduler-idle"
       ],
       "tags": [],
@@ -63590,6 +63724,27 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf5_case",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_is_perf5_case",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf5-video-ui"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
       "kind": "c_function",
       "source": "src/core/kernel_tests_blackbox.c",
@@ -63603,9 +63758,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_length",
@@ -63623,6 +63781,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63644,9 +63803,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed",
@@ -63662,9 +63824,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report",
@@ -63682,6 +63847,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63721,9 +63887,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
@@ -63739,9 +63908,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
@@ -63759,6 +63931,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -63800,9 +63973,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
@@ -63820,6 +63996,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63843,6 +64020,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
@@ -63864,6 +64042,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -63883,9 +64062,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
@@ -63903,6 +64085,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63926,6 +64109,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -65398,6 +65582,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:memory",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -65673,6 +65858,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:memory",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -94216,6 +94402,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/desktop/desktop.c:desktop_get_metrics",
+      "kind": "c_function",
+      "source": "src/desktop/desktop.c",
+      "symbol": "desktop_get_metrics",
+      "linkage": "external",
+      "owner": "desktop",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/desktop/desktop.c:desktop_get_mode",
       "kind": "c_function",
       "source": "src/desktop/desktop.c",
@@ -100879,12 +101083,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:mouse"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_damage_region_union",
@@ -100900,12 +101101,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:mouse"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_decode_wheel",
@@ -101060,6 +101258,27 @@
       "kind": "c_function",
       "source": "src/drivers/mouse.c",
       "symbol": "mouse_get_flow_metrics",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/drivers/mouse.c:mouse_get_render_metrics",
+      "kind": "c_function",
+      "source": "src/drivers/mouse.c",
+      "symbol": "mouse_get_render_metrics",
       "linkage": "external",
       "owner": "drivers",
       "layer": "kernel-source",
@@ -101324,9 +101543,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_present_cursor",
@@ -101435,9 +101657,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_raw_queue_count",
@@ -101453,9 +101678,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_raw_queue_pending",
@@ -101471,9 +101699,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_read",
@@ -110308,6 +110539,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/drivers/video.c:video_get_metrics",
+      "kind": "c_function",
+      "source": "src/drivers/video.c",
+      "symbol": "video_get_metrics",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/video.c:video_init",
@@ -161439,7 +161688,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
-        "qemu:tst5:perf1-baseline"
+        "qemu:tst5:perf1-baseline",
+        "qemu:tst5:perf5-video-ui"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -161528,7 +161778,8 @@
       "case_ids": [
         "host:shell:diagnostics",
         "qemu:tst5:perf1-baseline",
-        "qemu:tst5:perf4-memory-storage-network"
+        "qemu:tst5:perf4-memory-storage-network",
+        "qemu:tst5:perf5-video-ui"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -164495,6 +164746,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/taskbar/taskbar.c:taskbar_get_metrics",
+      "kind": "c_function",
+      "source": "src/taskbar/taskbar.c",
+      "symbol": "taskbar_get_metrics",
+      "linkage": "external",
+      "owner": "taskbar",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_get_work_area",
@@ -168067,6 +168336,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/wm/wm.c:wm_get_metrics",
+      "kind": "c_function",
+      "source": "src/wm/wm.c",
+      "symbol": "wm_get_metrics",
+      "linkage": "external",
+      "owner": "wm",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/wm/wm.c:wm_get_window",
@@ -176895,6 +177182,7 @@
         "api:src/include/drivers/mouse.h:mouse_get_buttons",
         "api:src/include/drivers/mouse.h:mouse_get_config",
         "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
+        "api:src/include/drivers/mouse.h:mouse_get_render_metrics",
         "api:src/include/drivers/mouse.h:mouse_get_status",
         "api:src/include/drivers/mouse.h:mouse_get_x",
         "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -176913,8 +177201,6 @@
         "c:src/drivers/mouse.c:mouse_apply_movement",
         "c:src/drivers/mouse.c:mouse_bottom_half",
         "c:src/drivers/mouse.c:mouse_collect_event_batch",
-        "c:src/drivers/mouse.c:mouse_damage_region_area",
-        "c:src/drivers/mouse.c:mouse_damage_region_union",
         "c:src/drivers/mouse.c:mouse_decode_wheel",
         "c:src/drivers/mouse.c:mouse_delta_magnitude",
         "c:src/drivers/mouse.c:mouse_dispatch_event",
@@ -176922,6 +177208,7 @@
         "c:src/drivers/mouse.c:mouse_enqueue_packet",
         "c:src/drivers/mouse.c:mouse_get_buttons",
         "c:src/drivers/mouse.c:mouse_get_config",
+        "c:src/drivers/mouse.c:mouse_get_flow_metrics",
         "c:src/drivers/mouse.c:mouse_get_status",
         "c:src/drivers/mouse.c:mouse_get_x",
         "c:src/drivers/mouse.c:mouse_get_y",
@@ -176933,10 +177220,14 @@
         "c:src/drivers/mouse.c:mouse_invalidate_cursor",
         "c:src/drivers/mouse.c:mouse_make_damage_region",
         "c:src/drivers/mouse.c:mouse_map_buttons",
+        "c:src/drivers/mouse.c:mouse_prepare_event_batch",
         "c:src/drivers/mouse.c:mouse_present_cursor",
         "c:src/drivers/mouse.c:mouse_present_damage_region",
         "c:src/drivers/mouse.c:mouse_process_events",
         "c:src/drivers/mouse.c:mouse_process_raw_byte",
+        "c:src/drivers/mouse.c:mouse_queue_count",
+        "c:src/drivers/mouse.c:mouse_raw_queue_count",
+        "c:src/drivers/mouse.c:mouse_raw_queue_pending",
         "c:src/drivers/mouse.c:mouse_read",
         "c:src/drivers/mouse.c:mouse_report_queue_overflow",
         "c:src/drivers/mouse.c:mouse_reset_state",
@@ -178143,7 +178434,9 @@
         "api:src/include/memory/paging.h:paging_switch_directory",
         "api:src/include/memory/paging.h:paging_unmap_user_page_in_directory",
         "api:src/include/memory/paging.h:paging_validate_user_range",
+        "c:src/core/log.c:log_console_print_number",
         "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_is_power_of_two",
         "c:src/core/log.c:log_level_is_valid",
         "c:src/core/log.c:log_print",
         "c:src/core/log.c:log_print_colored",
@@ -184475,8 +184768,30 @@
       "cleanup": "processo host encerrado e relatorio de cobertura preservado",
       "status": "AUTOMATED",
       "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:blackbox_contains",
         "c:src/core/kernel_tests_blackbox.c:blackbox_contains_prompt",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation"
+        "c:src/core/kernel_tests_blackbox.c:blackbox_equals",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_find",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_length",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_marker",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_report",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox"
       ]
     },
     {
@@ -184654,6 +184969,7 @@
         "api:src/include/ui/desktop.h:desktop_draw",
         "api:src/include/ui/desktop.h:desktop_draw_icons",
         "api:src/include/ui/desktop.h:desktop_draw_workspace",
+        "api:src/include/ui/desktop.h:desktop_get_metrics",
         "api:src/include/ui/desktop.h:desktop_get_mode",
         "api:src/include/ui/desktop.h:desktop_get_selected_app",
         "api:src/include/ui/desktop.h:desktop_handle_click",
@@ -185099,6 +185415,7 @@
         "api:src/include/ui/taskbar.h:taskbar_draw_config_menu",
         "api:src/include/ui/taskbar.h:taskbar_get_bounds",
         "api:src/include/ui/taskbar.h:taskbar_get_config",
+        "api:src/include/ui/taskbar.h:taskbar_get_metrics",
         "api:src/include/ui/taskbar.h:taskbar_get_work_area",
         "api:src/include/ui/taskbar.h:taskbar_handle_click",
         "api:src/include/ui/taskbar.h:taskbar_handle_config_key",
@@ -185338,6 +185655,7 @@
         "api:src/include/ui/wm.h:wm_get_config",
         "api:src/include/ui/wm.h:wm_get_focused",
         "api:src/include/ui/wm.h:wm_get_focused_id",
+        "api:src/include/ui/wm.h:wm_get_metrics",
         "api:src/include/ui/wm.h:wm_get_window",
         "api:src/include/ui/wm.h:wm_handle_click",
         "api:src/include/ui/wm.h:wm_handle_key",
@@ -189292,6 +189610,7 @@
         "api:src/include/core/video.h:video_flush_updates",
         "api:src/include/core/video.h:video_get_cursor_x",
         "api:src/include/core/video.h:video_get_cursor_y",
+        "api:src/include/core/video.h:video_get_metrics",
         "api:src/include/core/video.h:video_init",
         "api:src/include/core/video.h:video_newline",
         "api:src/include/core/video.h:video_power_quiesce",
@@ -190441,6 +190760,7 @@
         "api:src/include/core/video.h:video_flush_updates",
         "api:src/include/core/video.h:video_get_cursor_x",
         "api:src/include/core/video.h:video_get_cursor_y",
+        "api:src/include/core/video.h:video_get_metrics",
         "api:src/include/core/video.h:video_init",
         "api:src/include/core/video.h:video_newline",
         "api:src/include/core/video.h:video_power_quiesce",
@@ -190484,6 +190804,7 @@
         "api:src/include/drivers/mouse.h:mouse_get_buttons",
         "api:src/include/drivers/mouse.h:mouse_get_config",
         "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
+        "api:src/include/drivers/mouse.h:mouse_get_render_metrics",
         "api:src/include/drivers/mouse.h:mouse_get_status",
         "api:src/include/drivers/mouse.h:mouse_get_x",
         "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -190894,6 +191215,7 @@
         "api:src/include/ui/desktop.h:desktop_draw",
         "api:src/include/ui/desktop.h:desktop_draw_icons",
         "api:src/include/ui/desktop.h:desktop_draw_workspace",
+        "api:src/include/ui/desktop.h:desktop_get_metrics",
         "api:src/include/ui/desktop.h:desktop_get_mode",
         "api:src/include/ui/desktop.h:desktop_get_selected_app",
         "api:src/include/ui/desktop.h:desktop_handle_click",
@@ -190964,6 +191286,7 @@
         "api:src/include/ui/taskbar.h:taskbar_draw_config_menu",
         "api:src/include/ui/taskbar.h:taskbar_get_bounds",
         "api:src/include/ui/taskbar.h:taskbar_get_config",
+        "api:src/include/ui/taskbar.h:taskbar_get_metrics",
         "api:src/include/ui/taskbar.h:taskbar_get_work_area",
         "api:src/include/ui/taskbar.h:taskbar_handle_click",
         "api:src/include/ui/taskbar.h:taskbar_handle_config_key",
@@ -191003,6 +191326,7 @@
         "api:src/include/ui/wm.h:wm_get_config",
         "api:src/include/ui/wm.h:wm_get_focused",
         "api:src/include/ui/wm.h:wm_get_focused_id",
+        "api:src/include/ui/wm.h:wm_get_metrics",
         "api:src/include/ui/wm.h:wm_get_window",
         "api:src/include/ui/wm.h:wm_handle_click",
         "api:src/include/ui/wm.h:wm_handle_key",
@@ -191865,6 +192189,7 @@
         "api:src/include/drivers/mouse.h:mouse_get_buttons",
         "api:src/include/drivers/mouse.h:mouse_get_config",
         "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
+        "api:src/include/drivers/mouse.h:mouse_get_render_metrics",
         "api:src/include/drivers/mouse.h:mouse_get_status",
         "api:src/include/drivers/mouse.h:mouse_get_x",
         "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -193667,6 +193992,465 @@
       }
     },
     {
+      "id": "qemu:tst5:perf5-video-ui",
+      "scenario": "Linha de base deterministica de video e interfaces",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:perf5-video-ui",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 240,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1 + ZMETRIC/1",
+        "input": "qmp-input",
+        "network": "user,model=e1000,restrict=on",
+        "profiles": "baseline,baseline,no-vesa",
+        "modes": "simple,classic,simple-fallback",
+        "iterations": 3,
+        "idle_seconds": 3,
+        "host_sample_interval_seconds": 0.25,
+        "screenshots": "boot,baseline,ui,diagnostics,final",
+        "diagnostics": "regcheck full,health check,memcheck,schedcheck,proccheck,vfs,netstat"
+      },
+      "preconditions": "imagem pronta, QEMU com serial, QMP e suporte de screendump quando VESA estiver disponivel",
+      "action": "capturar video e exercitar taskbar, Desktop, aplicativos, cursor e Window Manager com diagnosticos observacionais",
+      "expected": "amostras guest completas, regioes coerentes, fallback explicito, screenshots VESA e prompt restaurado",
+      "errors": "envelope ausente ou incompleto, chaves duplicadas, protocolo, timeout, prompt ausente, screenshot obrigatorio ausente ou janela residual",
+      "effects": "somente diagnosticos observacionais, entrada QMP, screenshots e encerramento de cada QEMU isolado",
+      "cleanup": "encerrar cada QEMU isolado e preservar manifest, serial, input, QMP, screenshots e relatorio JSON",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/video.h:video_get_metrics",
+        "api:src/include/drivers/mouse.h:mouse_get_render_metrics",
+        "api:src/include/drivers/vesa.h:vesa_get_metrics",
+        "api:src/include/ui/desktop.h:desktop_get_metrics",
+        "api:src/include/ui/taskbar.h:taskbar_get_metrics",
+        "api:src/include/ui/wm.h:wm_get_metrics",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf5_case",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot"
+      ],
+      "tags": [
+        "qemu",
+        "tst5",
+        "perf5",
+        "video",
+        "ui",
+        "vesa",
+        "simple",
+        "classic",
+        "fallback"
+      ],
+      "interaction": {
+        "mode": "qmp-input",
+        "steps": [
+          {
+            "op": "phase",
+            "phase": "boot"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "screenshot",
+            "label": "boot"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "phase",
+            "phase": "baseline"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "screenshot",
+            "label": "baseline"
+          },
+          {
+            "op": "phase",
+            "phase": "ui"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "screenshot",
+            "label": "desktop"
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "pointer_move",
+            "dx": 12,
+            "dy": 8
+          },
+          {
+            "op": "pointer_wheel",
+            "delta": 1
+          },
+          {
+            "op": "pointer_button",
+            "button": "left",
+            "down": true
+          },
+          {
+            "op": "pointer_move",
+            "dx": 8,
+            "dy": 4
+          },
+          {
+            "op": "pointer_button",
+            "button": "left",
+            "down": false
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "tab"
+            ]
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f9"
+            ]
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f10"
+            ]
+          },
+          {
+            "op": "pointer_drag",
+            "button": "left",
+            "dx": 4,
+            "dy": 2,
+            "steps": 3
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "key",
+            "key": "tab"
+          },
+          {
+            "op": "key",
+            "key": "right"
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "screenshot",
+            "label": "ui"
+          },
+          {
+            "op": "phase",
+            "phase": "diagnostics"
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "memcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "vfs"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "netstat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "screenshot",
+            "label": "diagnostics"
+          },
+          {
+            "op": "phase",
+            "phase": "cleanup"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "phase",
+            "phase": "final"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "screenshot",
+            "label": "final"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-perf5-video-ui"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
       "id": "qemu:tst5:poweroff",
       "scenario": "Caminho black-box de poweroff isolado no QEMU",
       "owner": "quality",
@@ -194727,6 +195511,7 @@
         "api:src/include/core/video.h:video_flush_updates",
         "api:src/include/core/video.h:video_get_cursor_x",
         "api:src/include/core/video.h:video_get_cursor_y",
+        "api:src/include/core/video.h:video_get_metrics",
         "api:src/include/core/video.h:video_init",
         "api:src/include/core/video.h:video_newline",
         "api:src/include/core/video.h:video_power_quiesce",
@@ -194758,6 +195543,7 @@
         "api:src/include/drivers/mouse.h:mouse_get_buttons",
         "api:src/include/drivers/mouse.h:mouse_get_config",
         "api:src/include/drivers/mouse.h:mouse_get_flow_metrics",
+        "api:src/include/drivers/mouse.h:mouse_get_render_metrics",
         "api:src/include/drivers/mouse.h:mouse_get_status",
         "api:src/include/drivers/mouse.h:mouse_get_x",
         "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -194945,6 +195731,7 @@
         "api:src/include/ui/desktop.h:desktop_draw",
         "api:src/include/ui/desktop.h:desktop_draw_icons",
         "api:src/include/ui/desktop.h:desktop_draw_workspace",
+        "api:src/include/ui/desktop.h:desktop_get_metrics",
         "api:src/include/ui/desktop.h:desktop_get_mode",
         "api:src/include/ui/desktop.h:desktop_get_selected_app",
         "api:src/include/ui/desktop.h:desktop_handle_click",
@@ -195005,6 +195792,7 @@
         "api:src/include/ui/taskbar.h:taskbar_draw_config_menu",
         "api:src/include/ui/taskbar.h:taskbar_get_bounds",
         "api:src/include/ui/taskbar.h:taskbar_get_config",
+        "api:src/include/ui/taskbar.h:taskbar_get_metrics",
         "api:src/include/ui/taskbar.h:taskbar_get_work_area",
         "api:src/include/ui/taskbar.h:taskbar_handle_click",
         "api:src/include/ui/taskbar.h:taskbar_handle_config_key",
@@ -195044,6 +195832,7 @@
         "api:src/include/ui/wm.h:wm_get_config",
         "api:src/include/ui/wm.h:wm_get_focused",
         "api:src/include/ui/wm.h:wm_get_focused_id",
+        "api:src/include/ui/wm.h:wm_get_metrics",
         "api:src/include/ui/wm.h:wm_get_window",
         "api:src/include/ui/wm.h:wm_handle_click",
         "api:src/include/ui/wm.h:wm_handle_key",
@@ -196775,6 +197564,7 @@
         "api:src/include/core/video.h:video_flush_updates",
         "api:src/include/core/video.h:video_get_cursor_x",
         "api:src/include/core/video.h:video_get_cursor_y",
+        "api:src/include/core/video.h:video_get_metrics",
         "api:src/include/core/video.h:video_init",
         "api:src/include/core/video.h:video_newline",
         "api:src/include/core/video.h:video_power_quiesce",

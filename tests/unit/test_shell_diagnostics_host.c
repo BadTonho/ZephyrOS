@@ -45,6 +45,7 @@
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
 #include "drivers/vesa.h"
+#include "drivers/font.h"
 #include "fs/vfs.h"
 #include "fs/block_cache.h"
 #include "fs/block.h"
@@ -155,6 +156,11 @@ static uint32_t fixture_ipc_pending_count;
 static vesa_metrics_t fixture_vesa_metrics;
 static vesa_mode_t fixture_vesa_mode;
 static int fixture_vesa_backbuffer;
+static video_metrics_t fixture_video_metrics;
+static mouse_render_metrics_t fixture_mouse_render_metrics;
+static taskbar_metrics_t fixture_taskbar_metrics;
+static desktop_metrics_t fixture_desktop_metrics;
+static wm_metrics_t fixture_wm_metrics;
 static paging_boot_stats_t fixture_paging_boot_stats;
 static int fixture_paging_boot_result;
 static clock_status_t fixture_clock_status;
@@ -984,6 +990,49 @@ static void fixture_reset(void) {
     fixture_vesa_metrics.last_copy_bytes = 1024U;
     fixture_vesa_metrics.last_copy_ticks = 4U;
     fixture_vesa_metrics.max_copy_ticks = 8U;
+    fixture_vesa_metrics.last_region_width = 64U;
+    fixture_vesa_metrics.last_region_height = 32U;
+    fixture_vesa_metrics.last_region_pixels = 2048U;
+    fixture_vesa_metrics.partial_pixels = 2048U;
+    fixture_vesa_metrics.max_region_pixels = 2048U;
+    fixture_vesa_metrics.backbuffer_width = VESA_WIDTH_640;
+    fixture_vesa_metrics.backbuffer_height = VESA_HEIGHT_480;
+    fixture_vesa_metrics.backbuffer_bytes = 1228800U;
+    kmemset(&fixture_video_metrics, 0, sizeof(fixture_video_metrics));
+    fixture_video_metrics.full_redraws = 2U;
+    fixture_video_metrics.partial_redraws = 3U;
+    fixture_video_metrics.dirty_regions = 5U;
+    fixture_video_metrics.last_dirty_width = 8U;
+    fixture_video_metrics.last_dirty_height = 16U;
+    kmemset(&fixture_mouse_render_metrics, 0,
+            sizeof(fixture_mouse_render_metrics));
+    fixture_mouse_render_metrics.cursor_invalidations = 4U;
+    fixture_mouse_render_metrics.cursor_draws = 3U;
+    fixture_mouse_render_metrics.cursor_presentations = 2U;
+    fixture_mouse_render_metrics.last_region_width = 12U;
+    fixture_mouse_render_metrics.last_region_height = 16U;
+    kmemset(&fixture_taskbar_metrics, 0, sizeof(fixture_taskbar_metrics));
+    fixture_taskbar_metrics.redraws = 4U;
+    fixture_taskbar_metrics.clock_updates = 2U;
+    fixture_taskbar_metrics.menu_draws = 1U;
+    fixture_taskbar_metrics.last_region_width = SCREEN_COLS * FONT_WIDTH;
+    fixture_taskbar_metrics.last_region_height = FONT_HEIGHT;
+    kmemset(&fixture_desktop_metrics, 0, sizeof(fixture_desktop_metrics));
+    fixture_desktop_metrics.redraws = 3U;
+    fixture_desktop_metrics.workspace_redraws = 2U;
+    fixture_desktop_metrics.icon_redraws = 2U;
+    fixture_desktop_metrics.icon_count = 3U;
+    fixture_desktop_metrics.selected_icon = 0;
+    fixture_desktop_metrics.active = 1U;
+    fixture_desktop_metrics.mode = DESKTOP_MODE_SIMPLE;
+    kmemset(&fixture_wm_metrics, 0, sizeof(fixture_wm_metrics));
+    fixture_wm_metrics.redraws = 5U;
+    fixture_wm_metrics.window_redraws = 4U;
+    fixture_wm_metrics.focus_changes = 2U;
+    fixture_wm_metrics.visible_windows = 1U;
+    fixture_wm_metrics.window_count = 1U;
+    fixture_wm_metrics.focused_id = -1;
+    fixture_wm_metrics.active = 1U;
     kmemset(&fixture_vesa_mode, 0, sizeof(fixture_vesa_mode));
     fixture_vesa_mode.initialized = 1U;
     fixture_vesa_mode.width = VESA_WIDTH_640;
@@ -3138,6 +3187,36 @@ void vesa_get_metrics(vesa_metrics_t* metrics) {
     if (metrics) *metrics = fixture_vesa_metrics;
 }
 
+int video_get_metrics(video_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_video_metrics;
+    return OK;
+}
+
+int mouse_get_render_metrics(mouse_render_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_mouse_render_metrics;
+    return OK;
+}
+
+int taskbar_get_metrics(taskbar_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_taskbar_metrics;
+    return OK;
+}
+
+int desktop_get_metrics(desktop_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_desktop_metrics;
+    return OK;
+}
+
+int wm_get_metrics(wm_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_wm_metrics;
+    return OK;
+}
+
 uint32_t process_get_user_count(void) {
     return fixture_process_user_count;
 }
@@ -3308,6 +3387,7 @@ int mouse_get_flow_metrics(mouse_flow_metrics_t* metrics) {
     *metrics = fixture_mouse_flow_metrics;
     return OK;
 }
+
 
 int mouse_set_speed(uint8_t speed) {
     fixture_speed_calls++;
@@ -4329,6 +4409,15 @@ static int test_kmetrics(void) {
         fprintf(stderr, "diagnostics-host: contrato nulo de kmetrics invalido\n");
         failures++;
     }
+    if (snapshot.video_result != OK || snapshot.video.full_redraws != 2U ||
+        snapshot.mouse_render_result != OK ||
+        snapshot.mouse_render.cursor_draws != 3U ||
+        snapshot.taskbar_result != OK || snapshot.taskbar.redraws != 4U ||
+        snapshot.desktop_result != OK || snapshot.desktop.icon_count != 3U ||
+        snapshot.wm_result != OK || snapshot.wm.visible_windows != 1U) {
+        fprintf(stderr, "diagnostics-host: getters de video/UI nao capturados\n");
+        failures++;
+    }
     shell_dispatch_cmd_kmetrics("");
     failures += expect_contains("Metricas K1 (desde boot):\n");
     failures += expect_contains("  PIT: ticks=1000 frequencia=100 Hz\n");
@@ -4369,6 +4458,11 @@ static int test_kmetrics(void) {
     failures += expect_serial_contains("metric=cache_flush_unavailable");
     failures += expect_serial_contains("metric=durability_flush_unavailable");
     failures += expect_serial_contains("metric=network_interfaces");
+    failures += expect_serial_contains("metric=video_partial_redraws");
+    failures += expect_serial_contains("metric=cursor_presentations");
+    failures += expect_serial_contains("metric=taskbar_menu_draws");
+    failures += expect_serial_contains("metric=desktop_mode");
+    failures += expect_serial_contains("metric=wm_focus_changes");
     failures += expect_serial_contains("metric=net_buffer_copied_bytes");
     failures += expect_serial_contains("metric=socket_active_count value=0");
     failures += expect_serial_contains("metric=route_entry_count value=1");

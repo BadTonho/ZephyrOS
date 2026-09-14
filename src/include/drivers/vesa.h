@@ -47,6 +47,16 @@ typedef struct {
     uint32_t last_copy_bytes;
     uint32_t last_copy_ticks;
     uint32_t max_copy_ticks;
+    uint32_t last_region_x;
+    uint32_t last_region_y;
+    uint32_t last_region_width;
+    uint32_t last_region_height;
+    uint32_t last_region_pixels;
+    uint32_t partial_pixels;
+    uint32_t max_region_pixels;
+    uint32_t backbuffer_width;
+    uint32_t backbuffer_height;
+    uint32_t backbuffer_bytes;
 } vesa_metrics_t;
 
 typedef struct {

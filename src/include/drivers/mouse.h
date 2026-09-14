@@ -77,6 +77,16 @@ typedef struct {
     uint32_t wheel_events;
 } mouse_flow_metrics_t;
 
+typedef struct {
+    uint32_t cursor_invalidations;
+    uint32_t cursor_draws;
+    uint32_t cursor_presentations;
+    uint32_t last_region_x;
+    uint32_t last_region_y;
+    uint32_t last_region_width;
+    uint32_t last_region_height;
+} mouse_render_metrics_t;
+
 typedef void (*mouse_callback_t)(mouse_event_t*);
 
 int mouse_init(void);
@@ -90,6 +100,7 @@ int mouse_has_wheel(void);
 int mouse_get_config(mouse_config_t* config);
 int mouse_get_status(mouse_status_t* status);
 int mouse_get_flow_metrics(mouse_flow_metrics_t* metrics);
+int mouse_get_render_metrics(mouse_render_metrics_t* metrics);
 int mouse_set_speed(uint8_t speed);
 int mouse_set_acceleration(int enabled);
 int mouse_set_primary_button(mouse_primary_button_t primary_button);

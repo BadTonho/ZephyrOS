@@ -389,9 +389,11 @@ static void test_classic_windows(void) {
     mouse_event_t event;
     int first_id;
     int second_id;
+    wm_metrics_t metrics;
 
     reset_fixture();
     wm_init();
+    EXPECT(wm_get_metrics(0) == ERR_NULL);
     EXPECT(wm_get_config() != 0);
     wm_set_btn_position(WM_BTNS_LEFT);
     wm_set_btn_order(WM_BTN_CLOSE_MAX_MIN);
@@ -458,6 +460,11 @@ static void test_classic_windows(void) {
     wm_focus_window(second_id);
     wm_close_focused();
     wm_destroy_window(-1);
+    EXPECT(wm_get_metrics(&metrics) == OK);
+    EXPECT(metrics.redraws > 0U && metrics.window_redraws > 0U);
+    EXPECT(metrics.focus_changes > 0U && metrics.minimize_operations > 0U);
+    EXPECT(metrics.maximize_operations > 0U && metrics.move_operations > 0U);
+    EXPECT(metrics.resize_operations > 0U);
     wm_set_active(0);
     EXPECT(wm_is_active() == 0);
 
