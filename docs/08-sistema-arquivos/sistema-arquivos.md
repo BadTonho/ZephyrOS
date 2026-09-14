@@ -1301,3 +1301,13 @@ Dispositivos comuns exigem a capacidade basica; speaker exige audio; `/dev/hda`
 e reservado ao contexto nativo. `/proc` e `/sys` sao somente leitura para
 ring3 e `/proc/sys` somente pode ser alterado por processos nativos. Nao foram
 criados `chmod`, `chown`, `setuid`, ACL ou syscall nova.
+
+## PERF4: VFS, fila de bloco e cache
+
+O snapshot `kmetrics machine` publica capacidades e ocupacao de descritores,
+mounts, pipes, dispositivos, fila de requisicoes e cache de blocos usando os
+getters existentes. Profundidade, entradas dirty/read/writeback e filas sao
+gauges atuais; operacoes, falhas, evictions e writeback sao contadores com
+delta `uint32_t`. A matriz PERF4 exige fila de bloco/cache drenada e nenhum
+descritor ou pipe adicional ao fim dos diagnosticos, sem alterar FAT, formato,
+durabilidade, ownership ou comportamento de IRQ.

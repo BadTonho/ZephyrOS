@@ -1239,3 +1239,12 @@ Falhas recuperaveis retornam erro e desabilitam somente o componente afetado.
 Excecoes fatais e corrupcao estrutural continuam encaminhadas para `panic`.
 O `boot.asm` permanece inalterado e a politica de escalonamento nao faz parte
 desta etapa.
+
+## PERF4: snapshot de memoria e rede
+
+`kmetrics machine` copia os getters de memoria detalhada, SLAB, VFS, bloco,
+cache, buffers, sockets e rotas somente quando solicitado pelo Shell. A soma
+das zonas fisicas e validada no relatorio, enquanto contadores usam delta com
+wraparound `uint32_t` e estados indisponiveis permanecem `ND`. A coleta nao
+entra em IRQ, page fault, alocador, lock ou caminho de I/O; nao ha novo ABI,
+syscall, formato ou capacidade de fila.

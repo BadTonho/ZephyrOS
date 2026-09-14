@@ -2271,6 +2271,7 @@ test-shell-diagnostics-host: tools\core_host_runner.py tools\coverage_collector.
 test-shell-diagnostics-host: src\core\service_supervisor.c src\include\core\service_supervisor.h
 test-shell-diagnostics-host: src\shell\shell_kmetrics.c src\include\apps\shell_kmetrics.h src\include\drivers\serial.h
 test-shell-diagnostics-host: src\include\apps\shell_job.h src\include\core\ethernet.h src\include\core\input.h src\include\core\network_manager.h src\include\core\recovery.h src\include\core\service_supervisor.h src\include\core\update.h src\include\core\update_system_slots.h src\include\drivers\idt.h src\include\drivers\vesa.h src\include\fs\block.h src\include\fs\block_cache.h src\include\fs\permissions.h src\include\fs\vfs.h src\include\memory\paging.h src\include\process\credentials.h src\include\process\resource.h
+test-shell-diagnostics-host: src\include\core\net_buffer.h src\include\core\net_socket.h src\include\core\route.h src\include\core\sk_buff.h src\include\core\socket.h src\include\memory\slab.h
 
 test-perf1-host: test-shell-diagnostics-host tools\perf1_metrics.py tests\unit\test_perf1_metrics.py
 	python -m unittest tests.unit.test_perf1_metrics
@@ -2298,6 +2299,15 @@ perf3-scheduler-idle: $(OS_IMG) tools\perf3_scheduler_idle.py tools\perf1_metric
 	python tools\perf3_scheduler_idle.py --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-perf3-qemu: perf3-scheduler-idle
+
+test-perf4-host: test-memory-host test-paging-host test-vma-host test-slab-host test-process-host test-process-resource-host test-vfs-host test-block-host test-route-host test-net-socket-host test-socket-runtime-host test-network-host test-network-manager-host test-ethernet-host test-shell-network-checks-host test-shell-diagnostics-host test-blackbox-host tools\perf4_memory_storage_network.py tools\perf1_metrics.py tests\unit\test_perf4_memory_storage_network.py tests\unit\test_qemu_test_runner.py
+	python -m unittest tests.unit.test_perf4_memory_storage_network tests.unit.test_qemu_test_runner
+
+perf4-memory-storage-network: $(OS_IMG) tools\perf4_memory_storage_network.py tools\perf1_metrics.py tools\qemu_test_runner.py tests\catalog.json tests\coverage\registry.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\perf4_memory_storage_network.py --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-perf4-qemu: perf4-memory-storage-network
 
 test-shell-commands-wifi-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_wifi_host.c tests\catalog.json src\shell\shell_commands_wifi.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\wifi_manager.h src\include\core\usb_manager.h
 	python tools\core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
@@ -2475,7 +2485,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
-.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

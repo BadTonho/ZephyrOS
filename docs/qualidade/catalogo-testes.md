@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7728**
-- Casos de teste: **197**
+- Superfícies ativas: **7734**
+- Casos de teste: **199**
 - Superfícies aposentadas: **61**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1658 |
+| `api_function` | 1659 |
 | `asm_entry` | 101 |
-| `c_function` | 5849 |
+| `c_function` | 5854 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7634 |
+| `COVERED` | 7640 |
 | `MANUAL` | 0 |
 | `PENDING` | 94 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 197 |
+| `AUTOMATED` | 199 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 175 |
 | `appstore` | 98 |
 | `boot` | 146 |
-| `core` | 2900 |
+| `core` | 2902 |
 | `desktop` | 40 |
 | `drivers` | 981 |
 | `filemanager` | 93 |
@@ -46,7 +46,7 @@
 | `icons` | 18 |
 | `kernel` | 66 |
 | `memory` | 202 |
-| `process` | 332 |
+| `process` | 336 |
 | `settings` | 62 |
 | `shell` | 1127 |
 | `taskbar` | 47 |
@@ -505,7 +505,7 @@
 | `api:src/include/core/memory.h:kfree` | `src/include/core/memory.h` | `kfree` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:kmalloc` | `src/include/core/memory.h` | `kmalloc` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:kmalloc_aligned` | `src/include/core/memory.h` | `kmalloc_aligned` | `core` | `COVERED` | 6 |
-| `api:src/include/core/memory.h:memory_get_detailed_stats` | `src/include/core/memory.h` | `memory_get_detailed_stats` | `core` | `COVERED` | 7 |
+| `api:src/include/core/memory.h:memory_get_detailed_stats` | `src/include/core/memory.h` | `memory_get_detailed_stats` | `core` | `COVERED` | 8 |
 | `api:src/include/core/memory.h:memory_get_free` | `src/include/core/memory.h` | `memory_get_free` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:memory_get_free_pages` | `src/include/core/memory.h` | `memory_get_free_pages` | `core` | `COVERED` | 7 |
 | `api:src/include/core/memory.h:memory_get_heap_stats` | `src/include/core/memory.h` | `memory_get_heap_stats` | `core` | `COVERED` | 7 |
@@ -523,7 +523,7 @@
 | `api:src/include/core/memory.h:pmm_free_pages` | `src/include/core/memory.h` | `pmm_free_pages` | `core` | `COVERED` | 6 |
 | `api:src/include/core/net_buffer.h:net_buffer_begin` | `src/include/core/net_buffer.h` | `net_buffer_begin` | `core` | `COVERED` | 5 |
 | `api:src/include/core/net_buffer.h:net_buffer_complete` | `src/include/core/net_buffer.h` | `net_buffer_complete` | `core` | `COVERED` | 5 |
-| `api:src/include/core/net_buffer.h:net_buffer_get_stats` | `src/include/core/net_buffer.h` | `net_buffer_get_stats` | `core` | `COVERED` | 5 |
+| `api:src/include/core/net_buffer.h:net_buffer_get_stats` | `src/include/core/net_buffer.h` | `net_buffer_get_stats` | `core` | `COVERED` | 6 |
 | `api:src/include/core/net_buffer.h:net_buffer_init` | `src/include/core/net_buffer.h` | `net_buffer_init` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_buffer.h:net_buffer_note_clone` | `src/include/core/net_buffer.h` | `net_buffer_note_clone` | `core` | `COVERED` | 5 |
 | `api:src/include/core/net_buffer.h:net_buffer_note_copy` | `src/include/core/net_buffer.h` | `net_buffer_note_copy` | `core` | `COVERED` | 5 |
@@ -541,7 +541,7 @@
 | `api:src/include/core/net_socket.h:net_socket_connect` | `src/include/core/net_socket.h` | `net_socket_connect` | `core` | `COVERED` | 2 |
 | `api:src/include/core/net_socket.h:net_socket_get_handle_info` | `src/include/core/net_socket.h` | `net_socket_get_handle_info` | `core` | `COVERED` | 2 |
 | `api:src/include/core/net_socket.h:net_socket_get_info` | `src/include/core/net_socket.h` | `net_socket_get_info` | `core` | `COVERED` | 2 |
-| `api:src/include/core/net_socket.h:net_socket_get_status` | `src/include/core/net_socket.h` | `net_socket_get_status` | `core` | `COVERED` | 3 |
+| `api:src/include/core/net_socket.h:net_socket_get_status` | `src/include/core/net_socket.h` | `net_socket_get_status` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_socket.h:net_socket_init` | `src/include/core/net_socket.h` | `net_socket_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/net_socket.h:net_socket_maintain` | `src/include/core/net_socket.h` | `net_socket_maintain` | `core` | `COVERED` | 2 |
 | `api:src/include/core/net_socket.h:net_socket_open` | `src/include/core/net_socket.h` | `net_socket_open` | `core` | `COVERED` | 2 |
@@ -609,7 +609,7 @@
 | `api:src/include/core/route.h:route_clear` | `src/include/core/route.h` | `route_clear` | `core` | `COVERED` | 3 |
 | `api:src/include/core/route.h:route_delete` | `src/include/core/route.h` | `route_delete` | `core` | `COVERED` | 4 |
 | `api:src/include/core/route.h:route_get_entry` | `src/include/core/route.h` | `route_get_entry` | `core` | `COVERED` | 3 |
-| `api:src/include/core/route.h:route_get_status` | `src/include/core/route.h` | `route_get_status` | `core` | `COVERED` | 4 |
+| `api:src/include/core/route.h:route_get_status` | `src/include/core/route.h` | `route_get_status` | `core` | `COVERED` | 5 |
 | `api:src/include/core/route.h:route_init` | `src/include/core/route.h` | `route_init` | `core` | `COVERED` | 3 |
 | `api:src/include/core/route.h:route_lookup` | `src/include/core/route.h` | `route_lookup` | `core` | `COVERED` | 4 |
 | `api:src/include/core/route.h:route_reset` | `src/include/core/route.h` | `route_reset` | `core` | `COVERED` | 4 |
@@ -633,7 +633,7 @@
 | `api:src/include/core/sk_buff.h:alloc_skb` | `src/include/core/sk_buff.h` | `alloc_skb` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:free_skb` | `src/include/core/sk_buff.h` | `free_skb` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:skb_complete` | `src/include/core/sk_buff.h` | `skb_complete` | `core` | `COVERED` | 3 |
-| `api:src/include/core/sk_buff.h:skb_get_stats` | `src/include/core/sk_buff.h` | `skb_get_stats` | `core` | `COVERED` | 3 |
+| `api:src/include/core/sk_buff.h:skb_get_stats` | `src/include/core/sk_buff.h` | `skb_get_stats` | `core` | `COVERED` | 4 |
 | `api:src/include/core/sk_buff.h:skb_init` | `src/include/core/sk_buff.h` | `skb_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:skb_pull` | `src/include/core/sk_buff.h` | `skb_pull` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:skb_push` | `src/include/core/sk_buff.h` | `skb_push` | `core` | `COVERED` | 2 |
@@ -650,7 +650,7 @@
 | `api:src/include/core/socket.h:socket_create` | `src/include/core/socket.h` | `socket_create` | `core` | `COVERED` | 4 |
 | `api:src/include/core/socket.h:socket_family_name` | `src/include/core/socket.h` | `socket_family_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_get_info` | `src/include/core/socket.h` | `socket_get_info` | `core` | `COVERED` | 4 |
-| `api:src/include/core/socket.h:socket_get_status` | `src/include/core/socket.h` | `socket_get_status` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_get_status` | `src/include/core/socket.h` | `socket_get_status` | `core` | `COVERED` | 5 |
 | `api:src/include/core/socket.h:socket_init` | `src/include/core/socket.h` | `socket_init` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_listen` | `src/include/core/socket.h` | `socket_listen` | `core` | `COVERED` | 4 |
 | `api:src/include/core/socket.h:socket_recv` | `src/include/core/socket.h` | `socket_recv` | `core` | `COVERED` | 4 |
@@ -1124,7 +1124,7 @@
 | `api:src/include/fs/block.h:block_find` | `src/include/fs/block.h` | `block_find` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block.h:block_get_at` | `src/include/fs/block.h` | `block_get_at` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block.h:block_get_count` | `src/include/fs/block.h` | `block_get_count` | `fs` | `COVERED` | 5 |
-| `api:src/include/fs/block.h:block_get_stats` | `src/include/fs/block.h` | `block_get_stats` | `fs` | `COVERED` | 5 |
+| `api:src/include/fs/block.h:block_get_stats` | `src/include/fs/block.h` | `block_get_stats` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/block.h:block_init` | `src/include/fs/block.h` | `block_init` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block.h:block_read` | `src/include/fs/block.h` | `block_read` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block.h:block_register` | `src/include/fs/block.h` | `block_register` | `fs` | `COVERED` | 5 |
@@ -1137,7 +1137,7 @@
 | `api:src/include/fs/block.h:block_write` | `src/include/fs/block.h` | `block_write` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block_cache.h:block_cache_clear` | `src/include/fs/block_cache.h` | `block_cache_clear` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block_cache.h:block_cache_get_durability_status` | `src/include/fs/block_cache.h` | `block_cache_get_durability_status` | `fs` | `COVERED` | 5 |
-| `api:src/include/fs/block_cache.h:block_cache_get_stats` | `src/include/fs/block_cache.h` | `block_cache_get_stats` | `fs` | `COVERED` | 5 |
+| `api:src/include/fs/block_cache.h:block_cache_get_stats` | `src/include/fs/block_cache.h` | `block_cache_get_stats` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/block_cache.h:block_cache_init` | `src/include/fs/block_cache.h` | `block_cache_init` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block_cache.h:block_cache_invalidate_device` | `src/include/fs/block_cache.h` | `block_cache_invalidate_device` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block_cache.h:block_cache_invalidate_range` | `src/include/fs/block_cache.h` | `block_cache_invalidate_range` | `fs` | `COVERED` | 5 |
@@ -1342,7 +1342,7 @@
 | `api:src/include/fs/vfs.h:vfs_fd_table_release` | `src/include/fs/vfs.h` | `vfs_fd_table_release` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs.h:vfs_fsync` | `src/include/fs/vfs.h` | `vfs_fsync` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs.h:vfs_get_process_resource_usage` | `src/include/fs/vfs.h` | `vfs_get_process_resource_usage` | `fs` | `COVERED` | 8 |
-| `api:src/include/fs/vfs.h:vfs_get_status` | `src/include/fs/vfs.h` | `vfs_get_status` | `fs` | `COVERED` | 8 |
+| `api:src/include/fs/vfs.h:vfs_get_status` | `src/include/fs/vfs.h` | `vfs_get_status` | `fs` | `COVERED` | 9 |
 | `api:src/include/fs/vfs.h:vfs_getcwd` | `src/include/fs/vfs.h` | `vfs_getcwd` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/vfs.h:vfs_init` | `src/include/fs/vfs.h` | `vfs_init` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs.h:vfs_ioctl` | `src/include/fs/vfs.h` | `vfs_ioctl` | `fs` | `COVERED` | 8 |
@@ -1423,7 +1423,7 @@
 | `api:src/include/memory/slab.h:kmem_cache_get_count` | `src/include/memory/slab.h` | `kmem_cache_get_count` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_get_info` | `src/include/memory/slab.h` | `kmem_cache_get_info` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_get_info_at` | `src/include/memory/slab.h` | `kmem_cache_get_info_at` | `memory` | `COVERED` | 7 |
-| `api:src/include/memory/slab.h:kmem_cache_get_stats` | `src/include/memory/slab.h` | `kmem_cache_get_stats` | `memory` | `COVERED` | 8 |
+| `api:src/include/memory/slab.h:kmem_cache_get_stats` | `src/include/memory/slab.h` | `kmem_cache_get_stats` | `memory` | `COVERED` | 9 |
 | `api:src/include/memory/slab.h:kmem_cache_init` | `src/include/memory/slab.h` | `kmem_cache_init` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_owns` | `src/include/memory/slab.h` | `kmem_cache_owns` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_self_test` | `src/include/memory/slab.h` | `kmem_cache_self_test` | `memory` | `COVERED` | 8 |
@@ -1510,6 +1510,7 @@
 | `api:src/include/process/process.h:process_wait` | `src/include/process/process.h` | `process_wait` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_wake_channel` | `src/include/process/process.h` | `process_wake_channel` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_yield` | `src/include/process/process.h` | `process_yield` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:scheduler_get_runtime_stats` | `src/include/process/process.h` | `scheduler_get_runtime_stats` | `process` | `COVERED` | 9 |
 | `api:src/include/process/process.h:scheduler_get_stats` | `src/include/process/process.h` | `scheduler_get_stats` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:scheduler_init` | `src/include/process/process.h` | `scheduler_init` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:scheduler_preempt_user` | `src/include/process/process.h` | `scheduler_preempt_user` | `process` | `COVERED` | 8 |
@@ -2831,6 +2832,8 @@
 | `c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete` | `src/core/kernel_tests_blackbox.c` | `blackbox_hw6_observation_complete` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_hw6_case` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf3_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf4_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf4_case` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_sec6_case` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `PENDING` | 0 |
@@ -6261,10 +6264,13 @@
 | `c:src/process/process.c:process_wake_channel` | `src/process/process.c` | `process_wake_channel` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_yield` | `src/process/process.c` | `process_yield` | `process` | `COVERED` | 5 |
 | `c:src/process/process.c:scheduler_find_next_ready` | `src/process/process.c` | `scheduler_find_next_ready` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:scheduler_get_runtime_stats` | `src/process/process.c` | `scheduler_get_runtime_stats` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_get_stats` | `src/process/process.c` | `scheduler_get_stats` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_idle_context_valid` | `src/process/process.c` | `scheduler_idle_context_valid` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_init` | `src/process/process.c` | `scheduler_init` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:scheduler_note_wakeup` | `src/process/process.c` | `scheduler_note_wakeup` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_preempt_user` | `src/process/process.c` | `scheduler_preempt_user` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:scheduler_refresh_peaks` | `src/process/process.c` | `scheduler_refresh_peaks` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_schedule` | `src/process/process.c` | `scheduler_schedule` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_select_next` | `src/process/process.c` | `scheduler_select_next` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_tick` | `src/process/process.c` | `scheduler_tick` | `process` | `COVERED` | 8 |
@@ -7295,14 +7301,14 @@
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_job` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_job` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_line` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_line` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_machine` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_machine` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_memory` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_memory` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_memory` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_memory` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_metric` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_metric` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_network` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_network` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_network` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_network` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_begin` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_record_begin` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_record_end` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_record_end` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_recovery` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_recovery` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_scheduler` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_scheduler` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_storage` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_storage` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_storage` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_storage` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_system` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_system` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_u32` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_u32` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_update` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_update` | `shell` | `COVERED` | 2 |
@@ -7310,7 +7316,7 @@
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_work` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_emit_work` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_kind_name` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_kind_name` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_kmetrics.c:shell_kmetrics_line_start` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_line_start` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_take_snapshot` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_kmetrics.c` | `shell_kmetrics_take_snapshot` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished` | `src/shell/shell_pipeline.c` | `shell_pipeline_all_finished` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_fd` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_resources` | `shell` | `COVERED` | 1 |
@@ -7979,6 +7985,8 @@
 | `qemu:tst5:network` | `qemu` | `smoke` | `qemu:tst5:network` | `AUTOMATED` | 90 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta e QEMU configurado com rede isolada | consultar status, rotas e sockets sem conexao externa | o Shell responde e a ausencia de interface permanece coerente e observavel | conexao externa, estado incoerente, prompt preso, timeout, protocolo ou QEMU | somente consultas e estado temporario de rede no snapshot | encerrar o QEMU sem tocar na rede do hospedeiro |
 | `qemu:tst5:perf1-baseline` | `qemu` | `smoke` | `qemu:tst5:perf1-baseline` | `AUTOMATED` | 180 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU, serial e teclado virtual disponiveis | capturar amostra guest antes e depois do reset, aguardar idle fixo e executar diagnosticos somente leitura | cada sessao retorna o prompt, o marcador TST5 e um envelope ZMETRIC/1 completo; o relatorio registra guest e host | envelope ausente ou truncado, chave duplicada, valor fora de uint32, diagnostico negativo, prompt preso, timeout, protocolo ou QEMU | somente snapshots de metricas, diagnosticos observacionais e artefatos host; update/recovery permanecem sem mutacao | encerrar cada QEMU isolado e preservar serial, QMP, logs e relatorio JSON |
 | `qemu:tst5:perf2-input-responsiveness` | `qemu` | `smoke` | `qemu:tst5:perf2-input-responsiveness` | `AUTOMATED` | 240 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com input-send-event, serial, QMP e dispositivo PS/2 disponiveis | selecionar o Shell, capturar baseline, executar diagnosticos somente leitura durante carga QMP de teclado e mouse, cancelar regcheck com F11 e capturar amostra final | cada sessao retorna o prompt e o marcador TST5; o envelope guest tem tres amostras completas; press, release e roda preservam a contagem enviada; descartes e rejeicoes permanecem zero; o relatorio registra host e input.log | QMP sem suporte a input-send-event, envelope ausente ou truncado, chave duplicada, metricas guest ND, descarte, overflow, rejeicao deferred, timeout, prompt preso ou diagnostico negativo | somente eventos QMP, snapshots de metricas e diagnosticos observacionais; o estresse nao existe como comando produtivo e update/recovery permanecem sem mutacao | encerrar cada QEMU isolado e preservar serial, QMP, input.log, amostras host e relatorio JSON |
+| `qemu:tst5:perf3-scheduler-idle` | `qemu` | `smoke` | `qemu:tst5:perf3-scheduler-idle` | `AUTOMATED` | 180 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com serial, QMP e scheduler guest disponiveis | capturar boot, aguardar Idle, executar regcheck full por janela fixa, limpar com F11 e validar scheduler/workqueue | tres amostras guest completas, contabilidade Idle/ativo consistente, kworker vinculada e prompt restaurado | envelope ausente ou incompleto, metricas scheduler ND, timeout, protocolo, fila residual, erro workqueue ou schedcheck negativo | somente diagnosticos observacionais, amostras guest/host e cancelamento do job de teste | encerrar cada QEMU isolado e preservar serial, fases, amostras host e relatorio JSON |
+| `qemu:tst5:perf4-memory-storage-network` | `qemu` | `smoke` | `qemu:tst5:perf4-memory-storage-network` | `AUTOMATED` | 180 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com serial, QMP, rede e getters de diagnostico disponiveis | capturar boot, resetar metricas, aguardar idle e executar diagnosticos deterministas de memoria, VFS, bloco, cache e rede | tres amostras guest completas, invariantes de memoria coerentes, filas drenadas e prompt restaurado | envelope ausente ou incompleto, chaves duplicadas, protocolo, timeout, recurso residual, erro permanente, fila nao drenada ou metrica guest ND | somente diagnosticos observacionais, amostras guest/host e encerramento de cada QEMU isolado | encerrar cada QEMU isolado e preservar serial, fases, amostras host e relatorio JSON |
 | `qemu:tst5:poweroff` | `qemu` | `smoke` | `qemu:tst5:poweroff` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e suporte de poweroff do guest disponivel | confirmar caminho do Shell e enviar poweroff somente apos PASS | o caso publica PASS e QMP observa SHUTDOWN ou a saida esperada do QEMU | poweroff antes do PASS, reset inesperado, timeout, protocolo ou QEMU | encerra somente a instancia QEMU em snapshot | fechar sockets e preservar logs mesmo apos a saida do guest |
 | `qemu:tst5:processes` | `qemu` | `smoke` | `qemu:tst5:processes` | `AUTOMATED` | 75 | 15 | `snapshot` | `quality` | `qemu` | processos, threads, scheduler e Shell estao READY | consultar processos e threads por teclado externo | os diagnosticos terminam e o marcador confirma o retorno ao prompt | processo residual, diagnostico preso, timeout, protocolo ou QEMU | somente consultas de estado do guest em snapshot | encerrar o QEMU e preservar historico de entrada |
 | `qemu:tst5:reboot` | `qemu` | `smoke` | `qemu:tst5:reboot` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e caminho de reboot do guest disponivel | confirmar o terminal, enviar reboot apos PASS e aguardar novo HELLO/READY | QMP publica RESET e uma segunda sessao publica READY e HEARTBEAT | reset prematuro, handshake ausente, timeout, protocolo ou QEMU | reinicia somente a instancia QEMU em snapshot | encerrar a segunda sessao via QMP e preservar as duas fases |

@@ -188,6 +188,61 @@ foram completos, sem metricas obrigatorias `ND`, sem erro de protocolo e sem
 fila residual ou erro permanente da workqueue. `DT100-002` permanece `ACEITA`
 e `thread_t` continua isolada, conforme o criterio da PERF3.
 
+## PERF4 - Memoria, VFS, armazenamento e rede
+
+O PERF4 estende somente o snapshot interno de `kmetrics machine`. Os getters
+existentes de memoria detalhada, SLAB, VFS, fila/cache de bloco, durabilidade,
+buffers, `sk_buff`, sockets e rotas sao copiados sob demanda; nenhuma coleta e
+executada em IRQ, alocador, lock ou caminho por setor/pacote. A API publica, a
+ABI, as syscalls, os formatos e as capacidades das filas permanecem iguais.
+
+Os nomes `memory_zone_0_pages` a `memory_zone_5_pages` seguem a ordem de
+`memory_zone_t`: `KERNEL`, `HEAP`, `SLAB`, `PROCESS`, `BUFFER` e `FREE`.
+`memory_detailed_total_pages` deve ser igual a soma das seis zonas. Heap,
+PMM, paging e SLAB distinguem uso atual, capacidade, fragmentacao, picos,
+falhas, liberacoes invalidas e double free. VFS publica descritores, mounts,
+pipes, dispositivos e operacoes; bloco/cache publicam profundidade, I/O,
+merge, hits, misses, evictions, dirty/writeback, durabilidade e erros.
+
+`net_buffer_*`, `sk_buff_*`, `socket_*`, `net_socket_*`, `route_*` e os campos
+de Ethernet publicam ocupacao atual como gauges e operacoes como contadores.
+Bytes copiados e trafegados usam `kind=bytes`; contadores usam deltas com
+`overflow=wrap_u32`; gauges, estados, capacidades e duracoes nao usam delta.
+Getter ausente, subsistema nao inicializado ou erro de consulta publica
+`value=ND status=unavailable`. RDTSC/PMU e latencias sem fonte validada
+continuam `ND`.
+
+O caso `qemu:tst5:perf4-memory-storage-network` executa nove sessoes isoladas
+(`baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`, tres
+iteracoes cada) com rede QEMU `user,model=e1000,restrict=on`. Cada sessao
+captura boot, baseline apos `kmetrics reset`, janela de Idle de tres segundos,
+diagnosticos deterministas de memoria/VFS/bloco/cache/rede e amostra final.
+O host e amostrado a cada 250 ms; wall time, CPU user/system, RSS, pico,
+quantidade e intervalo ficam em `ND` individualmente quando indisponiveis.
+
+O schema da sessao e `zephyros-perf4-memory-storage-network-v1` e o relatorio
+agregado fica em
+`build/test-results/perf4-memory-storage-network/perf4-memory-storage-network.json`.
+Envelope incompleto, chave duplicada, protocolo invalido, timeout, metrica
+guest obrigatoria `ND`, erro permanente, zona inconsistente ou fila residual
+reprova a sessao; indisponibilidade de QEMU e `BLOCKED`. As recusas negativas
+deterministicas dos autotestes (`vfs_failures=3`, `net_buffer_dropped=2` e
+`sk_buff_drops=2`) sao registradas como deltas esperados; qualquer outro
+incremento reprova a sessao. A PERF4 foi aprovada em 9/9 sessoes; nenhuma
+divida tecnica e quitada por esta instrumentacao.
+
+Comandos da etapa:
+
+```text
+make q3check
+make clean
+make
+make catalog-test
+make test-perf4-host
+make test-perf4-qemu
+make perf4-memory-storage-network
+```
+
 ## Registros
 
 ### 2026-08-30 - PWR1, Idle arquitetural com HLT

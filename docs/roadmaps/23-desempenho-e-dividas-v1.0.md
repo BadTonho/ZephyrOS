@@ -140,15 +140,39 @@ relatorio esta em
 
 ### PERF4 — Memória, VFS e rede
 
-- [ ] Medir alocações, picos, fragmentação, caches, filas, cópias e tempo de
+- [x] Medir alocações, picos, fragmentação, caches, filas, cópias e tempo de
   resposta nos cenários representativos.
-- [ ] Reduzir cópias e contenções somente quando ownership e invariantes
+- [x] Reduzir cópias e contenções somente quando ownership e invariantes
   permanecerem explícitos.
-- [ ] Comparar SLAB/SLUB, buffer cache, pipes, sockets e snapshots sem usar
+- [x] Comparar SLAB/SLUB, buffer cache, pipes, sockets e snapshots sem usar
   ponteiros emprestados depois do ciclo de vida do objeto.
-- [ ] Validar que otimizações não introduzam alocação ou bloqueio em IRQ/hot
+- [x] Validar que otimizações não introduzam alocação ou bloqueio em IRQ/hot
   path sem justificativa documentada.
-- [ ] Repetir `memcheck`, `schedcheck`, `proccheck`, VFS, rede e regressão.
+- [x] Repetir `memcheck`, `schedcheck`, `proccheck`, VFS, rede e regressão.
+
+Implementacao PERF4 entregue: `kmetrics machine` passou a publicar os
+getters existentes de memoria detalhada, SLAB, VFS, fila/cache de bloco,
+durabilidade, buffers, `sk_buff`, sockets e rotas. O caso
+`qemu:tst5:perf4-memory-storage-network`, o relatorio versionado, os testes
+host/Python, o catalogo, a cobertura e os alvos Windows/Linux foram
+atualizados. Nenhum bootloader, ABI, syscall, formato, capacidade de fila ou
+caminho de IRQ foi alterado; nenhuma divida tecnica foi quitada.
+
+Validacao concluida em 2026-09-14: `make q3check`, `make clean`, `make`,
+`make catalog-test` e `make test-perf4-host` passaram. A matriz QEMU fixa foi
+aprovada em 9/9 sessoes (`baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, tres iteracoes cada), com envelopes completos,
+metricas guest obrigatorias disponiveis, zonas de memoria coerentes, filas
+drenadas, ausencia de crescimento residual e prompt restaurado. O host foi
+amostrado a cada 250 ms. O relatorio esta em
+`build/test-results/perf4-memory-storage-network/perf4-memory-storage-network.json`,
+schema `zephyros-perf4-memory-storage-network-v1`, imagem SHA-256
+`19052f96819368e6180bd1b295281be6b1c961f7c0fe1ecc5ea17f4b8e3b7073`.
+
+A comparacao nao encontrou ganho reproduzivel que justificasse uma alteracao
+funcional de copias, contencoes ou capacidade; por isso a linha de base foi
+preservada e o suporte SLUB inexistente permaneceu explicitamente fora do
+escopo.
 
 ### PERF5 — Vídeo e interfaces
 

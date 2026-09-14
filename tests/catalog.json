@@ -10780,6 +10780,7 @@
         "qemu:tst4:memory-slab",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst6:fault:memory",
         "qemu:tst6:stress:kernel",
         "qemu:tst6:stress:storage"
@@ -11250,6 +11251,7 @@
         "host:network:ethernet",
         "host:network:socket",
         "qemu:tst4:network",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
@@ -11682,6 +11684,7 @@
       "case_ids": [
         "host:network:socket",
         "qemu:tst4:network",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
@@ -13254,6 +13257,7 @@
         "host:network:route",
         "qemu:tst4:network",
         "qemu:tst5:network",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
@@ -13784,6 +13788,7 @@
       "case_ids": [
         "host:network:ethernet",
         "qemu:tst4:network",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
@@ -14178,6 +14183,7 @@
         "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
@@ -25226,6 +25232,7 @@
         "host:storage:block",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst5:storage",
         "qemu:tst6:stress:storage"
       ],
@@ -25551,6 +25558,7 @@
         "host:storage:block",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst5:storage",
         "qemu:tst6:stress:storage"
       ],
@@ -30579,6 +30587,7 @@
         "host:storage:vfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
         "qemu:tst6:stress:kernel",
@@ -32697,6 +32706,7 @@
         "host:network:ethernet",
         "qemu:tst4:memory-slab",
         "qemu:tst5:apps",
+        "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst6:fault:memory",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:stress:kernel",
@@ -34970,6 +34980,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:perf3-scheduler-idle",
@@ -34980,7 +34991,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:scheduler_get_stats",
@@ -63553,6 +63564,27 @@
       "status": "COVERED",
       "case_ids": [
         "qemu:tst5:perf3-scheduler-idle"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf4_case",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_is_perf4_case",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf4-memory-storage-network"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -139031,9 +139063,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_get_stats",
@@ -139115,10 +139150,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst5:perf3-scheduler-idle"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_preempt_user",
@@ -139157,10 +139193,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst5:perf3-scheduler-idle"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_schedule",
@@ -161157,7 +161194,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
-        "qemu:tst5:perf1-baseline"
+        "qemu:tst5:perf1-baseline",
+        "qemu:tst5:perf4-memory-storage-network"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -161201,7 +161239,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
-        "qemu:tst5:perf1-baseline"
+        "qemu:tst5:perf1-baseline",
+        "qemu:tst5:perf4-memory-storage-network"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -161311,7 +161350,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
-        "qemu:tst5:perf1-baseline"
+        "qemu:tst5:perf1-baseline",
+        "qemu:tst5:perf4-memory-storage-network"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -161487,7 +161527,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
-        "qemu:tst5:perf1-baseline"
+        "qemu:tst5:perf1-baseline",
+        "qemu:tst5:perf4-memory-storage-network"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -180094,6 +180135,7 @@
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
         "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
         "api:src/include/process/process.h:scheduler_get_stats",
         "api:src/include/process/process.h:scheduler_init",
         "api:src/include/process/process.h:scheduler_preempt_user",
@@ -180181,9 +180223,12 @@
         "c:src/process/process.c:process_wake_channel",
         "c:src/process/process.c:process_yield",
         "c:src/process/process.c:scheduler_find_next_ready",
+        "c:src/process/process.c:scheduler_get_runtime_stats",
         "c:src/process/process.c:scheduler_get_stats",
         "c:src/process/process.c:scheduler_idle_context_valid",
         "c:src/process/process.c:scheduler_init",
+        "c:src/process/process.c:scheduler_note_wakeup",
+        "c:src/process/process.c:scheduler_refresh_peaks",
         "c:src/process/process.c:scheduler_schedule",
         "c:src/process/process.c:scheduler_select_next",
         "c:src/process/process.c:scheduler_validate_invariants",
@@ -193074,6 +193119,554 @@
       }
     },
     {
+      "id": "qemu:tst5:perf3-scheduler-idle",
+      "scenario": "Scheduler, Idle e kworker com janela deterministica de carga",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:perf3-scheduler-idle",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 180,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1 + ZMETRIC/1",
+        "input": "qmp-keyboard",
+        "profiles": "baseline,baseline,no-vesa",
+        "modes": "simple,classic,simple-fallback",
+        "iterations": 3,
+        "idle_seconds": 3,
+        "load_seconds": 10,
+        "host_sample_interval_seconds": 0.25,
+        "diagnostics": "kmetrics machine,kmetrics reset,regcheck full,schedcheck,workq check,cpu usage,proccheck"
+      },
+      "preconditions": "imagem pronta, QEMU com serial, QMP e scheduler guest disponiveis",
+      "action": "capturar boot, aguardar Idle, executar regcheck full por janela fixa, limpar com F11 e validar scheduler/workqueue",
+      "expected": "tres amostras guest completas, contabilidade Idle/ativo consistente, kworker vinculada e prompt restaurado",
+      "errors": "envelope ausente ou incompleto, metricas scheduler ND, timeout, protocolo, fila residual, erro workqueue ou schedcheck negativo",
+      "effects": "somente diagnosticos observacionais, amostras guest/host e cancelamento do job de teste",
+      "cleanup": "encerrar cada QEMU isolado e preservar serial, fases, amostras host e relatorio JSON",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case",
+        "c:src/process/process.c:scheduler_note_wakeup",
+        "c:src/process/process.c:scheduler_refresh_peaks"
+      ],
+      "tags": [
+        "qemu",
+        "tst5",
+        "perf3",
+        "scheduler",
+        "idle",
+        "kworker",
+        "simple",
+        "classic",
+        "fallback"
+      ],
+      "interaction": {
+        "mode": "qmp-input",
+        "steps": [
+          {
+            "op": "phase",
+            "phase": "boot"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "phase",
+            "phase": "idle"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "phase",
+            "phase": "load"
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 5
+          },
+          {
+            "op": "phase",
+            "phase": "cleanup"
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "workq check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "cpu usage"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "phase",
+            "phase": "final"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-perf3-scheduler-idle"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:perf4-memory-storage-network",
+      "scenario": "Linha de base deterministica de memoria, VFS, armazenamento e rede",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:perf4-memory-storage-network",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 180,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1 + ZMETRIC/1",
+        "input": "qmp-keyboard",
+        "network": "user,model=e1000,restrict=on",
+        "profiles": "baseline,baseline,no-vesa",
+        "modes": "simple,classic,simple-fallback",
+        "iterations": 3,
+        "idle_seconds": 3,
+        "host_sample_interval_seconds": 0.25,
+        "diagnostics": "memcheck,slabinfo,vfs,blkstat,cachestat,net check,netstat,sockstat,route,schedcheck,proccheck"
+      },
+      "preconditions": "imagem pronta, QEMU com serial, QMP, rede e getters de diagnostico disponiveis",
+      "action": "capturar boot, resetar metricas, aguardar idle e executar diagnosticos deterministas de memoria, VFS, bloco, cache e rede",
+      "expected": "tres amostras guest completas, invariantes de memoria coerentes, filas drenadas e prompt restaurado",
+      "errors": "envelope ausente ou incompleto, chaves duplicadas, protocolo, timeout, recurso residual, erro permanente, fila nao drenada ou metrica guest ND",
+      "effects": "somente diagnosticos observacionais, amostras guest/host e encerramento de cada QEMU isolado",
+      "cleanup": "encerrar cada QEMU isolado e preservar serial, fases, amostras host e relatorio JSON",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/memory.h:memory_get_detailed_stats",
+        "api:src/include/core/net_buffer.h:net_buffer_get_stats",
+        "api:src/include/core/net_socket.h:net_socket_get_status",
+        "api:src/include/core/route.h:route_get_status",
+        "api:src/include/core/sk_buff.h:skb_get_stats",
+        "api:src/include/core/socket.h:socket_get_status",
+        "api:src/include/fs/block.h:block_get_stats",
+        "api:src/include/fs/block_cache.h:block_cache_get_stats",
+        "api:src/include/fs/vfs.h:vfs_get_status",
+        "api:src/include/memory/slab.h:kmem_cache_get_stats",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf4_case",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_memory",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_network",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_storage",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot"
+      ],
+      "tags": [
+        "qemu",
+        "tst5",
+        "perf4",
+        "memory",
+        "vfs",
+        "storage",
+        "network",
+        "simple",
+        "classic",
+        "fallback"
+      ],
+      "interaction": {
+        "mode": "qmp-input",
+        "steps": [
+          {
+            "op": "phase",
+            "phase": "boot"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "phase",
+            "phase": "idle"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "phase",
+            "phase": "load"
+          },
+          {
+            "op": "text",
+            "text": "memcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "slabinfo"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "vfs"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "blkstat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "cachestat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "net check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "netstat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "sockstat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "route"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "phase",
+            "phase": "cleanup"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "phase",
+            "phase": "final"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-perf4-memory-storage-network"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
       "id": "qemu:tst5:poweroff",
       "scenario": "Caminho black-box de poweroff isolado no QEMU",
       "owner": "quality",
@@ -199292,240 +199885,6 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
-    },
-    {
-      "id": "qemu:tst5:perf3-scheduler-idle",
-      "scenario": "Scheduler, Idle e kworker com janela deterministica de carga",
-      "owner": "quality",
-      "layer": "qemu",
-      "executor": "qemu",
-      "profile": "smoke",
-      "guest_case": "qemu:tst5:perf3-scheduler-idle",
-      "qemu_profile": "baseline",
-      "required_capabilities": [],
-      "timeout_seconds": 180,
-      "heartbeat_timeout_seconds": 20,
-      "isolation": "snapshot",
-      "parameters": {
-        "protocol": "ZTEST/1 + ZMETRIC/1",
-        "input": "qmp-keyboard",
-        "profiles": "baseline,baseline,no-vesa",
-        "modes": "simple,classic,simple-fallback",
-        "iterations": 3,
-        "idle_seconds": 3,
-        "load_seconds": 10,
-        "host_sample_interval_seconds": 0.25,
-        "diagnostics": "kmetrics machine,kmetrics reset,regcheck full,schedcheck,workq check,cpu usage,proccheck"
-      },
-      "preconditions": "imagem pronta, QEMU com serial, QMP e scheduler guest disponiveis",
-      "action": "capturar boot, aguardar Idle, executar regcheck full por janela fixa, limpar com F11 e validar scheduler/workqueue",
-      "expected": "tres amostras guest completas, contabilidade Idle/ativo consistente, kworker vinculada e prompt restaurado",
-      "errors": "envelope ausente ou incompleto, metricas scheduler ND, timeout, protocolo, fila residual, erro workqueue ou schedcheck negativo",
-      "effects": "somente diagnosticos observacionais, amostras guest/host e cancelamento do job de teste",
-      "cleanup": "encerrar cada QEMU isolado e preservar serial, fases, amostras host e relatorio JSON",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/process/process.h:scheduler_get_runtime_stats",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case",
-        "c:src/process/process.c:scheduler_note_wakeup",
-        "c:src/process/process.c:scheduler_refresh_peaks"
-      ],
-      "tags": [
-        "qemu",
-        "tst5",
-        "perf3",
-        "scheduler",
-        "idle",
-        "kworker",
-        "simple",
-        "classic",
-        "fallback"
-      ],
-      "interaction": {
-        "mode": "qmp-input",
-        "steps": [
-          {
-            "op": "phase",
-            "phase": "boot"
-          },
-          {
-            "op": "key",
-            "key": "meta_l"
-          },
-          {
-            "op": "key",
-            "key": "down"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 2
-          },
-          {
-            "op": "text",
-            "text": "guimode simple"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 0.5
-          },
-          {
-            "op": "text",
-            "text": "kmetrics machine"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 0.5
-          },
-          {
-            "op": "text",
-            "text": "kmetrics reset"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 0.5
-          },
-          {
-            "op": "phase",
-            "phase": "idle"
-          },
-          {
-            "op": "wait",
-            "seconds": 3
-          },
-          {
-            "op": "text",
-            "text": "kmetrics machine"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 0.5
-          },
-          {
-            "op": "phase",
-            "phase": "load"
-          },
-          {
-            "op": "text",
-            "text": "regcheck full"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 10
-          },
-          {
-            "op": "key",
-            "key": "f11"
-          },
-          {
-            "op": "wait",
-            "seconds": 5
-          },
-          {
-            "op": "phase",
-            "phase": "cleanup"
-          },
-          {
-            "op": "text",
-            "text": "schedcheck"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 1
-          },
-          {
-            "op": "text",
-            "text": "workq check"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 1
-          },
-          {
-            "op": "text",
-            "text": "cpu usage"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 1
-          },
-          {
-            "op": "text",
-            "text": "proccheck"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 1
-          },
-          {
-            "op": "phase",
-            "phase": "final"
-          },
-          {
-            "op": "text",
-            "text": "kmetrics machine"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          },
-          {
-            "op": "wait",
-            "seconds": 0.5
-          },
-          {
-            "op": "text",
-            "text": "echo tst5-perf3-scheduler-idle"
-          },
-          {
-            "op": "key",
-            "key": "enter"
-          }
-        ],
-        "post_action": {
-          "type": "none",
-          "steps": []
-        }
-      }
     }
   ],
   "retired": [

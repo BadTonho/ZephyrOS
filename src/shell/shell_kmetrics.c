@@ -329,6 +329,9 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_VIDEO;
     memory_get_heap_stats(&snapshot->heap);
     memory_get_pmm_stats(&snapshot->pmm);
+    snapshot->memory_detailed_result =
+        memory_get_detailed_stats(&snapshot->memory_detailed);
+    kmem_cache_get_stats(&snapshot->slab);
     paging_get_user_stats(&snapshot->paging_user);
     snapshot->paging_boot_result = paging_get_boot_stats(&snapshot->paging_boot);
     if (snapshot->paging_boot_result != OK) {
@@ -365,6 +368,13 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     snapshot->ethernet_result = ethernet_get_status(&snapshot->ethernet);
     snapshot->network_result =
         network_manager_get_status(&snapshot->network);
+    snapshot->net_buffer_result =
+        net_buffer_get_stats(&snapshot->net_buffer);
+    snapshot->sk_buff_result = skb_get_stats(&snapshot->sk_buff);
+    snapshot->socket_result = socket_get_status(&snapshot->sockets);
+    snapshot->net_socket_result =
+        net_socket_get_status(&snapshot->net_sockets);
+    snapshot->route_result = route_get_status(&snapshot->routes);
     if (snapshot->ethernet_result == OK && snapshot->network_result == OK) {
         snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_NETWORK;
     }
@@ -1053,35 +1063,146 @@ static int shell_kmetrics_emit_memory(
     const memory_heap_stats_t* base_heap = baseline ? &baseline->heap : 0;
     const memory_pmm_stats_t* pmm = &current->pmm;
     const memory_pmm_stats_t* base_pmm = baseline ? &baseline->pmm : 0;
+    const memory_detailed_stats_t* detailed = &current->memory_detailed;
+    const memory_detailed_stats_t* base_detailed =
+        baseline ? &baseline->memory_detailed : 0;
+    const kmem_slab_stats_t* slab = &current->slab;
+    const kmem_slab_stats_t* base_slab = baseline ? &baseline->slab : 0;
     const paging_user_stats_t* user = &current->paging_user;
     const paging_user_stats_t* base_user = baseline ? &baseline->paging_user : 0;
+    uint8_t heap_available = heap->initialized && heap->valid;
+    uint8_t detailed_available = current->memory_detailed_result == OK &&
+                                 detailed->initialized && detailed->valid;
+    uint8_t slab_available = slab->initialized && slab->valid;
     uint8_t pmm_available = pmm->initialized;
     uint8_t paging_user_available = user->initialized;
     uint8_t boot_available = current->paging_boot_result == OK &&
                              current->paging_boot.initialized;
+    uint8_t base_heap_available = base_heap && base_heap->initialized &&
+                                  base_heap->valid;
+    uint8_t base_pmm_available = base_pmm && base_pmm->initialized;
+    uint8_t base_detailed_available =
+        base_detailed && baseline->memory_detailed_result == OK &&
+        base_detailed->initialized && base_detailed->valid;
+    uint8_t base_slab_available = base_slab && base_slab->initialized &&
+                                  base_slab->valid;
+    uint8_t base_paging_user_available =
+        base_user && base_user->initialized;
 
     SHELL_KMETRICS_EMIT_U32("memory_heap_used_bytes", heap->used_bytes, 0U,
-                            heap->initialized && heap->valid, "byte",
+                            heap_available, "byte",
                             SHELL_KMETRICS_KIND_GAUGE, "heap", "memory");
     SHELL_KMETRICS_EMIT_U32("memory_heap_free_bytes", heap->free_bytes, 0U,
-                            heap->initialized && heap->valid, "byte",
+                            heap_available, "byte",
                             SHELL_KMETRICS_KIND_GAUGE, "heap", "memory");
     SHELL_KMETRICS_EMIT_U32("memory_heap_total_bytes", heap->total_bytes, 0U,
-                            heap->initialized && heap->valid, "byte",
+                            heap_available, "byte",
                             SHELL_KMETRICS_KIND_GAUGE, "heap", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_heap_allocated_blocks",
+                            heap->allocated_blocks, 0U, heap_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "heap", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_heap_free_blocks", heap->free_blocks, 0U,
+                            heap_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "heap", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_heap_largest_free_block",
+                            heap->largest_free_block, 0U, heap_available, "byte",
+                            SHELL_KMETRICS_KIND_GAUGE, "heap", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_heap_fragmentation_percent",
+                            heap->fragmentation_percent, 0U, heap_available,
+                            "percent", SHELL_KMETRICS_KIND_GAUGE, "heap",
+                            "memory");
     SHELL_KMETRICS_EMIT_U32("memory_heap_allocation_failures",
                             heap->allocation_failures,
-                            base_heap ? base_heap->allocation_failures : 0U,
-                            baseline_valid && heap->initialized && heap->valid,
+                            base_heap_available ? base_heap->allocation_failures : 0U,
+                            baseline_valid && base_heap_available && heap_available,
                             "count", SHELL_KMETRICS_KIND_COUNTER, "heap", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_heap_invalid_frees", heap->invalid_frees,
+                            base_heap_available ? base_heap->invalid_frees : 0U,
+                            baseline_valid && base_heap_available && heap_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "heap", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_heap_double_frees", heap->double_frees,
+                            base_heap_available ? base_heap->double_frees : 0U,
+                            baseline_valid && base_heap_available && heap_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "heap", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_heap_initialized", heap->initialized, 0U,
+                            heap_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "heap", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_heap_valid", heap->valid, 0U,
+                            heap_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "heap", "memory");
     SHELL_KMETRICS_EMIT_U32("memory_pmm_owned_pages", pmm->owned_pages, 0U,
                             pmm_available, "page", SHELL_KMETRICS_KIND_GAUGE,
                             "pmm", "memory");
     SHELL_KMETRICS_EMIT_U32("memory_pmm_allocation_failures",
                             pmm->allocation_failures,
-                            base_pmm ? base_pmm->allocation_failures : 0U,
-                            baseline_valid && pmm_available, "count",
+                            base_pmm_available ? base_pmm->allocation_failures : 0U,
+                            baseline_valid && base_pmm_available && pmm_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "pmm", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_pmm_invalid_frees", pmm->invalid_frees,
+                            base_pmm_available ? base_pmm->invalid_frees : 0U,
+                            baseline_valid && base_pmm_available && pmm_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "pmm", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_pmm_initialized", pmm->initialized, 0U,
+                            pmm_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "pmm", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_detailed_total_pages", detailed->total_pages,
+                            0U, detailed_available, "page",
+                            SHELL_KMETRICS_KIND_GAUGE, "memory", "memory");
+    for (uint32_t index = 0U; index < MEMORY_ZONE_COUNT; index++) {
+        if (shell_kmetrics_emit_indexed_u32(
+                "memory_zone_", index, "_pages", detailed->zone_pages[index],
+                base_detailed_available ? base_detailed->zone_pages[index] : 0U,
+                baseline_valid && base_detailed_available && detailed_available,
+                detailed_available, "page", SHELL_KMETRICS_KIND_GAUGE,
+                "memory", "memory") != OK) {
+            return ERR_OVERFLOW;
+        }
+    }
+    SHELL_KMETRICS_EMIT_U32("memory_detailed_free_runs", detailed->free_runs,
+                            0U, detailed_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "memory", "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_detailed_largest_free_run",
+                            detailed->largest_free_run, 0U, detailed_available,
+                            "page", SHELL_KMETRICS_KIND_GAUGE, "memory",
+                            "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_detailed_isolated_free_pages",
+                            detailed->isolated_free_pages, 0U, detailed_available,
+                            "page", SHELL_KMETRICS_KIND_GAUGE, "memory",
+                            "memory");
+    SHELL_KMETRICS_EMIT_U32("memory_detailed_fragmentation_percent",
+                            detailed->fragmentation_percent, 0U,
+                            detailed_available, "percent",
+                            SHELL_KMETRICS_KIND_GAUGE, "memory", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_caches", slab->caches, 0U, slab_available,
+                            "count", SHELL_KMETRICS_KIND_GAUGE, "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_slabs", slab->slabs, 0U, slab_available,
+                            "count", SHELL_KMETRICS_KIND_GAUGE, "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_pages", slab->pages, 0U, slab_available,
+                            "page", SHELL_KMETRICS_KIND_GAUGE, "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_active_objects", slab->active_objects, 0U,
+                            slab_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_capacity", slab->capacity, 0U, slab_available,
+                            "count", SHELL_KMETRICS_KIND_GAUGE, "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_allocation_failures",
+                            slab->allocation_failures,
+                            base_slab_available ? base_slab->allocation_failures : 0U,
+                            baseline_valid && base_slab_available && slab_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_invalid_frees", slab->invalid_frees,
+                            base_slab_available ? base_slab->invalid_frees : 0U,
+                            baseline_valid && base_slab_available && slab_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_double_frees", slab->double_frees,
+                            base_slab_available ? base_slab->double_frees : 0U,
+                            baseline_valid && base_slab_available && slab_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_initialized", slab->initialized, 0U,
+                            slab_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "slab", "memory");
+    SHELL_KMETRICS_EMIT_U32("slab_valid", slab->valid, 0U, slab_available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "slab", "memory");
     SHELL_KMETRICS_EMIT_U32("paging_user_active_directories",
                             user->active_directories, 0U,
                             paging_user_available, "count",
@@ -1091,8 +1212,9 @@ static int shell_kmetrics_emit_memory(
                             SHELL_KMETRICS_KIND_GAUGE, "paging", "memory");
     SHELL_KMETRICS_EMIT_U32("paging_user_directories_created",
                             user->directories_created,
-                            base_user ? base_user->directories_created : 0U,
-                            baseline_valid && paging_user_available, "count",
+                            base_paging_user_available ? base_user->directories_created : 0U,
+                            baseline_valid && base_paging_user_available &&
+                                paging_user_available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "paging", "memory");
     SHELL_KMETRICS_EMIT_U32("paging_boot_identity_pages",
                             current->paging_boot.identity_pages, 0U,
@@ -1120,26 +1242,91 @@ static int shell_kmetrics_emit_storage(
     uint8_t vfs_available = current->vfs_result == OK;
     uint8_t block_available = current->block_result == OK;
     uint8_t cache_available = current->cache_result == OK;
+    uint8_t durability_available = current->durability_result == OK;
+    uint8_t base_vfs_available = baseline && baseline->vfs_result == OK;
+    uint8_t base_block_available = baseline && baseline->block_result == OK;
+    uint8_t base_cache_available = baseline && baseline->cache_result == OK;
 
+    SHELL_KMETRICS_EMIT_U32("vfs_initialized", vfs->initialized, 0U,
+                            vfs_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_descriptor_capacity",
+                            vfs->descriptor_capacity, 0U, vfs_available,
+                            "count", SHELL_KMETRICS_KIND_GAUGE, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_global_file_capacity",
+                            vfs->global_file_capacity, 0U, vfs_available,
+                            "count", SHELL_KMETRICS_KIND_GAUGE, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_global_files_used", vfs->global_files_used,
+                            0U, vfs_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_processes_with_tables",
+                            vfs->processes_with_tables, 0U, vfs_available,
+                            "count", SHELL_KMETRICS_KIND_GAUGE, "vfs", "storage");
     SHELL_KMETRICS_EMIT_U32("vfs_descriptors_open", vfs->descriptors_open, 0U,
                             vfs_available, "count", SHELL_KMETRICS_KIND_GAUGE,
                             "vfs", "storage");
     SHELL_KMETRICS_EMIT_U32("vfs_opens", vfs->opens,
-                            base_vfs ? base_vfs->opens : 0U,
-                            baseline_valid && vfs_available, "count",
-                            SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+                            base_vfs_available ? base_vfs->opens : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
     SHELL_KMETRICS_EMIT_U32("vfs_reads", vfs->reads,
-                            base_vfs ? base_vfs->reads : 0U,
-                            baseline_valid && vfs_available, "count",
-                            SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+                            base_vfs_available ? base_vfs->reads : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
     SHELL_KMETRICS_EMIT_U32("vfs_writes", vfs->writes,
-                            base_vfs ? base_vfs->writes : 0U,
-                            baseline_valid && vfs_available, "count",
-                            SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+                            base_vfs_available ? base_vfs->writes : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
     SHELL_KMETRICS_EMIT_U32("vfs_failures", vfs->failures,
-                            base_vfs ? base_vfs->failures : 0U,
-                            baseline_valid && vfs_available, "count",
-                            SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+                            base_vfs_available ? base_vfs->failures : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_seeks", vfs->seeks,
+                            base_vfs_available ? base_vfs->seeks : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_closes", vfs->closes,
+                            base_vfs_available ? base_vfs->closes : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_mount_capacity", vfs->mount_capacity, 0U,
+                            vfs_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_mounts_active", vfs->mounts_active, 0U,
+                            vfs_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_lookups", vfs->lookups,
+                            base_vfs_available ? base_vfs->lookups : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_chdirs", vfs->chdirs,
+                            base_vfs_available ? base_vfs->chdirs : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_ioctls", vfs->ioctls,
+                            base_vfs_available ? base_vfs->ioctls : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_device_capacity", vfs->device_capacity, 0U,
+                            vfs_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_devices_active", vfs->devices_active, 0U,
+                            vfs_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_pipe_capacity", vfs->pipe_capacity, 0U,
+                            vfs_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_pipes_active", vfs->pipes_active, 0U,
+                            vfs_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_pipe_reads", vfs->pipe_reads,
+                            base_vfs_available ? base_vfs->pipe_reads : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
+    SHELL_KMETRICS_EMIT_U32("vfs_pipe_writes", vfs->pipe_writes,
+                            base_vfs_available ? base_vfs->pipe_writes : 0U,
+                            baseline_valid && base_vfs_available && vfs_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "vfs", "storage");
     SHELL_KMETRICS_EMIT_U32("block_queue_depth", block->queue_depth, 0U,
                             block_available, "count", SHELL_KMETRICS_KIND_GAUGE,
                             "block", "storage");
@@ -1153,24 +1340,37 @@ static int shell_kmetrics_emit_storage(
                             block_available, "count", SHELL_KMETRICS_KIND_GAUGE,
                             "block", "storage");
     SHELL_KMETRICS_EMIT_U32("block_submitted", block->submitted,
-                            base_block ? base_block->submitted : 0U,
-                            baseline_valid && block_available, "count",
+                            base_block_available ? base_block->submitted : 0U,
+                            baseline_valid && base_block_available && block_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "block", "storage");
     SHELL_KMETRICS_EMIT_U32("block_completed", block->completed,
-                            base_block ? base_block->completed : 0U,
-                            baseline_valid && block_available, "count",
+                            base_block_available ? base_block->completed : 0U,
+                            baseline_valid && base_block_available && block_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "block", "storage");
     SHELL_KMETRICS_EMIT_U32("block_failed", block->failed,
-                            base_block ? base_block->failed : 0U,
-                            baseline_valid && block_available, "count",
+                            base_block_available ? base_block->failed : 0U,
+                            baseline_valid && base_block_available && block_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "block", "storage");
+    SHELL_KMETRICS_EMIT_U32("block_cancelled", block->cancelled,
+                            base_block_available ? base_block->cancelled : 0U,
+                            baseline_valid && base_block_available && block_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block", "storage");
+    SHELL_KMETRICS_EMIT_U32("block_merged", block->merged,
+                            base_block_available ? base_block->merged : 0U,
+                            baseline_valid && base_block_available && block_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block", "storage");
     SHELL_KMETRICS_EMIT_U32("block_read_sectors", block->read_sectors,
-                            base_block ? base_block->read_sectors : 0U,
-                            baseline_valid && block_available, "sector",
+                            base_block_available ? base_block->read_sectors : 0U,
+                            baseline_valid && base_block_available && block_available,
+                            "sector",
                             SHELL_KMETRICS_KIND_COUNTER, "block", "storage");
     SHELL_KMETRICS_EMIT_U32("block_write_sectors", block->write_sectors,
-                            base_block ? base_block->write_sectors : 0U,
-                            baseline_valid && block_available, "sector",
+                            base_block_available ? base_block->write_sectors : 0U,
+                            baseline_valid && base_block_available && block_available,
+                            "sector",
                             SHELL_KMETRICS_KIND_COUNTER, "block", "storage");
     SHELL_KMETRICS_EMIT_U32("block_read_sectors_per_second",
                             block->read_sectors_per_second, 0U, block_available,
@@ -1180,23 +1380,58 @@ static int shell_kmetrics_emit_storage(
                             block->write_sectors_per_second, 0U, block_available,
                             "sector_per_second", SHELL_KMETRICS_KIND_GAUGE,
                             "block", "storage");
+    SHELL_KMETRICS_EMIT_U32("block_last_error", (uint32_t)block->last_error, 0U,
+                            block_available && block->last_error >= 0, "error",
+                            SHELL_KMETRICS_KIND_STATE, "block", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_capacity", cache->capacity, 0U,
+                            cache_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_block_size", cache->block_size, 0U,
+                            cache_available, "byte", SHELL_KMETRICS_KIND_GAUGE,
+                            "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_memory_bytes", cache->memory_bytes, 0U,
+                            cache_available, "byte", SHELL_KMETRICS_KIND_GAUGE,
+                            "block_cache", "storage");
     SHELL_KMETRICS_EMIT_U32("cache_entries", cache->entries, 0U, cache_available,
                             "count", SHELL_KMETRICS_KIND_GAUGE, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_valid_entries", cache->valid_entries, 0U,
+                            cache_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_reading_entries", cache->reading_entries, 0U,
+                            cache_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_dirty_entries", cache->dirty_entries, 0U,
+                            cache_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_writeback_entries", cache->writeback_entries,
+                            0U, cache_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_pinned_entries", cache->pinned_entries, 0U,
+                            cache_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "block_cache", "storage");
     SHELL_KMETRICS_EMIT_U32("cache_hits", cache->hits,
-                            base_cache ? base_cache->hits : 0U,
-                            baseline_valid && cache_available, "count",
+                            base_cache_available ? base_cache->hits : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
     SHELL_KMETRICS_EMIT_U32("cache_misses", cache->misses,
-                            base_cache ? base_cache->misses : 0U,
-                            baseline_valid && cache_available, "count",
+                            base_cache_available ? base_cache->misses : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_reads_avoided", cache->reads_avoided,
+                            base_cache_available ? base_cache->reads_avoided : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
     SHELL_KMETRICS_EMIT_U32("cache_physical_reads", cache->physical_reads,
-                            base_cache ? base_cache->physical_reads : 0U,
-                            baseline_valid && cache_available, "count",
+                            base_cache_available ? base_cache->physical_reads : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
     SHELL_KMETRICS_EMIT_U32("cache_physical_writes", cache->physical_writes,
-                            base_cache ? base_cache->physical_writes : 0U,
-                            baseline_valid && cache_available, "count",
+                            base_cache_available ? base_cache->physical_writes : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
     SHELL_KMETRICS_EMIT_U32("cache_hit_rate_percent", cache->hit_rate_percent,
                             0U, cache_available, "percent",
@@ -1204,10 +1439,58 @@ static int shell_kmetrics_emit_storage(
     SHELL_KMETRICS_EMIT_U32("cache_dirty_bytes", cache->dirty_bytes, 0U,
                             cache_available, "byte", SHELL_KMETRICS_KIND_GAUGE,
                             "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_evictions", cache->evictions,
+                            base_cache_available ? base_cache->evictions : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_invalidations", cache->invalidations,
+                            base_cache_available ? base_cache->invalidations : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_bypasses", cache->bypasses,
+                            base_cache_available ? base_cache->bypasses : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_errors", cache->errors,
+                            base_cache_available ? base_cache->errors : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
     SHELL_KMETRICS_EMIT_U32("cache_writeback_failures", cache->writeback_failures,
-                            base_cache ? base_cache->writeback_failures : 0U,
-                            baseline_valid && cache_available, "count",
+                            base_cache_available ? base_cache->writeback_failures : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count",
                             SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_writeback_attempts", cache->writeback_attempts,
+                            base_cache_available ? base_cache->writeback_attempts : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_writeback_completed", cache->writeback_completed,
+                            base_cache_available ? base_cache->writeback_completed : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_sync_operations", cache->sync_operations,
+                            base_cache_available ? base_cache->sync_operations : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_flush_operations", cache->flush_operations,
+                            base_cache_available ? base_cache->flush_operations : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_flush_unavailable", cache->flush_unavailable,
+                            base_cache_available ? base_cache->flush_unavailable : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_degraded_syncs", cache->degraded_syncs,
+                            base_cache_available ? base_cache->degraded_syncs : 0U,
+                            baseline_valid && base_cache_available && cache_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_last_error", (uint32_t)cache->last_error, 0U,
+                            cache_available && cache->last_error >= 0, "error",
+                            SHELL_KMETRICS_KIND_STATE, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("cache_last_sync_error",
+                            (uint32_t)cache->last_sync_error, 0U,
+                            cache_available && cache->last_sync_error >= 0, "error",
+                            SHELL_KMETRICS_KIND_STATE, "block_cache", "storage");
     SHELL_KMETRICS_EMIT_U32("cache_durability_state",
                             current->durability.state, 0U,
                             current->durability_result == OK, "enum",
@@ -1216,10 +1499,24 @@ static int shell_kmetrics_emit_storage(
                             current->durability.flush_supported, 0U,
                             current->durability_result == OK, "bool",
                             SHELL_KMETRICS_KIND_STATE, "block_cache", "storage");
-    SHELL_KMETRICS_EMIT_U32("cache_flush_unavailable",
-                            current->durability.flush_unavailable, 0U,
-                            current->durability_result == OK, "count",
+    SHELL_KMETRICS_EMIT_U32("durability_devices_checked",
+                            current->durability.devices_checked, 0U,
+                            durability_available, "count",
                             SHELL_KMETRICS_KIND_GAUGE, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("durability_flush_supported",
+                            current->durability.flush_supported, 0U,
+                            durability_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("durability_flush_unavailable",
+                            current->durability.flush_unavailable, 0U,
+                            durability_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "block_cache", "storage");
+    SHELL_KMETRICS_EMIT_U32("durability_last_error",
+                            (uint32_t)current->durability.last_error, 0U,
+                            durability_available &&
+                                current->durability.last_error >= 0,
+                            "error", SHELL_KMETRICS_KIND_STATE, "block_cache",
+                            "storage");
     return OK;
 }
 
@@ -1229,8 +1526,47 @@ static int shell_kmetrics_emit_network(
     const ethernet_status_t* ethernet = &current->ethernet;
     const ethernet_status_t* base_ethernet = baseline ? &baseline->ethernet : 0;
     const network_manager_status_t* network = &current->network;
+    const net_buffer_stats_t* buffers = &current->net_buffer;
+    const net_buffer_stats_t* base_buffers =
+        baseline ? &baseline->net_buffer : 0;
+    const sk_buff_stats_t* sk_buff = &current->sk_buff;
+    const sk_buff_stats_t* base_sk_buff = baseline ? &baseline->sk_buff : 0;
+    const socket_status_t* sockets = &current->sockets;
+    const socket_status_t* base_sockets = baseline ? &baseline->sockets : 0;
+    const net_socket_status_t* net_sockets = &current->net_sockets;
+    const net_socket_status_t* base_net_sockets =
+        baseline ? &baseline->net_sockets : 0;
+    const route_status_t* routes = &current->routes;
+    const route_status_t* base_routes = baseline ? &baseline->routes : 0;
     uint8_t available = current->ethernet_result == OK &&
                         current->network_result == OK;
+    uint8_t ethernet_available = current->ethernet_result == OK;
+    uint8_t buffers_available = current->net_buffer_result == OK &&
+                                buffers->initialized;
+    uint8_t sk_buff_available = current->sk_buff_result == OK &&
+                                sk_buff->initialized;
+    uint8_t sockets_available = current->socket_result == OK &&
+                                sockets->initialized;
+    uint8_t net_sockets_available = current->net_socket_result == OK &&
+                                    net_sockets->initialized;
+    uint8_t routes_available = current->route_result == OK && routes->initialized;
+    uint8_t base_ethernet_available = baseline &&
+                                      baseline->ethernet_result == OK;
+    uint8_t base_buffers_available = baseline &&
+                                     baseline->net_buffer_result == OK &&
+                                     base_buffers->initialized;
+    uint8_t base_sk_buff_available = baseline &&
+                                     baseline->sk_buff_result == OK &&
+                                     base_sk_buff->initialized;
+    uint8_t base_sockets_available = baseline &&
+                                     baseline->socket_result == OK &&
+                                     base_sockets->initialized;
+    uint8_t base_net_sockets_available = baseline &&
+                                         baseline->net_socket_result == OK &&
+                                         base_net_sockets->initialized;
+    uint8_t base_routes_available = baseline &&
+                                    baseline->route_result == OK &&
+                                    base_routes->initialized;
 
     SHELL_KMETRICS_EMIT_U32("network_interfaces", network->interface_count, 0U,
                             available, "count", SHELL_KMETRICS_KIND_GAUGE,
@@ -1248,31 +1584,302 @@ static int shell_kmetrics_emit_network(
                             network->tcp_connection_count, 0U, available, "count",
                             SHELL_KMETRICS_KIND_GAUGE, "network", "network");
     SHELL_KMETRICS_EMIT_U32("ethernet_interfaces", ethernet->interface_count,
-                            0U, current->ethernet_result == OK, "count",
+                            0U, ethernet_available, "count",
                             SHELL_KMETRICS_KIND_GAUGE, "ethernet", "network");
     SHELL_KMETRICS_EMIT_U32("ethernet_handlers", ethernet->handler_count,
-                            0U, current->ethernet_result == OK, "count",
+                            0U, ethernet_available, "count",
                             SHELL_KMETRICS_KIND_GAUGE, "ethernet", "network");
     SHELL_KMETRICS_EMIT_U32("ethernet_polls", ethernet->polls,
-                            base_ethernet ? base_ethernet->polls : 0U,
-                            baseline_valid && available, "count",
+                            base_ethernet_available ? base_ethernet->polls : 0U,
+                            baseline_valid && base_ethernet_available &&
+                                ethernet_available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "ethernet", "network");
     SHELL_KMETRICS_EMIT_U32("ethernet_poll_errors", ethernet->poll_errors,
-                            base_ethernet ? base_ethernet->poll_errors : 0U,
-                            baseline_valid && available, "count",
+                            base_ethernet_available ? base_ethernet->poll_errors : 0U,
+                            baseline_valid && base_ethernet_available &&
+                                ethernet_available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "ethernet", "network");
     SHELL_KMETRICS_EMIT_U32("ethernet_rx_frames", ethernet->rx_frames,
-                            base_ethernet ? base_ethernet->rx_frames : 0U,
-                            baseline_valid && available, "count",
+                            base_ethernet_available ? base_ethernet->rx_frames : 0U,
+                            baseline_valid && base_ethernet_available &&
+                                ethernet_available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "ethernet", "network");
     SHELL_KMETRICS_EMIT_U32("ethernet_rx_delivered", ethernet->rx_delivered,
-                            base_ethernet ? base_ethernet->rx_delivered : 0U,
-                            baseline_valid && available, "count",
+                            base_ethernet_available ? base_ethernet->rx_delivered : 0U,
+                            baseline_valid && base_ethernet_available &&
+                                ethernet_available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "ethernet", "network");
     SHELL_KMETRICS_EMIT_U32("ethernet_tx_frames", ethernet->tx_frames,
-                            base_ethernet ? base_ethernet->tx_frames : 0U,
-                            baseline_valid && available, "count",
+                            base_ethernet_available ? base_ethernet->tx_frames : 0U,
+                            baseline_valid && base_ethernet_available &&
+                                ethernet_available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "ethernet", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_initialized", buffers->initialized, 0U,
+                            buffers_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_active_buffers", buffers->active_buffers,
+                            0U, buffers_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_peak_buffers", buffers->peak_buffers,
+                            0U, buffers_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_allocations", buffers->allocations,
+                            base_buffers_available ? base_buffers->allocations : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_frees", buffers->frees,
+                            base_buffers_available ? base_buffers->frees : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_delivered", buffers->delivered,
+                            base_buffers_available ? base_buffers->delivered : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_dropped", buffers->dropped,
+                            base_buffers_available ? base_buffers->dropped : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_copies", buffers->copies,
+                            base_buffers_available ? base_buffers->copies : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_copied_bytes", buffers->copied_bytes,
+                            base_buffers_available ? base_buffers->copied_bytes : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_clones", buffers->clones,
+                            base_buffers_available ? base_buffers->clones : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_fragments", buffers->fragments,
+                            base_buffers_available ? base_buffers->fragments : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_invalid_transitions",
+                            buffers->invalid_transitions,
+                            base_buffers_available ? base_buffers->invalid_transitions : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_duplicate_completions",
+                            buffers->duplicate_completions,
+                            base_buffers_available ? base_buffers->duplicate_completions : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_ref_acquires", buffers->ref_acquires,
+                            base_buffers_available ? base_buffers->ref_acquires : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_ref_releases", buffers->ref_releases,
+                            base_buffers_available ? base_buffers->ref_releases : 0U,
+                            baseline_valid && base_buffers_available && buffers_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("net_buffer_last_error",
+                            (uint32_t)buffers->last_error, 0U,
+                            buffers_available && buffers->last_error >= 0, "error",
+                            SHELL_KMETRICS_KIND_STATE, "net_buffer", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_initialized", sk_buff->initialized, 0U,
+                            sk_buff_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_active_buffers", sk_buff->active_buffers,
+                            0U, sk_buff_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_peak_buffers", sk_buff->peak_buffers, 0U,
+                            sk_buff_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_allocations", sk_buff->allocations,
+                            base_sk_buff_available ? base_sk_buff->allocations : 0U,
+                            baseline_valid && base_sk_buff_available && sk_buff_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_frees", sk_buff->frees,
+                            base_sk_buff_available ? base_sk_buff->frees : 0U,
+                            baseline_valid && base_sk_buff_available && sk_buff_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_completions", sk_buff->completions,
+                            base_sk_buff_available ? base_sk_buff->completions : 0U,
+                            baseline_valid && base_sk_buff_available && sk_buff_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_drops", sk_buff->drops,
+                            base_sk_buff_available ? base_sk_buff->drops : 0U,
+                            baseline_valid && base_sk_buff_available && sk_buff_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_invalid_operations",
+                            sk_buff->invalid_operations,
+                            base_sk_buff_available ? base_sk_buff->invalid_operations : 0U,
+                            baseline_valid && base_sk_buff_available && sk_buff_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("sk_buff_last_error", (uint32_t)sk_buff->last_error,
+                            0U, sk_buff_available && sk_buff->last_error >= 0,
+                            "error", SHELL_KMETRICS_KIND_STATE, "sk_buff", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_initialized", sockets->initialized, 0U,
+                            sockets_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_active_count", sockets->active_count, 0U,
+                            sockets_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_peak_count", sockets->peak_count, 0U,
+                            sockets_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_creates", sockets->creates,
+                            base_sockets_available ? base_sockets->creates : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_closes", sockets->closes,
+                            base_sockets_available ? base_sockets->closes : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_binds", sockets->binds,
+                            base_sockets_available ? base_sockets->binds : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_connects", sockets->connects,
+                            base_sockets_available ? base_sockets->connects : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_accepts", sockets->accepts,
+                            base_sockets_available ? base_sockets->accepts : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_sends", sockets->sends,
+                            base_sockets_available ? base_sockets->sends : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_receives", sockets->receives,
+                            base_sockets_available ? base_sockets->receives : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_bytes_sent", sockets->bytes_sent,
+                            base_sockets_available ? base_sockets->bytes_sent : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_bytes_received", sockets->bytes_received,
+                            base_sockets_available ? base_sockets->bytes_received : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_queue_drops", sockets->queue_drops,
+                            base_sockets_available ? base_sockets->queue_drops : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_stale_fds", sockets->stale_fds,
+                            base_sockets_available ? base_sockets->stale_fds : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_failures", sockets->failures,
+                            base_sockets_available ? base_sockets->failures : 0U,
+                            baseline_valid && base_sockets_available && sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("socket_last_error", (uint32_t)sockets->last_error, 0U,
+                            sockets_available && sockets->last_error >= 0, "error",
+                            SHELL_KMETRICS_KIND_STATE, "socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_initialized", net_sockets->initialized, 0U,
+                            net_sockets_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_active_count", net_sockets->active_count,
+                            0U, net_sockets_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_opens", net_sockets->opens,
+                            base_net_sockets_available ? base_net_sockets->opens : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_connects", net_sockets->connects,
+                            base_net_sockets_available ? base_net_sockets->connects : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_closes", net_sockets->closes,
+                            base_net_sockets_available ? base_net_sockets->closes : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_aborts", net_sockets->aborts,
+                            base_net_sockets_available ? base_net_sockets->aborts : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_bytes_queued_tx", net_sockets->bytes_queued_tx,
+                            base_net_sockets_available ? base_net_sockets->bytes_queued_tx : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_bytes_sent_tcp", net_sockets->bytes_sent_tcp,
+                            base_net_sockets_available ? base_net_sockets->bytes_sent_tcp : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_bytes_received_tcp",
+                            net_sockets->bytes_received_tcp,
+                            base_net_sockets_available ? base_net_sockets->bytes_received_tcp : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_bytes_read", net_sockets->bytes_read,
+                            base_net_sockets_available ? base_net_sockets->bytes_read : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_rx_overflows", net_sockets->rx_overflows,
+                            base_net_sockets_available ? base_net_sockets->rx_overflows : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_stale_handles", net_sockets->stale_handles,
+                            base_net_sockets_available ? base_net_sockets->stale_handles : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_maintenance_cycles",
+                            net_sockets->maintenance_cycles,
+                            base_net_sockets_available ? base_net_sockets->maintenance_cycles : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_wait_calls", net_sockets->wait_calls,
+                            base_net_sockets_available ? base_net_sockets->wait_calls : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_wait_events", net_sockets->wait_events,
+                            base_net_sockets_available ? base_net_sockets->wait_events : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_wait_timeouts", net_sockets->wait_timeouts,
+                            base_net_sockets_available ? base_net_sockets->wait_timeouts : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_wait_cancellations",
+                            net_sockets->wait_cancellations,
+                            base_net_sockets_available ? base_net_sockets->wait_cancellations : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_wait_failures", net_sockets->wait_failures,
+                            base_net_sockets_available ? base_net_sockets->wait_failures : 0U,
+                            baseline_valid && base_net_sockets_available && net_sockets_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("net_socket_last_error",
+                            (uint32_t)net_sockets->last_error, 0U,
+                            net_sockets_available && net_sockets->last_error >= 0,
+                            "error", SHELL_KMETRICS_KIND_STATE, "net_socket", "network");
+    SHELL_KMETRICS_EMIT_U32("route_initialized", routes->initialized, 0U,
+                            routes_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "route", "network");
+    SHELL_KMETRICS_EMIT_U32("route_entry_count", routes->entry_count, 0U,
+                            routes_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "route", "network");
+    SHELL_KMETRICS_EMIT_U32("route_lookups", routes->lookups,
+                            base_routes_available ? base_routes->lookups : 0U,
+                            baseline_valid && base_routes_available && routes_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "route", "network");
+    SHELL_KMETRICS_EMIT_U32("route_matches", routes->matches,
+                            base_routes_available ? base_routes->matches : 0U,
+                            baseline_valid && base_routes_available && routes_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "route", "network");
+    SHELL_KMETRICS_EMIT_U32("route_misses", routes->misses,
+                            base_routes_available ? base_routes->misses : 0U,
+                            baseline_valid && base_routes_available && routes_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "route", "network");
+    SHELL_KMETRICS_EMIT_U32("route_adds", routes->adds,
+                            base_routes_available ? base_routes->adds : 0U,
+                            baseline_valid && base_routes_available && routes_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "route", "network");
+    SHELL_KMETRICS_EMIT_U32("route_deletes", routes->deletes,
+                            base_routes_available ? base_routes->deletes : 0U,
+                            baseline_valid && base_routes_available && routes_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "route", "network");
+    SHELL_KMETRICS_EMIT_U32("route_replacements", routes->replacements,
+                            base_routes_available ? base_routes->replacements : 0U,
+                            baseline_valid && base_routes_available && routes_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "route", "network");
+    SHELL_KMETRICS_EMIT_U32("route_last_error", (uint32_t)routes->last_error, 0U,
+                            routes_available && routes->last_error >= 0, "error",
+                            SHELL_KMETRICS_KIND_STATE, "route", "network");
     return OK;
 }
 

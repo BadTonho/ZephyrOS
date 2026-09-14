@@ -806,3 +806,12 @@ cancelar explicitamente o processo ring 3 reservado ao `usertest`, mantendo o
 resultado no mesmo canal de coleta usado pelo encerramento normal. A rotina
 recusa PIDs que nao pertencem a um UserTest e nao altera a API publica de
 `shell.h`.
+
+## PERF4: ocupacao observavel
+
+As amostras `kmetrics machine` incluem os limites e o uso atual de recursos
+por processo junto com a contabilidade global de memoria, VFS e sockets. A
+consulta e uma copia sob demanda no contexto do Shell; nao altera selecao do
+scheduler, prioridade, quantum, ABI ou ciclo de vida de processos. O relatorio
+considera residuo somente quando descritores, pipes ou sockets ativos nao
+retornam ao snapshot de referencia.

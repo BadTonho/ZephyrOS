@@ -2501,6 +2501,35 @@ artefatos de cada sessao preservam `manifest.json`, `serial.log`,
 obrigatoria `ND`, descarte, overflow, rejeicao deferred, timeout, duplicidade
 ou prompt preso resulta em reprovacao.
 
+## PERF4: memoria, VFS, armazenamento e rede
+
+Depois dos gates de build e do catalogo, execute:
+
+```text
+make test-perf4-host
+make test-perf4-qemu
+make perf4-memory-storage-network
+```
+
+O alvo QEMU usa `user,model=e1000,restrict=on`, sem acesso externo, e gera
+nove sessoes isoladas nos perfis `baseline/Simple`, `baseline/Classic` e
+`no-vesa/Simple fallback`, tres iteracoes por perfil. A sequencia captura
+`kmetrics machine`, `kmetrics reset`, aguarda tres segundos e executa
+`memcheck`, `slabinfo`, `vfs`, `blkstat`, `cachestat`, `net check`, `netstat`,
+`sockstat`, `route`, `schedcheck` e `proccheck` antes da amostra final.
+
+O relatorio fica em
+`build/test-results/perf4-memory-storage-network/perf4-memory-storage-network.json`.
+Cada sessao preserva `manifest.json`, `serial.log`, logs QMP, amostras host e
+`perf4.json`. Falha de coletor host vira `ND`; envelope incompleto, chaves
+duplicadas, protocolo, timeout, fila de bloco/cache nao drenada, residuos de
+memoria/rede ou metrica guest obrigatoria `ND` reprovam. Falha de suporte QMP
+ou de infraestrutura permanece `BLOCKED`.
+
+Na validacao de 2026-09-14, o relatorio registrou `PASS` em 9/9 sessoes,
+com a imagem SHA-256
+`19052f96819368e6180bd1b295281be6b1c961f7c0fe1ecc5ea17f4b8e3b7073`.
+
 ## Traces Assembly de boot e recuperacao
 
 Os traces QEMU de Assembly devem ser executados individualmente, com um ID de

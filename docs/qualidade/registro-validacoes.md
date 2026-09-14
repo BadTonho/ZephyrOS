@@ -7,6 +7,33 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-14 - PERF4: memoria, VFS, armazenamento e rede
+
+- Implementacao: `kmetrics machine` passou a copiar os getters existentes de
+  memoria detalhada, SLAB, VFS, fila/cache de bloco, durabilidade, buffers,
+  `sk_buff`, sockets e rotas. O caso
+  `qemu:tst5:perf4-memory-storage-network` foi adicionado ao catalogo e ao
+  observer black-box; os Makefiles passaram a expor os alvos host e QEMU com
+  rede `user,model=e1000,restrict=on`. Nenhum bootloader, ABI, syscall,
+  formato, capacidade de fila ou caminho de IRQ foi alterado.
+- Evidencia: `make q3check`, `make clean`, `make`, `make catalog-test` e
+  `make test-perf4-host` passaram. A matriz QEMU fixa passou 9/9 sessoes,
+  tres para cada perfil `baseline/Simple`, `baseline/Classic` e
+  `no-vesa/Simple fallback`, no relatorio versionado
+  `build/test-results/perf4-memory-storage-network/perf4-memory-storage-network.json`.
+  A imagem usada tem SHA-256
+  `19052f96819368e6180bd1b295281be6b1c961f7c0fe1ecc5ea17f4b8e3b7073`.
+- Durante a validação, o protocolo detectou e corrigiu uma chave duplicada de
+  durabilidade e a distinção entre contadores `ND` da amostra de boot e as
+  amostras pós-reset. A matriz final foi executada novamente após as correções;
+  nenhuma falha foi mascarada.
+- Estado: PERF4 `PASS`, com envelopes completos, metricas guest obrigatorias
+  disponiveis, zonas coerentes, filas drenadas, ausencia de crescimento
+  residual, coleta host registrada e prompt restaurado. As recusas negativas
+  deterministicas dos autotestes foram consistentes (`vfs_failures=3`,
+  `net_buffer_dropped=2`, `sk_buff_drops=2`); qualquer incremento fora dessa
+  lista reprova a sessao. Nenhuma divida tecnica foi marcada como quitada.
+
 ## 2026-09-14 - PERF3: scheduler, Idle e kworker
 
 - Implementacao: `scheduler_runtime_stats_t` e a coleta de latencia da

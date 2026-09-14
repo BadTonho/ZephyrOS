@@ -7,9 +7,14 @@
 #include "core/input.h"
 #include "core/irq_deferred.h"
 #include "core/keyboard.h"
+#include "core/net_buffer.h"
+#include "core/net_socket.h"
 #include "core/network_manager.h"
+#include "core/route.h"
 #include "core/recovery.h"
 #include "core/service_supervisor.h"
+#include "core/sk_buff.h"
+#include "core/socket.h"
 #include "core/update.h"
 #include "core/update_system_slots.h"
 #include "core/workqueue.h"
@@ -22,6 +27,7 @@
 #include "fs/vfs.h"
 #include "core/memory.h"
 #include "memory/paging.h"
+#include "memory/slab.h"
 #include "process/credentials.h"
 #include "process/process.h"
 #include "process/resource.h"
@@ -75,6 +81,8 @@ typedef struct {
     uint8_t vesa_backbuffer;
     memory_heap_stats_t heap;
     memory_pmm_stats_t pmm;
+    memory_detailed_stats_t memory_detailed;
+    kmem_slab_stats_t slab;
     paging_user_stats_t paging_user;
     paging_boot_stats_t paging_boot;
     int paging_boot_result;
@@ -84,6 +92,11 @@ typedef struct {
     block_durability_status_t durability;
     ethernet_status_t ethernet;
     network_manager_status_t network;
+    net_buffer_stats_t net_buffer;
+    sk_buff_stats_t sk_buff;
+    socket_status_t sockets;
+    net_socket_status_t net_sockets;
+    route_status_t routes;
     service_supervisor_snapshot_t services[SERVICE_SUPERVISOR_ID_COUNT];
     uint32_t service_count;
     process_resource_validation_t resource_validation;
@@ -114,6 +127,12 @@ typedef struct {
     int durability_result;
     int ethernet_result;
     int network_result;
+    int memory_detailed_result;
+    int net_buffer_result;
+    int sk_buff_result;
+    int socket_result;
+    int net_socket_result;
+    int route_result;
     int service_result;
     int resource_result;
     int stack_result;

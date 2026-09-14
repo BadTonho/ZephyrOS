@@ -129,6 +129,14 @@ static int blackbox_is_perf3_case(const char* case_id,
     return blackbox_equals(case_id, case_length, case_name);
 }
 
+static int blackbox_is_perf4_case(const char* case_id,
+                                  uint32_t case_length) {
+    static const char case_name[] =
+        "qemu:tst5:perf4-memory-storage-network";
+
+    return blackbox_equals(case_id, case_length, case_name);
+}
+
 static int blackbox_requires_prompt(const char* case_id,
                                     uint32_t case_length) {
     static const char reboot_case[] = "qemu:tst5:reboot";
@@ -354,6 +362,8 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     static const char perf1_case[] = "qemu:tst5:perf1-baseline";
     static const char perf2_case[] = "qemu:tst5:perf2-input-responsiveness";
     static const char perf3_case[] = "qemu:tst5:perf3-scheduler-idle";
+    static const char perf4_case[] =
+        "qemu:tst5:perf4-memory-storage-network";
 
     if (blackbox_equals(case_id, case_length, shell_case)) return "tst5-shell";
     if (blackbox_equals(case_id, case_length, input_case)) return "tst5-input";
@@ -417,6 +427,9 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     }
     if (blackbox_equals(case_id, case_length, perf3_case)) {
         return "tst5-perf3-scheduler-idle";
+    }
+    if (blackbox_equals(case_id, case_length, perf4_case)) {
+        return "tst5-perf4-memory-storage-network";
     }
     return 0;
 }

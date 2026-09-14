@@ -24,6 +24,7 @@
 #include "core/recovery.h"
 #include "core/device_manager.h"
 #include "core/network_manager.h"
+#include "core/route.h"
 #include "core/ethernet.h"
 #include "core/power.h"
 #include "core/usb_manager.h"
@@ -102,7 +103,7 @@ void shell_diagnostics_reset(void);
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_OUTPUT_CAPACITY 4096U
 #define HOST_PATH_CAPACITY 256U
-#define HOST_SERIAL_CAPACITY 65536U
+#define HOST_SERIAL_CAPACITY 131072U
 
 static uintptr_t coverage_addresses[HOST_COVERAGE_CAPACITY];
 static uint32_t coverage_count;
@@ -277,6 +278,7 @@ static int fixture_acpi_table_count_result;
 static int fixture_acpi_table_result;
 static int fixture_acpi_madt_result;
 static kmem_cache_info_t fixture_slab_info[2];
+static kmem_slab_stats_t fixture_slab_stats;
 static uint32_t fixture_slab_count;
 static int fixture_slab_info_result;
 static int fixture_slab_self_test_result;
@@ -322,6 +324,7 @@ static net_buffer_stats_t fixture_net_buffer_stats;
 static sk_buff_stats_t fixture_skb_stats;
 static net_socket_status_t fixture_net_socket_status;
 static socket_status_t fixture_socket_status;
+static route_status_t fixture_route_status;
 static socket_self_test_result_t fixture_socket_test;
 static block_cache_stats_t fixture_block_cache_stats;
 static block_durability_status_t fixture_block_durability;
@@ -1663,6 +1666,17 @@ static void fixture_reset(void) {
     fixture_memcheck_detailed_stats.fragmentation_percent = 5U;
     fixture_memcheck_detailed_stats.initialized = 1U;
     fixture_memcheck_detailed_stats.valid = 1U;
+    kmemset(&fixture_slab_stats, 0, sizeof(fixture_slab_stats));
+    fixture_slab_stats.caches = 2U;
+    fixture_slab_stats.slabs = 3U;
+    fixture_slab_stats.pages = 4U;
+    fixture_slab_stats.active_objects = 5U;
+    fixture_slab_stats.capacity = 64U;
+    fixture_slab_stats.initialized = 1U;
+    fixture_slab_stats.valid = 1U;
+    kmemset(&fixture_route_status, 0, sizeof(fixture_route_status));
+    fixture_route_status.initialized = 1U;
+    fixture_route_status.entry_count = 1U;
     kmemset(&fixture_memcheck_paging_stats, 0,
             sizeof(fixture_memcheck_paging_stats));
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
@@ -2858,14 +2872,7 @@ int vfs_validate_state(void) {
 }
 
 void kmem_cache_get_stats(kmem_slab_stats_t* stats) {
-    if (!stats) return;
-    kmemset(stats, 0, sizeof(*stats));
-    stats->initialized = 1U;
-    stats->valid = 1U;
-    stats->caches = 1U;
-    stats->slabs = 1U;
-    stats->active_objects = 1U;
-    stats->capacity = 8U;
+    if (stats) *stats = fixture_slab_stats;
 }
 
 uint32_t recovery_get_count(void) {
@@ -3019,6 +3026,12 @@ int socket_self_test(socket_self_test_result_t* result) {
 int net_socket_get_status(net_socket_status_t* status) {
     if (!status) return ERR_NULL;
     *status = fixture_net_socket_status;
+    return OK;
+}
+
+int route_get_status(route_status_t* status) {
+    if (!status) return ERR_NULL;
+    *status = fixture_route_status;
     return OK;
 }
 
@@ -4348,8 +4361,17 @@ static int test_kmetrics(void) {
         "metric=workqueue_worker_bound value=1");
     failures += expect_serial_contains("metric=input_key_queued value=0");
     failures += expect_serial_contains("metric=vfs_descriptors_open");
+    failures += expect_serial_contains(
+        "metric=memory_detailed_total_pages value=100");
+    failures += expect_serial_contains("metric=memory_zone_5_pages value=50");
+    failures += expect_serial_contains("metric=slab_active_objects value=5");
     failures += expect_serial_contains("metric=cache_durability_state");
+    failures += expect_serial_contains("metric=cache_flush_unavailable");
+    failures += expect_serial_contains("metric=durability_flush_unavailable");
     failures += expect_serial_contains("metric=network_interfaces");
+    failures += expect_serial_contains("metric=net_buffer_copied_bytes");
+    failures += expect_serial_contains("metric=socket_active_count value=0");
+    failures += expect_serial_contains("metric=route_entry_count value=1");
     failures += expect_serial_contains("metric=credentials_uid");
     failures += expect_serial_contains("metric=update_active_slot");
     failures += expect_serial_contains("metric=recovery_25_state");

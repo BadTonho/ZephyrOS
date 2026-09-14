@@ -86,6 +86,27 @@ uint32_t timer_get_ticks(void) {
     return 0U;
 }
 
+int vfs_get_process_resource_usage(uint32_t pid, uint32_t* descriptors,
+                                   uint32_t* pipes) {
+    (void)pid;
+    if (!descriptors || !pipes) return ERR_NULL;
+    *descriptors = 0U;
+    *pipes = 0U;
+    return OK;
+}
+
+uint32_t process_get_child_count(uint32_t parent_pid) {
+    (void)parent_pid;
+    return 0U;
+}
+
+int ipc_get_pending_count_for_pid(uint32_t pid, uint32_t* pending) {
+    (void)pid;
+    if (!pending) return ERR_NULL;
+    *pending = 0U;
+    return OK;
+}
+
 static void reset_fixture(void) {
     fake_current_process = NULL;
     kmemset(&fake_directory, 0, sizeof(fake_directory));

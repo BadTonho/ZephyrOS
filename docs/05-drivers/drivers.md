@@ -1249,5 +1249,16 @@ hardware fisico permanece `PENDING`.
 | `no-audio` | ACPI, PCI e VGA sem audio | entrada e diagnosticos | audio `ABSENT` |
 | `no-storage` | somente o disco de boot | diagnosticos sem volume adicional | storage opcional indisponivel |
 | `network-dual` | duas NICs E1000 QEMU | identidades distintas em rede restrita | falha individual publicada por NIC |
+
+## PERF4: observabilidade de rede
+
+O caminho de diagnostico captura, sob demanda, as estatisticas existentes de
+Ethernet, `net_buffer`, `sk_buff`, sockets genericos, sockets TCP e tabela de
+rotas. Ocupacao atual e estado sao gauges; entregas, descartes, copias, bytes,
+operacoes de socket e buscas de rota sao contadores ou bytes com wraparound
+`uint32_t`. Nenhum contador e incrementado apenas para o PERF4, e a coleta nao
+adiciona logging a IRQ, polling, alocacao ou caminho por pacote. A rede da
+matriz usa `user,model=e1000,restrict=on` sem acesso externo; ausencia de uma
+camada publica `ND` e nao e convertida em zero.
 | `usb-storage-ehci` | EHCI e MSC somente leitura | status e leitura do dispositivo | escrita recusada e perda degradada |
 | hardware fisico | nao validado nesta fase | nenhum suporte declarado | `PENDING` |
