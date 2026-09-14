@@ -281,8 +281,10 @@ static uint32_t fixture_slab_count;
 static int fixture_slab_info_result;
 static int fixture_slab_self_test_result;
 static scheduler_stats_t fixture_scheduler_stats;
+static scheduler_runtime_stats_t fixture_scheduler_runtime_stats;
 static scheduler_validation_t fixture_scheduler_validation;
 static int fixture_scheduler_stats_result;
+static int fixture_scheduler_runtime_result;
 static int fixture_scheduler_validation_result;
 static page_fault_stats_t fixture_page_fault_stats;
 static int fixture_page_fault_stats_result;
@@ -871,6 +873,7 @@ static void fixture_reset(void) {
     fixture_slab_info_result = OK;
     fixture_slab_self_test_result = OK;
     fixture_scheduler_stats_result = OK;
+    fixture_scheduler_runtime_result = OK;
     fixture_scheduler_validation_result = OK;
     fixture_page_fault_stats_result = OK;
     fixture_user_area_count = 2U;
@@ -1170,6 +1173,9 @@ static void fixture_reset(void) {
     fixture_workq_stats.peak_pending = 4U;
     fixture_workq_stats.total_callback_ticks = 20U;
     fixture_workq_stats.max_callback_ticks = 8U;
+    fixture_workq_stats.dispatch_latency_samples = 5U;
+    fixture_workq_stats.dispatch_latency_total_ticks = 17U;
+    fixture_workq_stats.max_dispatch_latency_ticks = 7U;
     fixture_work_records[0].id = 0x01000005U;
     fixture_work_records[0].generation = 1U;
     copy_text(fixture_work_records[0].owner,
@@ -1590,6 +1596,18 @@ static void fixture_reset(void) {
     fixture_scheduler_stats.user_quantum_ticks = 1U;
     fixture_scheduler_stats.idle_ticks = 20U;
     fixture_scheduler_stats.active_ticks = 80U;
+    kmemset(&fixture_scheduler_runtime_stats, 0,
+            sizeof(fixture_scheduler_runtime_stats));
+    fixture_scheduler_runtime_stats.idle_entries = 11U;
+    fixture_scheduler_runtime_stats.idle_hlt_returns = 10U;
+    fixture_scheduler_runtime_stats.wakeups = 6U;
+    fixture_scheduler_runtime_stats.wake_latency_samples = 5U;
+    fixture_scheduler_runtime_stats.wake_latency_total_ticks = 17U;
+    fixture_scheduler_runtime_stats.wake_latency_max_ticks = 7U;
+    fixture_scheduler_runtime_stats.ready_peak = 4U;
+    fixture_scheduler_runtime_stats.blocked_peak = 3U;
+    fixture_scheduler_runtime_stats.current_pid = 42U;
+    fixture_scheduler_runtime_stats.last_error = OK;
     kmemset(&fixture_scheduler_validation, 0,
             sizeof(fixture_scheduler_validation));
     fixture_scheduler_validation.current_valid = 1U;
@@ -3123,6 +3141,15 @@ void scheduler_get_stats(scheduler_stats_t* stats) {
     if (stats) *stats = fixture_scheduler_stats;
 }
 
+int scheduler_get_runtime_stats(scheduler_runtime_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    if (fixture_scheduler_runtime_result != OK) {
+        return fixture_scheduler_runtime_result;
+    }
+    *stats = fixture_scheduler_runtime_stats;
+    return OK;
+}
+
 int scheduler_validate_invariants(scheduler_validation_t* validation) {
     if (!validation) return ERR_NULL;
     *validation = fixture_scheduler_validation;
@@ -4311,6 +4338,14 @@ static int test_kmetrics(void) {
         "@@ZMETRIC/1 record=metric metric=pit_ticks value=1000");
     failures += expect_serial_contains(
         "metric=rdtsc_cycles value=ND unit=cycle");
+    failures += expect_serial_contains(
+        "metric=scheduler_idle_entries value=ND unit=count");
+    failures += expect_serial_contains(
+        "metric=scheduler_wake_latency_ticks value=ND unit=tick");
+    failures += expect_serial_contains(
+        "metric=workqueue_dispatch_latency_samples value=ND unit=count");
+    failures += expect_serial_contains(
+        "metric=workqueue_worker_bound value=1");
     failures += expect_serial_contains("metric=input_key_queued value=0");
     failures += expect_serial_contains("metric=vfs_descriptors_open");
     failures += expect_serial_contains("metric=cache_durability_state");
@@ -4328,8 +4363,11 @@ static int test_kmetrics(void) {
 
     fixture_reset();
     fixture_workq_stats_result = ERR_UNAVAILABLE;
+    fixture_scheduler_runtime_result = ERR_UNAVAILABLE;
     fixture_paging_boot_result = ERR_UNAVAILABLE;
     shell_dispatch_cmd_kmetrics("machine");
+    failures += expect_serial_contains(
+        "metric=scheduler_idle_entries value=ND unit=count");
     failures += expect_serial_contains(
         "metric=workqueue_pending value=ND unit=count");
     failures += expect_serial_contains(

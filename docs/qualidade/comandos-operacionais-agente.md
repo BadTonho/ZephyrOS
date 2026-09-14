@@ -1453,6 +1453,30 @@ do guest, Shell ou aplicacao como `FAIL`. Em ambos os casos preserva
 `build/test-results/<run-id>/`. Reboot exige novo handshake apos `RESET`; o
 poweroff exige `SHUTDOWN` ou a saida esperada da instancia.
 
+### PERF3: Scheduler, Idle e kworker
+
+Depois dos gates de build, a validacao host e a matriz dedicada sao:
+
+```text
+make test-perf3-host
+make test-perf3-qemu
+make perf3-scheduler-idle
+```
+
+`perf3-scheduler-idle` executa nove sessoes isoladas nos perfis
+`baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`, com tres
+iteracoes por perfil. Cada sessao coleta `kmetrics machine` apos o boot,
+depois de `kmetrics reset` e apos tres segundos de Idle, executa `regcheck
+full` por dez segundos e encerra com `schedcheck`, `workq check`, `cpu usage`,
+`proccheck` e uma amostra final. O host e amostrado a cada 250 ms; campos sem
+coletor sao `ND`. O relatorio fica em
+`build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json`.
+
+Na validacao de 2026-09-14, `make test-perf3-host` passou e a matriz QEMU
+registrou 5/9 sessoes aprovadas; 4/9 reprovaram por fila READY residual na
+amostra final das faixas baseline com VESA. O resultado nao deve ser tratado
+como quitacao de `DT100-002`.
+
 ## TST6: matriz, estresse e falhas controladas
 
 A TST6 usa casos QEMU independentes, sempre em `-snapshot`, sem retry

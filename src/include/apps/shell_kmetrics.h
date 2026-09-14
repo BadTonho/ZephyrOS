@@ -93,6 +93,7 @@ typedef struct {
     process_credentials_t credentials;
     uint32_t credentials_valid;
     int permissions_result;
+    scheduler_runtime_stats_t scheduler_runtime;
     update_capabilities_t update_capabilities;
     update_status_t update_status;
     update_system_slots_status_t update_slots;
@@ -116,6 +117,7 @@ typedef struct {
     int service_result;
     int resource_result;
     int stack_result;
+    int scheduler_runtime_result;
     int update_capabilities_result;
     int update_status_result;
     int update_slots_result;

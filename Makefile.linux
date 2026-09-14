@@ -2291,6 +2291,15 @@ perf2-responsiveness: $(OS_IMG) tools/perf2_responsiveness.py tools/perf1_metric
 
 test-perf2-qemu: perf2-responsiveness
 
+test-perf3-host: test-process-host test-workqueue-host test-shell-diagnostics-host test-blackbox-host tools/perf3_scheduler_idle.py tools/perf1_metrics.py tests/unit/test_perf3_scheduler_idle.py tests/unit/test_qemu_test_runner.py
+	$(PYTHON) -m unittest tests.unit.test_perf3_scheduler_idle tests.unit.test_qemu_test_runner
+
+perf3-scheduler-idle: $(OS_IMG) tools/perf3_scheduler_idle.py tools/perf1_metrics.py tools/qemu_test_runner.py tests/catalog.json tests/coverage/registry.json
+	@if [ ! -f "$(OS_IMG)" ]; then echo "Imagem ausente: $(OS_IMG)"; exit 2; fi
+	$(PYTHON) tools/perf3_scheduler_idle.py --qemu "$(QEMU)" --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-perf3-qemu: perf3-scheduler-idle
+
 test-shell-commands-wifi-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_wifi_host.c tests/catalog.json src/shell/shell_commands_wifi.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/include/core/wifi_manager.h src/include/core/usb_manager.h
 	$(PYTHON) tools/core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
@@ -2467,7 +2476,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
-.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

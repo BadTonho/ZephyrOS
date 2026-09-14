@@ -122,6 +122,22 @@ DT100-001 foi marcada `QUITADA`; nenhuma outra divida tecnica foi alterada.
 - [ ] Confirmar que entrada, timer, rede e workqueue acordem consumidores sem
   perda ou polling excessivo.
 
+Implementacao PERF3 entregue: `scheduler_runtime_stats_t` e
+`scheduler_get_runtime_stats()` preservam `scheduler_get_stats()`; o Idle
+mantem `sti; hlt`; a workqueue publica latencia de despacho; `kmetrics machine`,
+o runner QMP, o caso `qemu:tst5:perf3-scheduler-idle`, testes host/Python,
+catalogo, cobertura e alvos Windows/Linux foram atualizados. A `thread_t`
+permanece isolada e `DT100-002` permanece `ACEITA`.
+
+Validacao em 2026-09-14: `make test-perf3-host` passou com 32 testes. A matriz
+QEMU foi executada em 9 sessoes e resultou em 5/9 `PASS` e 4/9 `FAIL`, todas
+por `fila_workqueue_residual` em amostra final (`baseline/Simple` 3/3 e
+`baseline/Classic` 1/3); `no-vesa/Simple fallback` passou 3/3. Nao houve
+envelope incompleto, metricas guest obrigatorias `ND`, erro de protocolo,
+erro de workqueue ou falha de kworker. A etapa permanece pendente ate a
+resolucao ou aceite explicito desse backlog sob VESA; o relatorio esta em
+`build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json`.
+
 ### PERF4 — Memória, VFS e rede
 
 - [ ] Medir alocações, picos, fragmentação, caches, filas, cópias e tempo de

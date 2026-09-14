@@ -462,6 +462,7 @@ static void install_fixture(uint32_t slot, process_t* process, uint32_t pid,
 
 static int test_initial_state(void) {
     scheduler_stats_t stats;
+    scheduler_runtime_stats_t runtime;
     scheduler_validation_t validation;
     process_user_fault_summary_t fault;
     process_stack_info_t stack_info;
@@ -481,6 +482,14 @@ static int test_initial_state(void) {
     if (stats.context_switches || stats.cooperative_yields ||
         stats.user_preemptions || stats.idle_fallbacks || stats.idle_ticks ||
         stats.active_ticks || stats.user_quantum_ticks != 1U) return 5;
+    if (scheduler_get_runtime_stats(NULL) != ERR_NULL ||
+        scheduler_get_runtime_stats(&runtime) != OK ||
+        runtime.idle_entries || runtime.idle_hlt_returns || runtime.wakeups ||
+        runtime.wake_latency_samples || runtime.ready_peak ||
+        runtime.blocked_peak || runtime.last_error != OK) return 51;
+    process_host_test_idle_once();
+    if (scheduler_get_runtime_stats(&runtime) != OK ||
+        runtime.idle_entries != 1U || runtime.idle_hlt_returns != 1U) return 52;
     if (scheduler_schedule() != NULL) return 6;
     if (scheduler_validate_invariants(NULL) != ERR_NULL ||
         scheduler_validate_invariants(&validation) != ERR_STATE) return 7;
@@ -805,6 +814,28 @@ static int test_wait_and_wake_contract(void) {
         strcmp(info.name, "kernel-fixture") != 0 ||
         strcmp(info.channel_owner, "host-wait") != 0 ||
         info.remaining_ticks != 1U || !info.active) return 7;
+    reset_fixture();
+    install_fixture(1U, &fixture, PROCESS_FIXTURE_PID,
+                    PROCESS_STATE_BLOCKED, 0U);
+    fixture.wait_start_tick = 90U;
+    fixture.wait_start_tick_valid = 1U;
+    if (process_unblock(&fixture), fixture.state != PROCESS_STATE_READY) return 8;
+    {
+        scheduler_runtime_stats_t runtime;
+
+        if (scheduler_get_runtime_stats(&runtime) != OK ||
+            runtime.wakeups != 1U || runtime.wake_latency_samples != 1U ||
+            runtime.wake_latency_total_ticks != 10U ||
+            runtime.wake_latency_max_ticks != 10U) return 9;
+        fixture.state = PROCESS_STATE_BLOCKED;
+        fixture.wait_start_tick = 0xFFFFFFF0U;
+        fixture.wait_start_tick_valid = 1U;
+        fake_ticks = 0x10U;
+        process_unblock(&fixture);
+        if (scheduler_get_runtime_stats(&runtime) != OK ||
+            runtime.wakeups != 2U || runtime.wake_latency_total_ticks != 42U ||
+            runtime.wake_latency_max_ticks != 32U) return 10;
+    }
     return 0;
 }
 

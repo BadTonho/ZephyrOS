@@ -26,6 +26,7 @@ static uint32_t yield_calls;
 static uint32_t wake_calls;
 static uint32_t signal_calls;
 static uint32_t wait_calls;
+static uint32_t fake_ticks = 100U;
 
 process_t* processes[MAX_PROCESSES];
 uint32_t process_count;
@@ -74,7 +75,7 @@ static void __attribute__((no_instrument_function)) coverage_emit(int result) {
 }
 
 uint32_t timer_get_ticks(void) {
-    return 100U;
+    return fake_ticks;
 }
 
 uint32_t timer_get_frequency(void) {
@@ -213,6 +214,7 @@ static void fixture_reset(void) {
     wake_calls = 0U;
     signal_calls = 0U;
     wait_calls = 0U;
+    fake_ticks = 100U;
 }
 
 static int check_preinitialization(void) {
@@ -271,6 +273,7 @@ static int check_work_lifecycle(void) {
     if (workqueue_copy_info(info, 2U, NULL) != ERR_NULL) return 5;
     if (workqueue_copy_info(info, 2U, &(uint32_t){0U}) != OK) return 6;
     if (work.state != WORK_STATE_READY || work.coalesced != 1U) return 7;
+    fake_ticks = 110U;
     if (workqueue_dispatch(1U, 1U, &executed) != ERR_STATE) return 8;
     if (workqueue_set_fallback(1U) != OK) return 9;
     if (workqueue_dispatch(0U, 1U, &executed) != OK || executed != 1U) {
@@ -294,6 +297,9 @@ static int check_work_lifecycle(void) {
     if (workqueue_get_stats(&stats) != OK || stats.callback_errors == 0U) {
         return 22;
     }
+    if (stats.dispatch_latency_samples < 2U ||
+        stats.dispatch_latency_total_ticks < 10U ||
+        stats.max_dispatch_latency_ticks < 10U) return 221;
     if (work_destroy(&work) != OK) return 23;
     if (work_destroy(&work) != ERR_STATE) return 24;
     current_process.event_generation = 1U;

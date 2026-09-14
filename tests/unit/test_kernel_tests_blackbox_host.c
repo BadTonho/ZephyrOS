@@ -10,7 +10,7 @@
 #define HOST_COVERAGE_CAPACITY 96U
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_TEXT_CAPACITY 768U
-#define HOST_CASE_COUNT 22U
+#define HOST_CASE_COUNT 23U
 
 typedef enum {
     HOST_TERMINAL_NORMAL,
@@ -73,6 +73,11 @@ uint32_t timer_get_ticks(void) {
 void process_yield(void) {
     yield_count++;
     fake_ticks++;
+}
+
+void process_block(uint32_t ticks) {
+    yield_count++;
+    fake_ticks += ticks;
 }
 
 int video_test_copy_terminal(char* output, uint32_t capacity,
@@ -226,7 +231,8 @@ static int check_valid_cases(void) {
         {"qemu:tst5:shell6-interface-compatibility",
          "shell6-interface-compatibility"},
         {"qemu:tst5:perf1-baseline", "tst5-perf1-baseline"},
-        {"qemu:tst5:perf2-input-responsiveness", "tst5-perf2-input"}
+        {"qemu:tst5:perf2-input-responsiveness", "tst5-perf2-input"},
+        {"qemu:tst5:perf3-scheduler-idle", "tst5-perf3-scheduler-idle"}
     };
     kernel_tests_runtime_t runtime;
 

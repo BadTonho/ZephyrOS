@@ -141,6 +141,53 @@ da imagem `f5ad9ed2e3cd807fb98635f8afbfc8038b7bcb7f3efe014995fe58c64f6bd156`.
 DT100-001 foi marcada `QUITADA` no registro de dividas; nenhuma divida foi
 quitada por inferencia fora dessa matriz.
 
+## PERF3 - Scheduler, Idle e kworker
+
+O PERF3 adiciona a API diagnostica append-only `scheduler_get_runtime_stats()`
+e os campos de latencia de despacho em `workqueue_stats_t`. A API preserva
+`scheduler_get_stats()`, o algoritmo de selecao, o quantum, prioridades,
+syscalls, ABI e PID 0. O caminho do Idle conserva a sequencia atomica
+`sti; hlt`; os contadores sao atualizados sem logging, alocacao ou decisao
+extra no hot path.
+
+O envelope `ZMETRIC/1` publica entradas e retornos do Idle, wakeups, amostras,
+total e maximo da latencia bloqueio->wakeup, picos READY/BLOCKED, PID atual,
+erros, estado da kworker e latencia enqueue->dispatch da workqueue. Contadores
+usam `kind=counter`, `unit=tick` e `overflow=wrap_u32`; maximos sao duracoes,
+filas sao gauges e estados usam `kind=state`. Recurso sem fonte validada usa
+`value=ND status=unavailable`; RDTSC/PMU continua ND.
+
+O relatorio usa `zephyros-perf3-scheduler-idle-v1` e a matriz fixa de nove
+sessoes (`baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`,
+tres iteracoes cada). Cada sessao tem amostras apos boot, apos tres segundos
+de Idle e ao final da janela de dez segundos de `regcheck full`, alem de
+amostras do processo QEMU a cada 250 ms. A residencia exige
+`idle_ticks + active_ticks == pit_ticks`, fila READY/RUNNING final vazia,
+kworker vinculada,
+`schedcheck` aprovado e prompt restaurado. Coletor host indisponivel e `ND` e
+nao reprova a sessao; envelope incompleto, metricas guest obrigatorias ND,
+timeout, protocolo invalido ou erro de workqueue reprovam.
+
+Comandos da etapa:
+
+```text
+make test-perf3-host
+make test-perf3-qemu
+make perf3-scheduler-idle
+```
+
+O relatorio agregado fica em
+`build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json`. A
+`DT100-002` permanece `ACEITA`; estas metricas produzem evidencia para uma
+decisao futura e nao integram `thread_t` ao scheduler.
+
+Na primeira matriz operacional da PERF3, o relatorio consolidado registrou
+5/9 sessoes `PASS` e 4/9 `FAIL` por `fila_workqueue_residual` na amostra final
+das faixas com VESA (`baseline/Simple` 3/3 e `baseline/Classic` 1/3). O
+fallback `no-vesa/Simple` passou 3/3. Esse resultado e backlog observavel de
+manutencao da workqueue sob VESA, nao e evidencia suficiente para quitar
+`DT100-002`.
+
 ## Registros
 
 ### 2026-08-30 - PWR1, Idle arquitetural com HLT

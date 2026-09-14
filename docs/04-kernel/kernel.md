@@ -282,6 +282,24 @@ acumulada desde o boot e `cpu usage reset` salva somente uma linha-base privada
 do Shell. A porcentagem é uma estimativa de residência do scheduler baseada no
 PIT de 50 Hz, não uma medição elétrica nem uma leitura RDTSC/PMU.
 
+### PERF3 - Runtime do scheduler e da kworker
+
+`scheduler_runtime_stats_t` e `scheduler_get_runtime_stats()` sao uma
+extensao diagnostica somente-leitura. A copia protegida informa entradas e
+retornos do Idle, wakeups, amostras/total/maximo da latencia entre bloqueio e
+acordo, picos de processos `READY` e `BLOCKED`, PID atual e ultimo erro.
+`scheduler_get_stats()` permanece inalterada para consumidores existentes.
+
+O processo PID 0 continua fora do round-robin. O contador de entradas e
+incrementado antes de `sti; hlt` e o de retornos depois da instrucao, sem
+logging ou alocacao no caminho. Latencias usam aritmetica modular de
+`uint32_t`, portanto wraparound do PIT e valido.
+
+`workqueue_stats_t` publica amostras, total e maximo da latencia entre
+enfileiramento e despacho, sem alterar a fila, o orcamento ou o contexto de
+execucao. A kworker continua sendo um processo ring0 e `thread_t` permanece
+isolada, usada apenas pelos diagnosticos.
+
 ## Isolamento ring 3
 
 O kernel possui segmentos de usuario em `0x1B` (codigo) e `0x23` (dados).

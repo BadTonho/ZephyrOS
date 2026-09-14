@@ -122,6 +122,13 @@ static int blackbox_is_hw6_case(const char* case_id, uint32_t case_length) {
     return blackbox_equals(case_id, case_length, case_name);
 }
 
+static int blackbox_is_perf3_case(const char* case_id,
+                                  uint32_t case_length) {
+    static const char case_name[] = "qemu:tst5:perf3-scheduler-idle";
+
+    return blackbox_equals(case_id, case_length, case_name);
+}
+
 static int blackbox_requires_prompt(const char* case_id,
                                     uint32_t case_length) {
     static const char reboot_case[] = "qemu:tst5:reboot";
@@ -346,6 +353,7 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
         "qemu:tst5:shell6-interface-compatibility";
     static const char perf1_case[] = "qemu:tst5:perf1-baseline";
     static const char perf2_case[] = "qemu:tst5:perf2-input-responsiveness";
+    static const char perf3_case[] = "qemu:tst5:perf3-scheduler-idle";
 
     if (blackbox_equals(case_id, case_length, shell_case)) return "tst5-shell";
     if (blackbox_equals(case_id, case_length, input_case)) return "tst5-input";
@@ -407,6 +415,9 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     if (blackbox_equals(case_id, case_length, perf2_case)) {
         return "tst5-perf2-input";
     }
+    if (blackbox_equals(case_id, case_length, perf3_case)) {
+        return "tst5-perf3-scheduler-idle";
+    }
     return 0;
 }
 
@@ -419,9 +430,10 @@ static int blackbox_wait_for_marker(const kernel_tests_runtime_t* runtime,
                                     const char* marker,
                                     uint32_t initial_generation,
                                     int validate_krn6,
-    int validate_sec6,
-    int validate_hw6,
-    int require_prompt) {
+                                    int validate_sec6,
+                                    int validate_hw6,
+                                    int require_prompt,
+                                    int block_between_polls) {
     video_test_terminal_info_t info;
     int marker_ready;
     uint32_t start = timer_get_ticks();
@@ -481,7 +493,8 @@ static int blackbox_wait_for_marker(const kernel_tests_runtime_t* runtime,
             LOG_ERROR("TST5", "Progresso do observer falhou");
             return ERR_STATE;
         }
-        process_yield();
+        if (block_between_polls) process_block(1U);
+        else process_yield();
     }
     if (validate_hw6) blackbox_report_hw6_missing();
     LOG_ERROR("TST5", "Observer de terminal excedeu o prazo");
@@ -502,6 +515,7 @@ int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
     int validate_sec6;
     int validate_hw6;
     int require_prompt;
+    int block_between_polls;
     int result;
 
     marker = blackbox_marker(case_id, case_length);
@@ -509,6 +523,7 @@ int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
     validate_sec6 = blackbox_is_sec6_case(case_id, case_length);
     validate_hw6 = blackbox_is_hw6_case(case_id, case_length);
     require_prompt = blackbox_requires_prompt(case_id, case_length);
+    block_between_polls = blackbox_is_perf3_case(case_id, case_length);
     if (validate_krn6) blackbox_reset_krn6_observation();
     if (validate_sec6) blackbox_reset_sec6_observation();
     if (validate_hw6) blackbox_reset_hw6_observation();
@@ -522,6 +537,6 @@ int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
     if (result != OK) return result;
     result = blackbox_wait_for_marker(runtime, marker, before.generation,
                                       validate_krn6, validate_sec6, validate_hw6,
-                                      require_prompt);
+                                      require_prompt, block_between_polls);
     return blackbox_report(runtime, "terminal-observer", result);
 }

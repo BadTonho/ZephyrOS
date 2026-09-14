@@ -395,10 +395,16 @@ def validate_case_for_runner(case: dict[str, Any]) -> None:
 def validate_input_step(step: Any, identifier: str) -> None:
     if not isinstance(step, dict) or step.get("op") not in {
             "key", "keys", "text", "wait", "pointer_move",
-            "pointer_button", "pointer_wheel", "pointer_drag", "stress"}:
+            "pointer_button", "pointer_wheel", "pointer_drag", "stress",
+            "phase"}:
         raise RunnerError(f"script_entrada_invalido:{identifier}",
                           "catalog_error", True)
     operation = step["op"]
+    if operation == "phase":
+        if step.get("phase") not in {"boot", "idle", "load", "cleanup", "final"}:
+            raise RunnerError(f"fase_entrada_invalida:{identifier}",
+                              "catalog_error", True)
+        return
     if operation == "wait":
         value = step.get("seconds")
         if (not isinstance(value, (int, float)) or isinstance(value, bool) or
@@ -676,6 +682,7 @@ class QemuSession:
         self.qmp_events: list[dict[str, Any]] = []
         self.input_trace: list[dict[str, Any]] = []
         self.input_stress_hook: Any = None
+        self.host_sample_hook: Any = None
         self.input_stress_cycles = 0
         self.diagnostics: list[str] = []
         self.observed_capabilities: list[str] = []
@@ -881,6 +888,9 @@ class QemuSession:
                 keys = [character]
             self._send_qmp_keys(keys)
 
+    def mark_phase(self, phase: str) -> None:
+        self._record_input({"op": "phase", "phase": phase})
+
     def _send_qmp_pointer(self, events: list[dict[str, Any]]) -> None:
         qmp_events = [{"type": event["type"], "data": {
             key: value for key, value in event.items() if key != "type"
@@ -941,6 +951,9 @@ class QemuSession:
                 hook = getattr(self, "input_stress_hook", None)
                 if callable(hook):
                     hook()
+                hook = getattr(self, "host_sample_hook", None)
+                if callable(hook):
+                    hook()
                 cycle += 1
                 self.input_stress_cycles = cycle
                 next_cycle += cycle_ms / 1000.0
@@ -949,7 +962,9 @@ class QemuSession:
             self._record_input({"op": "stress_end", "cycles": cycle})
 
     def execute_input_step(self, step: dict[str, Any]) -> None:
-        if step["op"] == "key":
+        if step["op"] == "phase":
+            self.mark_phase(step["phase"])
+        elif step["op"] == "key":
             self.send_key(step["key"])
         elif step["op"] == "keys":
             self.send_keys(step["keys"])
@@ -970,6 +985,9 @@ class QemuSession:
             deadline = time.monotonic() + float(step["seconds"])
             while time.monotonic() < deadline:
                 self.pump(preserve_events=True)
+                hook = getattr(self, "host_sample_hook", None)
+                if callable(hook):
+                    hook()
                 remaining = deadline - time.monotonic()
                 if remaining > 0:
                     time.sleep(min(0.05, remaining))
@@ -1236,6 +1254,9 @@ def wait_for_case(session: QemuSession, case_id: str, iteration: int,
             raise RunnerError(
                 f"guest_sem_heartbeat:state={session.progress.state}",
                 "watchdog")
+        hook = getattr(session, "host_sample_hook", None)
+        if callable(hook):
+            hook()
         time.sleep(0.01)
     raise RunnerError(
         f"case_timeout:{case_id}:state={session.progress.state}", "timeout")

@@ -455,6 +455,13 @@ registrada como `DT100-002` e deve ser quitada pela K5 antes da v1.0.0.
 O comando `workq check` inclui um percurso real Shell -> Wait Queue -> kworker
 -> wake, alem da fixture privada das filas.
 
+Na PERF3, `scheduler_runtime_stats_t` publica a residencia observavel do
+Idle, wakeups, latencia bloqueio->wakeup e picos de estados do scheduler.
+`workqueue_stats_t` tambem informa a latencia enqueue->dispatch. Os contadores
+de latencia sao acumulados com wraparound `uint32_t`; valores sem fonte sao
+`ND` no `kmetrics machine`. A coleta e somente sob demanda pelo Shell e nao
+altera selecao, quantum, prioridades ou o contrato de `thread_t`.
+
 ### KRN5.1 — IPC, pipes, sockets, Wait Queue e workqueue
 
 Os mecanismos de comunicacao mantem as APIs existentes e protegem suas regioes
@@ -634,6 +641,22 @@ falhas e fila cheia. Essas metricas descrevem atividade do scheduler e das
 filas; nao medem uso real de CPU.
 
 ---
+
+### PERF3 - evidencia de Scheduler, Idle e kworker
+
+O caso QEMU `qemu:tst5:perf3-scheduler-idle` executa uma janela ociosa de
+3 segundos e uma janela de carga de 10 segundos usando `regcheck full`,
+seguida de `schedcheck`, `workq check`, `cpu usage` e `proccheck`. A matriz
+repete `baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback` tres
+vezes. A residencia so e aceita quando `idle_ticks + active_ticks` coincide
+com os ticks PIT, a fila termina vazia, a kworker permanece vinculada e o
+prompt e restaurado. A `DT100-002` continua `ACEITA` ate uma decisao baseada
+nessa evidencia.
+
+Na execucao de 2026-09-14, a matriz terminou com 5/9 sessoes aprovadas. As
+quatro falhas foram `fila_workqueue_residual` somente na amostra final das
+faixas baseline com VESA; o fallback `no-vesa/Simple` passou 3/3. A evidencia
+mantem `thread_t` isolada e nao autoriza a quitacao de `DT100-002`.
 
 ## TSS (Task State Segment)
 

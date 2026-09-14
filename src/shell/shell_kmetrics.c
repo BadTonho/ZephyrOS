@@ -300,6 +300,8 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     snapshot->keyboard_flow_result =
         keyboard_get_flow_metrics(&snapshot->keyboard_flow);
     scheduler_get_stats(&snapshot->scheduler);
+    snapshot->scheduler_runtime_result =
+        scheduler_get_runtime_stats(&snapshot->scheduler_runtime);
     ipc_get_stats(&snapshot->ipc);
     shell_kmetrics_capture_irq(snapshot);
     snapshot->input_result = input_get_metrics(&snapshot->input);
@@ -407,6 +409,9 @@ static int shell_kmetrics_emit_scheduler(
     const shell_kmetrics_snapshot_t* current,
     const shell_kmetrics_snapshot_t* baseline, uint8_t baseline_valid) {
     uint32_t index;
+    uint8_t runtime_available = current->scheduler_runtime_result == OK;
+    uint8_t runtime_baseline = baseline &&
+                               baseline->scheduler_runtime_result == OK;
 
     SHELL_KMETRICS_EMIT_U32("pit_ticks", current->ticks,
                             baseline ? baseline->ticks : 0U, 1U, "tick",
@@ -454,6 +459,56 @@ static int shell_kmetrics_emit_scheduler(
                             baseline ? baseline->scheduler.active_ticks : 0U, 1U,
                             "tick", SHELL_KMETRICS_KIND_COUNTER, "scheduler",
                             "kernel");
+    SHELL_KMETRICS_EMIT_U32("scheduler_idle_entries",
+                            current->scheduler_runtime.idle_entries,
+                            baseline ? baseline->scheduler_runtime.idle_entries : 0U,
+                            baseline_valid && runtime_available && runtime_baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "scheduler",
+                            "idle");
+    SHELL_KMETRICS_EMIT_U32("scheduler_idle_hlt_returns",
+                            current->scheduler_runtime.idle_hlt_returns,
+                            baseline ? baseline->scheduler_runtime.idle_hlt_returns : 0U,
+                            baseline_valid && runtime_available && runtime_baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "scheduler",
+                            "idle");
+    SHELL_KMETRICS_EMIT_U32("scheduler_wakeups",
+                            current->scheduler_runtime.wakeups,
+                            baseline ? baseline->scheduler_runtime.wakeups : 0U,
+                            baseline_valid && runtime_available && runtime_baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "scheduler",
+                            "wait");
+    SHELL_KMETRICS_EMIT_U32("scheduler_wake_latency_samples",
+                            current->scheduler_runtime.wake_latency_samples,
+                            baseline ? baseline->scheduler_runtime.wake_latency_samples : 0U,
+                            baseline_valid && runtime_available && runtime_baseline,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "scheduler",
+                            "wait");
+    SHELL_KMETRICS_EMIT_U32("scheduler_wake_latency_ticks",
+                            current->scheduler_runtime.wake_latency_total_ticks,
+                            baseline ? baseline->scheduler_runtime.wake_latency_total_ticks : 0U,
+                            baseline_valid && runtime_available && runtime_baseline,
+                            "tick", SHELL_KMETRICS_KIND_COUNTER, "scheduler",
+                            "wait");
+    SHELL_KMETRICS_EMIT_U32("scheduler_wake_latency_max_ticks",
+                            current->scheduler_runtime.wake_latency_max_ticks, 0U,
+                            runtime_available, "tick", SHELL_KMETRICS_KIND_DURATION,
+                            "scheduler", "wait");
+    SHELL_KMETRICS_EMIT_U32("scheduler_ready_peak",
+                            current->scheduler_runtime.ready_peak, 0U,
+                            runtime_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "scheduler", "process");
+    SHELL_KMETRICS_EMIT_U32("scheduler_blocked_peak",
+                            current->scheduler_runtime.blocked_peak, 0U,
+                            runtime_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "scheduler", "process");
+    SHELL_KMETRICS_EMIT_U32("scheduler_current_pid",
+                            current->scheduler_runtime.current_pid, 0U,
+                            runtime_available, "pid", SHELL_KMETRICS_KIND_STATE,
+                            "scheduler", "kernel");
+    SHELL_KMETRICS_EMIT_U32("scheduler_last_error",
+                            (uint32_t)current->scheduler_runtime.last_error, 0U,
+                            runtime_available, "code", SHELL_KMETRICS_KIND_STATE,
+                            "scheduler", "kernel");
     for (index = PROCESS_STATE_UNUSED; index <= PROCESS_STATE_ZOMBIE; index++) {
         SHELL_KMETRICS_EMIT_U32(
             index == PROCESS_STATE_UNUSED ? "process_unused" :
@@ -845,10 +900,37 @@ static int shell_kmetrics_emit_work(
     const workqueue_stats_t* base = baseline ? &baseline->workqueue : 0;
     uint8_t available = current->workqueue_result == OK;
 
+    SHELL_KMETRICS_EMIT_U32("workqueue_worker_bound", work->worker_bound, 0U,
+                            available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_worker_active", work->worker_active, 0U,
+                            available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_fallback_active", work->fallback_active,
+                            0U, available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "workqueue", "fallback");
+    SHELL_KMETRICS_EMIT_U32("workqueue_worker_pid", work->worker_pid, 0U,
+                            available, "pid", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_execution_context",
+                            work->execution_context, 0U, available, "enum",
+                            SHELL_KMETRICS_KIND_STATE, "workqueue", "kworker");
     SHELL_KMETRICS_EMIT_U32("workqueue_pending", work->ready_high +
                             work->ready_normal + work->delayed + work->running,
                             0U, available, "count", SHELL_KMETRICS_KIND_GAUGE,
                             "workqueue", "shell");
+    SHELL_KMETRICS_EMIT_U32("workqueue_ready_high", work->ready_high, 0U,
+                            available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_ready_normal", work->ready_normal, 0U,
+                            available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_delayed", work->delayed, 0U,
+                            available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_running", work->running, 0U,
+                            available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "workqueue", "kworker");
     SHELL_KMETRICS_EMIT_U32("workqueue_scheduled", work->scheduled,
                             base ? base->scheduled : 0U, baseline_valid && available,
                             "count", SHELL_KMETRICS_KIND_COUNTER, "workqueue",
@@ -869,6 +951,30 @@ static int shell_kmetrics_emit_work(
                             base ? base->callback_errors : 0U,
                             baseline_valid && available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "workqueue", "shell");
+    SHELL_KMETRICS_EMIT_U32("workqueue_rejected", work->rejected,
+                            base ? base->rejected : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_context_errors", work->context_errors,
+                            base ? base->context_errors : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_invariant_errors", work->invariant_errors,
+                            base ? base->invariant_errors : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_wakeups", work->wakeups,
+                            base ? base->wakeups : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_wake_errors", work->wake_errors,
+                            base ? base->wake_errors : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_sleeps", work->sleeps,
+                            base ? base->sleeps : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "workqueue", "kworker");
     SHELL_KMETRICS_EMIT_U32("workqueue_peak_pending", work->peak_pending, 0U,
                             available, "count", SHELL_KMETRICS_KIND_GAUGE,
                             "workqueue", "shell");
@@ -879,6 +985,23 @@ static int shell_kmetrics_emit_work(
     SHELL_KMETRICS_EMIT_U32("workqueue_max_callback_ticks",
                             work->max_callback_ticks, 0U, available, "tick",
                             SHELL_KMETRICS_KIND_DURATION, "workqueue", "job");
+    SHELL_KMETRICS_EMIT_U32("workqueue_dispatch_latency_samples",
+                            work->dispatch_latency_samples,
+                            base ? base->dispatch_latency_samples : 0U,
+                            baseline_valid && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_dispatch_latency_ticks",
+                            work->dispatch_latency_total_ticks,
+                            base ? base->dispatch_latency_total_ticks : 0U,
+                            baseline_valid && available, "tick",
+                            SHELL_KMETRICS_KIND_COUNTER, "workqueue", "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_max_dispatch_latency_ticks",
+                            work->max_dispatch_latency_ticks, 0U, available,
+                            "tick", SHELL_KMETRICS_KIND_DURATION, "workqueue",
+                            "kworker");
+    SHELL_KMETRICS_EMIT_U32("workqueue_last_error",
+                            (uint32_t)work->last_error, 0U, available, "code",
+                            SHELL_KMETRICS_KIND_STATE, "workqueue", "kworker");
     return OK;
 }
 

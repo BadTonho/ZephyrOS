@@ -59,6 +59,7 @@ struct work_struct {
     uint8_t cancel_requested;
     uint8_t rerun_requested;
     uint8_t rerun_delayed;
+    uint32_t ready_tick;
 };
 
 typedef struct {
@@ -90,6 +91,9 @@ typedef struct {
     uint32_t total_callback_ticks;
     uint32_t max_callback_ticks;
     int last_error;
+    uint32_t dispatch_latency_samples;
+    uint32_t dispatch_latency_total_ticks;
+    uint32_t max_dispatch_latency_ticks;
 } workqueue_stats_t;
 
 typedef struct {

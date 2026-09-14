@@ -49,6 +49,16 @@ static uint32_t scheduler_idle_fallbacks = 0;
 static uint32_t scheduler_idle_ticks = 0;
 static uint32_t scheduler_active_ticks = 0;
 static uint32_t scheduler_tick_baseline = 0;
+static uint32_t scheduler_idle_entries = 0;
+static uint32_t scheduler_idle_hlt_returns = 0;
+static uint32_t scheduler_wakeups = 0;
+static uint32_t scheduler_wake_latency_samples = 0;
+static uint32_t scheduler_wake_latency_total_ticks = 0;
+static uint32_t scheduler_wake_latency_max_ticks = 0;
+static uint32_t scheduler_ready_peak = 0;
+static uint32_t scheduler_blocked_peak = 0;
+static int scheduler_last_error = OK;
+static uint8_t scheduler_runtime_initialized = 0U;
 static process_context_t scheduler_bootstrap_context;
 static uint8_t scheduler_started = 0U;
 
@@ -408,6 +418,33 @@ static void process_wait_irq_restore(uint32_t flags) {
 #endif
 }
 
+static void scheduler_refresh_peaks(void) {
+    uint32_t ready = 0U;
+    uint32_t blocked = 0U;
+
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        if (!processes[index]) continue;
+        if (processes[index]->state == PROCESS_STATE_READY) ready++;
+        if (processes[index]->state == PROCESS_STATE_BLOCKED) blocked++;
+    }
+    if (ready > scheduler_ready_peak) scheduler_ready_peak = ready;
+    if (blocked > scheduler_blocked_peak) scheduler_blocked_peak = blocked;
+}
+
+static void scheduler_note_wakeup(process_t* proc) {
+    uint32_t latency;
+
+    if (!proc || !proc->wait_start_tick_valid) return;
+    latency = timer_get_ticks() - proc->wait_start_tick;
+    proc->wait_start_tick_valid = 0U;
+    scheduler_wakeups++;
+    scheduler_wake_latency_samples++;
+    scheduler_wake_latency_total_ticks += latency;
+    if (latency > scheduler_wake_latency_max_ticks) {
+        scheduler_wake_latency_max_ticks = latency;
+    }
+}
+
 static void process_wait_block_transition(void* target,
                                           wait_queue_entry_t* entry) {
     process_t* proc = (process_t*)target;
@@ -420,13 +457,17 @@ static void process_wait_block_transition(void* target,
     proc->wait_active = 1U;
     proc->wait_ticks = entry->deadline_active ?
                        entry->deadline_tick - timer_get_ticks() : 0U;
+    proc->wait_start_tick = timer_get_ticks();
+    proc->wait_start_tick_valid = 1U;
     proc->state = PROCESS_STATE_BLOCKED;
+    scheduler_refresh_peaks();
 }
 
 static void process_wait_wake_transition(void* target,
                                          wait_queue_entry_t* entry) {
     process_t* proc = (process_t*)target;
 
+    scheduler_note_wakeup(proc);
     proc->wait_active = 0U;
     proc->wait_channel = 0;
     proc->wait_condition = 0U;
@@ -434,9 +475,12 @@ static void process_wait_wake_transition(void* target,
     proc->wait_reason = entry->reason;
     proc->wait_deadline_active = 0U;
     proc->wait_ticks = 0U;
+    proc->wait_start_tick = 0U;
+    proc->wait_start_tick_valid = 0U;
     if (proc->state == PROCESS_STATE_BLOCKED) {
         proc->state = PROCESS_STATE_READY;
     }
+    scheduler_refresh_peaks();
 }
 
 static void process_wait_yield_transition(void* target) {
@@ -460,6 +504,8 @@ static int process_wait_state_init(process_t* proc) {
     proc->wait_reason = WAIT_REASON_NONE;
     proc->wait_deadline_active = 0U;
     proc->wait_active = 0U;
+    proc->wait_start_tick = 0U;
+    proc->wait_start_tick_valid = 0U;
     kmemset(&proc->wait_entry, 0, sizeof(proc->wait_entry));
     return OK;
 }
@@ -472,6 +518,7 @@ static void process_wait_clear(process_t* proc, wait_reason_t reason) {
         }
         return;
     }
+    scheduler_note_wakeup(proc);
     proc->wait_active = 0U;
     proc->wait_channel = 0;
     proc->wait_condition = 0U;
@@ -479,9 +526,12 @@ static void process_wait_clear(process_t* proc, wait_reason_t reason) {
     proc->wait_reason = reason;
     proc->wait_deadline_active = 0U;
     proc->wait_ticks = 0U;
+    proc->wait_start_tick = 0U;
+    proc->wait_start_tick_valid = 0U;
     if (proc->state == PROCESS_STATE_BLOCKED) {
         proc->state = PROCESS_STATE_READY;
     }
+    scheduler_refresh_peaks();
 }
 
 static int process_wait_deadline_reached(const process_t* proc,
@@ -508,10 +558,14 @@ static void process_idle_main(void) {
     test_coverage_end_case(OK);
 #endif
 #if defined(ZEPHYROS_HOST_TEST)
+    scheduler_idle_entries++;
+    scheduler_idle_hlt_returns++;
     process_yield();
 #else
     while (1) {
+        scheduler_idle_entries++;
         asm volatile("sti\n\thlt" : : : "memory");
+        scheduler_idle_hlt_returns++;
         process_yield();
     }
 #endif
@@ -775,6 +829,7 @@ void process_bootstrap_idle(void) {
     scheduler_tick_baseline = timer_get_ticks();
     current_process = proc;
     process_count = 1;
+    scheduler_refresh_peaks();
     process_signal_process_created(proc->pid, proc->event_generation, 0U);
     LOG_INFO("PROC", "Processo Idle inicializado");
 }
@@ -2498,6 +2553,7 @@ static process_t* scheduler_select_next(void) {
         return idle;
     }
 
+    scheduler_last_error = ERR_STATE;
     LOG_ERROR("PROC", "Idle indisponivel para fallback do scheduler");
     return 0;
 }
@@ -2522,6 +2578,7 @@ static void scheduler_yield_internal(void) {
 
     if (!prev || !process_pointer_valid(prev) ||
         !process_pointer_valid(next)) {
+        scheduler_last_error = ERR_STATE;
         LOG_ERROR("PROC", "Troca de contexto com processo invalido");
         process_wait_irq_restore(flags);
         return;
@@ -2600,6 +2657,9 @@ void process_block(uint32_t ticks) {
     current_process->wait_active = 0U;
     current_process->state = PROCESS_STATE_BLOCKED;
     current_process->wait_ticks = ticks;
+    current_process->wait_start_tick = timer_get_ticks();
+    current_process->wait_start_tick_valid = 1U;
+    scheduler_refresh_peaks();
     process_yield();
 }
 
@@ -2627,9 +2687,11 @@ void process_unblock(process_t* proc) {
         return;
     }
     if (proc->state == PROCESS_STATE_BLOCKED) {
+        scheduler_note_wakeup(proc);
         proc->state = PROCESS_STATE_READY;
         proc->wait_ticks = 0U;
         proc->wait_reason = WAIT_REASON_EVENT;
+        scheduler_refresh_peaks();
         LOG_DEBUG("PROC", "Processo desbloqueado");
     } else {
         LOG_DEBUG("PROC", "Processo nao estava bloqueado");
@@ -2745,6 +2807,16 @@ void scheduler_init(void) {
     scheduler_idle_fallbacks = 0;
     scheduler_idle_ticks = 0;
     scheduler_active_ticks = 0;
+    scheduler_idle_entries = 0;
+    scheduler_idle_hlt_returns = 0;
+    scheduler_wakeups = 0;
+    scheduler_wake_latency_samples = 0;
+    scheduler_wake_latency_total_ticks = 0;
+    scheduler_wake_latency_max_ticks = 0;
+    scheduler_ready_peak = 0;
+    scheduler_blocked_peak = 0;
+    scheduler_last_error = OK;
+    scheduler_runtime_initialized = 1U;
     scheduler_tick_baseline = timer_get_ticks();
     scheduler_started = 0U;
     kmemset(&scheduler_bootstrap_context, 0,
@@ -2779,12 +2851,14 @@ void scheduler_tick(void) {
             } else if (proc->wait_ticks > 0) {
                 proc->wait_ticks--;
                 if (proc->wait_ticks == 0) {
+                    scheduler_note_wakeup(proc);
                     proc->state = PROCESS_STATE_READY;
                     proc->wait_reason = WAIT_REASON_TIMEOUT;
                 }
             }
         }
     }
+    scheduler_refresh_peaks();
 
     if (current_process->pid == 0U) {
         scheduler_idle_ticks++;
@@ -2812,6 +2886,32 @@ void scheduler_get_stats(scheduler_stats_t* stats) {
     stats->idle_ticks = scheduler_idle_ticks;
     stats->active_ticks = scheduler_active_ticks;
     process_wait_irq_restore(flags);
+}
+
+int scheduler_get_runtime_stats(scheduler_runtime_stats_t* stats) {
+    uint32_t flags;
+
+    if (!stats) {
+        LOG_ERROR("PROC", "Destino nulo nas metricas de runtime do scheduler");
+        return ERR_NULL;
+    }
+    if (!scheduler_runtime_initialized) {
+        LOG_ERROR("PROC", "Metricas de runtime antes da inicializacao");
+        return ERR_STATE;
+    }
+    flags = process_wait_irq_save();
+    stats->idle_entries = scheduler_idle_entries;
+    stats->idle_hlt_returns = scheduler_idle_hlt_returns;
+    stats->wakeups = scheduler_wakeups;
+    stats->wake_latency_samples = scheduler_wake_latency_samples;
+    stats->wake_latency_total_ticks = scheduler_wake_latency_total_ticks;
+    stats->wake_latency_max_ticks = scheduler_wake_latency_max_ticks;
+    stats->ready_peak = scheduler_ready_peak;
+    stats->blocked_peak = scheduler_blocked_peak;
+    stats->current_pid = current_process ? current_process->pid : 0U;
+    stats->last_error = scheduler_last_error;
+    process_wait_irq_restore(flags);
+    return OK;
 }
 
 static uint32_t scheduler_validate_pid_table(void) {

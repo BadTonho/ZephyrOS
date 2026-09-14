@@ -7582,3 +7582,28 @@ dívida.
   QEMU de nove sessoes ainda devem ser executadas para a mesma imagem antes
   de alterar DT100-001. Estado: PERF2 `PENDING`; DT100-001 permanece
   `ACEITA`.
+
+- PERF3 - scheduler, Idle e kworker - implementacao registrada em 2026-09-14
+  (America/Sao_Paulo). Foram adicionadas a API diagnostica append-only
+  `scheduler_runtime_stats_t`/`scheduler_get_runtime_stats()`, contadores de
+  entrada e retorno do Idle, wakeups, latencia bloqueio->wakeup, picos de
+  estados e latencia enqueue->dispatch da workqueue. `kmetrics machine` foi
+  estendido sem alterar `scheduler_get_stats()`, selecao, quantum, prioridade,
+  ABI, syscalls, PID 0 ou `src/boot/boot.asm`. O caminho do observer PERF3 usa
+  bloqueio cooperativo por tick para que a residencia Idle seja observavel.
+
+  O caso `qemu:tst5:perf3-scheduler-idle`, o relatorio
+  `zephyros-perf3-scheduler-idle-v1`, as operacoes de fase, a barreira final
+  `workq check`, testes host/Python, catalogo, cobertura e alvos Windows/Linux
+  foram adicionados. A validacao `make test-perf3-host` passou com 32 testes.
+  A matriz QEMU de nove sessoes foi executada e terminou com 5/9 `PASS` e 4/9
+  `FAIL`: `baseline/Simple` 0/3 e `baseline/Classic` 2/3 reprovaram por
+  `fila_workqueue_residual` na amostra final, enquanto
+  `no-vesa/Simple fallback` passou 3/3. Nao houve envelope incompleto,
+  metrica guest obrigatoria `ND`, erro de protocolo, erro de workqueue ou
+  falha de kworker. O relatorio agregado esta em
+  `build/test-results/perf3-scheduler-idle/perf3-scheduler-idle.json`.
+
+  Estado: PERF3 `PENDING`; `DT100-002` permanece `ACEITA`. O backlog observado
+  sob VESA precisa ser resolvido ou aceito explicitamente antes de considerar
+  a matriz 9/9 e a etapa concluidas.

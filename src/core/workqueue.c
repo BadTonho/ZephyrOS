@@ -218,6 +218,7 @@ static void workqueue_ready_append(workqueue_service_t* service,
                                    work_struct_t* work) {
     uint32_t priority = (uint32_t)work->priority;
 
+    work->ready_tick = timer_get_ticks();
     work->previous = service->ready_last[priority];
     work->next = 0;
     if (service->ready_last[priority]) {
@@ -458,11 +459,18 @@ static int workqueue_cancel_on(workqueue_service_t* service,
 static work_struct_t* workqueue_take_ready(workqueue_service_t* service,
                                            work_priority_t priority) {
     work_struct_t* work = service->ready_first[priority];
+    uint32_t latency;
 
     if (!work) return 0;
+    latency = timer_get_ticks() - work->ready_tick;
     workqueue_list_remove(service, work);
     work->state = WORK_STATE_RUNNING;
     service->stats.running++;
+    service->stats.dispatch_latency_samples++;
+    service->stats.dispatch_latency_total_ticks += latency;
+    if (latency > service->stats.max_dispatch_latency_ticks) {
+        service->stats.max_dispatch_latency_ticks = latency;
+    }
     workqueue_update_peak(service);
     return work;
 }

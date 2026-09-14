@@ -34955,6 +34955,34 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/process/process.h:scheduler_get_runtime_stats",
+      "kind": "api_function",
+      "source": "src/include/process/process.h",
+      "symbol": "scheduler_get_runtime_stats",
+      "linkage": "public",
+      "owner": "process",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution",
+        "qemu:tst5:apps",
+        "qemu:tst5:perf3-scheduler-idle",
+        "qemu:tst5:processes",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "api:src/include/process/process.h:scheduler_get_stats",
       "kind": "api_function",
       "source": "src/include/process/process.h",
@@ -63504,6 +63532,27 @@
       "status": "COVERED",
       "case_ids": [
         "qemu:tst5:krn6-diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_is_perf3_case",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf3-scheduler-idle"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -138969,6 +139018,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/process/process.c:scheduler_get_runtime_stats",
+      "kind": "c_function",
+      "source": "src/process/process.c",
+      "symbol": "scheduler_get_runtime_stats",
+      "linkage": "external",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/process/process.c:scheduler_get_stats",
       "kind": "c_function",
       "source": "src/process/process.c",
@@ -139033,6 +139100,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/process/process.c:scheduler_note_wakeup",
+      "kind": "c_function",
+      "source": "src/process/process.c",
+      "symbol": "scheduler_note_wakeup",
+      "linkage": "static",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf3-scheduler-idle"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/process/process.c:scheduler_preempt_user",
       "kind": "c_function",
       "source": "src/process/process.c",
@@ -139049,6 +139137,27 @@
       "status": "COVERED",
       "case_ids": [
         "qemu:tst4:paging-vma"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/process/process.c:scheduler_refresh_peaks",
+      "kind": "c_function",
+      "source": "src/process/process.c",
+      "symbol": "scheduler_refresh_peaks",
+      "linkage": "static",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:perf3-scheduler-idle"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -187960,6 +188069,7 @@
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
         "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
         "api:src/include/process/process.h:scheduler_get_stats",
         "api:src/include/process/process.h:scheduler_init",
         "api:src/include/process/process.h:scheduler_preempt_user",
@@ -190683,6 +190793,7 @@
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
         "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
         "api:src/include/process/process.h:scheduler_get_stats",
         "api:src/include/process/process.h:scheduler_init",
         "api:src/include/process/process.h:scheduler_preempt_user",
@@ -193246,6 +193357,7 @@
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
         "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
         "api:src/include/process/process.h:scheduler_get_stats",
         "api:src/include/process/process.h:scheduler_init",
         "api:src/include/process/process.h:scheduler_preempt_user",
@@ -196318,6 +196430,7 @@
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
         "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
         "api:src/include/process/process.h:scheduler_get_stats",
         "api:src/include/process/process.h:scheduler_init",
         "api:src/include/process/process.h:scheduler_preempt_user",
@@ -197215,6 +197328,7 @@
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
         "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
         "api:src/include/process/process.h:scheduler_get_stats",
         "api:src/include/process/process.h:scheduler_init",
         "api:src/include/process/process.h:scheduler_preempt_user",
@@ -197772,6 +197886,7 @@
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
         "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
         "api:src/include/process/process.h:scheduler_get_stats",
         "api:src/include/process/process.h:scheduler_init",
         "api:src/include/process/process.h:scheduler_preempt_user",
@@ -198530,6 +198645,7 @@
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
         "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
         "api:src/include/process/process.h:scheduler_get_stats",
         "api:src/include/process/process.h:scheduler_init",
         "api:src/include/process/process.h:scheduler_preempt_user",
@@ -199176,6 +199292,240 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
+    },
+    {
+      "id": "qemu:tst5:perf3-scheduler-idle",
+      "scenario": "Scheduler, Idle e kworker com janela deterministica de carga",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:perf3-scheduler-idle",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 180,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1 + ZMETRIC/1",
+        "input": "qmp-keyboard",
+        "profiles": "baseline,baseline,no-vesa",
+        "modes": "simple,classic,simple-fallback",
+        "iterations": 3,
+        "idle_seconds": 3,
+        "load_seconds": 10,
+        "host_sample_interval_seconds": 0.25,
+        "diagnostics": "kmetrics machine,kmetrics reset,regcheck full,schedcheck,workq check,cpu usage,proccheck"
+      },
+      "preconditions": "imagem pronta, QEMU com serial, QMP e scheduler guest disponiveis",
+      "action": "capturar boot, aguardar Idle, executar regcheck full por janela fixa, limpar com F11 e validar scheduler/workqueue",
+      "expected": "tres amostras guest completas, contabilidade Idle/ativo consistente, kworker vinculada e prompt restaurado",
+      "errors": "envelope ausente ou incompleto, metricas scheduler ND, timeout, protocolo, fila residual, erro workqueue ou schedcheck negativo",
+      "effects": "somente diagnosticos observacionais, amostras guest/host e cancelamento do job de teste",
+      "cleanup": "encerrar cada QEMU isolado e preservar serial, fases, amostras host e relatorio JSON",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/process/process.h:scheduler_get_runtime_stats",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case",
+        "c:src/process/process.c:scheduler_note_wakeup",
+        "c:src/process/process.c:scheduler_refresh_peaks"
+      ],
+      "tags": [
+        "qemu",
+        "tst5",
+        "perf3",
+        "scheduler",
+        "idle",
+        "kworker",
+        "simple",
+        "classic",
+        "fallback"
+      ],
+      "interaction": {
+        "mode": "qmp-input",
+        "steps": [
+          {
+            "op": "phase",
+            "phase": "boot"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "phase",
+            "phase": "idle"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "phase",
+            "phase": "load"
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 5
+          },
+          {
+            "op": "phase",
+            "phase": "cleanup"
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "workq check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "cpu usage"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "phase",
+            "phase": "final"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-perf3-scheduler-idle"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
     }
   ],
   "retired": [

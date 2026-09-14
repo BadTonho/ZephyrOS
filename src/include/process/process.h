@@ -67,6 +67,19 @@ typedef struct {
 } scheduler_stats_t;
 
 typedef struct {
+    uint32_t idle_entries;
+    uint32_t idle_hlt_returns;
+    uint32_t wakeups;
+    uint32_t wake_latency_samples;
+    uint32_t wake_latency_total_ticks;
+    uint32_t wake_latency_max_ticks;
+    uint32_t ready_peak;
+    uint32_t blocked_peak;
+    uint32_t current_pid;
+    int last_error;
+} scheduler_runtime_stats_t;
+
+typedef struct {
     uint32_t current_valid;
     uint32_t idle_valid;
     uint32_t pid_table_valid;
@@ -160,6 +173,8 @@ typedef struct process {
     app_launch_info_t user_launch;
     uint32_t event_generation;
     process_credentials_t credentials;
+    uint32_t wait_start_tick;
+    uint8_t wait_start_tick_valid;
 } process_t;
 
 typedef struct {
@@ -297,6 +312,7 @@ void scheduler_init(void);
 void scheduler_tick(void);
 void scheduler_preempt_user(void);
 void scheduler_get_stats(scheduler_stats_t* stats);
+int scheduler_get_runtime_stats(scheduler_runtime_stats_t* stats);
 int scheduler_validate_invariants(scheduler_validation_t* validation);
 
 
