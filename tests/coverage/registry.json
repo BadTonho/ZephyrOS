@@ -11695,7 +11695,7 @@
         "py:tools/release_baseline.py:validate_fat32",
         "py:tools/release_baseline.py:version_from_header"
       ],
-      "evidence": "PENDING: q3check, build limpo, catalogo e host PASS; auditoria explicita FAIL apenas por worktree_dirty; alvo oficial BLOCKED por NM/OBJDUMP nao configurados",
+      "evidence": "PASS: commit d22e07da; q3check, build limpo, catalogo, host 15/15 e rls1-baseline PASS; schema, hashes, layout, FAT32, updater, ELF, simbolos e secoes validados",
       "case_definition": {
         "id": "host:quality:rls1-baseline",
         "scenario": "Auditoria host-only da linha de base dos artefatos de release",

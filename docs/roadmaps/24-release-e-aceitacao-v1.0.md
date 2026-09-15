@@ -2,8 +2,9 @@
 
 ## Estado
 
-Em execução. A RLS1 já possui auditoria host-only e artefatos versionados em
-desenvolvimento; os gates finais dependem da execução sobre a árvore limpa.
+Em execução. A RLS1 está em `PASS` no commit `d22e07da`, com auditoria
+host-only e artefatos de baseline reproduzidos sobre a árvore limpa. RLS2–RLS5
+continuam pendentes.
 Esta frente prepara uma linha de base reproduzível e suportada para a versão
 1.0.0. Ela não adiciona uma nova API, syscall, formato binário ou driver;
 organiza a correção das falhas que impediriam declarar o sistema estável.

@@ -20,11 +20,10 @@ segredos.
   Makefiles Windows/Linux, teste host dedicado e caso host
   `host:quality:rls1-baseline` no registry. RLS2–RLS5 continuam pendentes;
   não houve tag, assinatura ou publicação.
-- Estado: RLS1 implementada; `q3check`, build limpo, catalogo e
-  `make test-rls1-host` passaram. A auditoria explicita validou os artefatos,
-  layout, FAT32, updater, simbolos e secoes, mas permanece `FAIL` somente por
-  `worktree_dirty`; o alvo oficial tambem fica `BLOCKED` quando `NM/OBJDUMP`
-  nao estao configurados. O relatorio esta em
+- Estado: RLS1 `PASS` no commit `d22e07da`; `q3check`, build limpo, catalogo,
+  `make test-rls1-host` (15/15) e o alvo oficial `rls1-baseline` passaram com
+  `NM/OBJDUMP` configurados na linha de comando. A auditoria validou os
+  artefatos, layout, FAT32, updater, simbolos e secoes. O relatorio esta em
   `build/test-results/rls1-baseline/rls1-baseline.json`.
 
 ## 2026-09-14 - PERF6: kworker como thread e preparação do release
