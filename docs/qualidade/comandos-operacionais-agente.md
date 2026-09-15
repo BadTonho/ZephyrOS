@@ -2472,6 +2472,41 @@ e `no-vesa/Simple`.
 O inventario auditado de comandos, jobs, cenas e pontos de foco esta em
 `docs/qualidade/rls2-inventario-shell.md`.
 
+## RLS3 - Limpeza e invariantes
+
+Depois dos gates de build e catalogo, a validacao host pode ser executada com:
+
+```text
+make test-rls3-host
+```
+
+A matriz QEMU usa nove sessoes isoladas e pode ser paralelizada com tres
+workers:
+
+```text
+make test-rls3-qemu RLS3_QEMU_WORKERS=3
+make rls3-invariants RLS3_QEMU_WORKERS=3
+```
+
+O relatorio agregado fica em
+`build/test-results/rls3-invariants/rls3-invariants.json`. Cada sessao
+preserva `manifest.json`, `serial.log`, `input.log`, `qmp-events.log` e
+`rls3.json`. O runner usa as fases `boot`, `baseline`, `audit`, `recovery`,
+`repeat` e `final`, executa diagnosticos somente leitura e usa a fixture
+`readonly-update` dentro de snapshots isolados. Envelope incompleto, metrica
+guest obrigatoria `ND`, fila residual, erro permanente, prompt ausente ou
+protocolo invalido reprova a sessao; falta de suporte QMP e `BLOCKED`.
+O coletor do processo QEMU amostra user/system, RSS, pico de RSS e intervalo
+a cada 250 ms; indisponibilidade do coletor host e registrada como `ND`.
+
+Na validacao de 2026-09-15, os gates, a suite host e a matriz QEMU passaram.
+As nove sessoes terminaram `PASS` nas lanes suportadas. O intervalo
+declarativo entre capturas `kmetrics machine` e 4 s, com uma espera adicional de
+3 s antes da captura final e 10 s antes do marcador final, para permitir a
+drenagem da saida serial/VESA; a coleta host continua em 250 ms e nenhuma
+alteracao funcional foi feita no produto. O relatorio registra o resultado em
+`build/test-results/rls3-invariants/rls3-invariants.json`.
+
 ## PERF1: baseline de métricas
 
 Depois dos gates de build, a validação host e a matriz de linha de base podem

@@ -65,7 +65,10 @@ static void shell_job_complete(shell_job_state_t state, int result) {
     shell_job_context.next_wake_active = 0U;
 
     if (shell_job_definition && shell_job_definition->finish) {
+        shell_job_context.state = state;
         shell_job_definition->finish(&shell_job_context, state, result);
+    } else {
+        shell_job_context.state = state;
     }
 
     if (state == SHELL_JOB_STATE_SUCCEEDED) {
@@ -78,7 +81,6 @@ static void shell_job_complete(shell_job_state_t state, int result) {
         LOG_ERROR("SHELL", "Job cooperativo terminou com erro");
     }
 
-    shell_job_context.state = state;
     shell_job_definition = NULL;
     shell_job_cancel_called = 0U;
     shell_job_block_warning = 0U;

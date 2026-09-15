@@ -283,6 +283,125 @@ static void shell_kmetrics_capture_process(
     }
 }
 
+static uint32_t shell_kmetrics_count_result_failure(int result) {
+    return result == OK ? 0U : 1U;
+}
+
+static int shell_kmetrics_first_result_error(
+    const shell_kmetrics_snapshot_t* snapshot) {
+    const int results[] = {
+        snapshot->workqueue_result,
+        snapshot->paging_boot_result,
+        snapshot->resource_result,
+        snapshot->stack_result,
+        snapshot->scheduler_runtime_result,
+        snapshot->update_capabilities_result,
+        snapshot->update_status_result,
+        snapshot->update_slots_result,
+        snapshot->permissions_result,
+    };
+
+    for (uint32_t index = 0U; index < sizeof(results) / sizeof(results[0]);
+         index++) {
+        if (results[index] != OK) return results[index];
+    }
+    return OK;
+}
+
+static uint8_t shell_kmetrics_recovery_is_critical(uint32_t component) {
+    switch (component) {
+        case RECOVERY_COMPONENT_ATA:
+        case RECOVERY_COMPONENT_FILESYSTEM:
+        case RECOVERY_COMPONENT_SYSTEM_PROCESS:
+        case RECOVERY_COMPONENT_SHELL:
+        case RECOVERY_COMPONENT_APP_LOADER:
+        case RECOVERY_COMPONENT_UPDATE:
+        case RECOVERY_COMPONENT_SYSTEM_UPDATER:
+        case RECOVERY_COMPONENT_STORAGE:
+            return 1U;
+        default:
+            return 0U;
+    }
+}
+
+static void shell_kmetrics_capture_invariants(
+    shell_kmetrics_snapshot_t* snapshot) {
+    uint32_t failures = 0U;
+    uint32_t ownership_valid;
+    uint32_t security_valid;
+    uint32_t supervisor_valid;
+    uint32_t update_valid;
+    uint32_t recovery_valid;
+
+    failures += shell_kmetrics_count_result_failure(snapshot->workqueue_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->paging_boot_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->service_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->resource_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->stack_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->scheduler_runtime_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->update_capabilities_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->update_status_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->update_slots_result);
+    failures += shell_kmetrics_count_result_failure(snapshot->permissions_result);
+
+    ownership_valid = snapshot->heap.invalid_frees == 0U &&
+                      snapshot->heap.double_frees == 0U &&
+                      snapshot->pmm.invalid_frees == 0U &&
+                      snapshot->slab.invalid_frees == 0U &&
+                      snapshot->slab.double_frees == 0U &&
+                      snapshot->resource_validation.invalid == 0U &&
+                      snapshot->stack_validation.corrupted == 0U &&
+                      snapshot->workqueue.invariant_errors == 0U;
+    security_valid = snapshot->credentials_valid &&
+                     snapshot->permissions_result == OK &&
+                     snapshot->resource_result == OK &&
+                     snapshot->stack_result == OK;
+    supervisor_valid = snapshot->service_result == OK &&
+                       service_supervisor_validate_state() == OK;
+    update_valid = snapshot->update_capabilities_result == OK &&
+                   snapshot->update_status_result == OK &&
+                   snapshot->update_slots_result == OK &&
+                   !snapshot->update_status.transaction_pending &&
+                   !snapshot->update_capabilities.recovery_pending &&
+                   !snapshot->update_slots.journal_pending &&
+                   !snapshot->update_slots.recovery_pending;
+    recovery_valid = snapshot->recovery_count > 0U;
+    for (uint32_t index = 0U; index < snapshot->recovery_count; index++) {
+        if (!snapshot->recovery_valid[index]) {
+            recovery_valid = 0U;
+            failures++;
+        } else if (shell_kmetrics_recovery_is_critical(index) &&
+                   (snapshot->recovery[index].state != RECOVERY_STATE_READY ||
+                    snapshot->recovery[index].last_error != OK)) {
+            recovery_valid = 0U;
+            failures++;
+        }
+    }
+    if (!ownership_valid) failures++;
+    if (!security_valid && snapshot->permissions_result == OK &&
+        snapshot->resource_result == OK && snapshot->stack_result == OK) {
+        failures++;
+    }
+    if (!supervisor_valid && snapshot->service_result == OK) failures++;
+    if (!update_valid && snapshot->update_capabilities_result == OK &&
+        snapshot->update_status_result == OK && snapshot->update_slots_result == OK) {
+        failures++;
+    }
+    if (!recovery_valid && snapshot->recovery_count == 0U) failures++;
+
+    snapshot->invariants.ownership_valid = ownership_valid ? 1U : 0U;
+    snapshot->invariants.security_valid = security_valid ? 1U : 0U;
+    snapshot->invariants.supervisor_valid = supervisor_valid ? 1U : 0U;
+    snapshot->invariants.update_valid = update_valid ? 1U : 0U;
+    snapshot->invariants.recovery_valid = recovery_valid ? 1U : 0U;
+    snapshot->invariants.domain_failures = failures;
+    snapshot->invariants.last_error =
+        shell_kmetrics_first_result_error(snapshot);
+    snapshot->invariants.valid = failures == 0U && ownership_valid &&
+                                 security_valid && supervisor_valid &&
+                                 update_valid && recovery_valid;
+}
+
 int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     uint32_t start_ticks;
     uint32_t index;
@@ -416,6 +535,7 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     if (snapshot->recovery_count > 0U && recovery_available) {
         snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_RECOVERY;
     }
+    shell_kmetrics_capture_invariants(snapshot);
     snapshot->capture_ticks = timer_get_ticks() - start_ticks;
     return OK;
 }
@@ -2162,6 +2282,47 @@ static int shell_kmetrics_emit_system(
     return OK;
 }
 
+static int shell_kmetrics_emit_invariants(
+    const shell_kmetrics_snapshot_t* current) {
+    const shell_kmetrics_invariant_snapshot_t* invariants =
+        &current->invariants;
+
+    if (shell_kmetrics_emit_u32(
+            "invariant_valid", invariants->valid, 0U, 0U, 1U, "bool",
+            SHELL_KMETRICS_KIND_STATE, "invariants", "kernel") != OK ||
+        shell_kmetrics_emit_u32(
+            "invariant_ownership_valid", invariants->ownership_valid, 0U,
+            0U, 1U, "bool", SHELL_KMETRICS_KIND_STATE, "invariants",
+            "ownership") != OK ||
+        shell_kmetrics_emit_u32(
+            "invariant_security_valid", invariants->security_valid, 0U, 0U,
+            1U, "bool", SHELL_KMETRICS_KIND_STATE, "invariants",
+            "security") != OK ||
+        shell_kmetrics_emit_u32(
+            "invariant_supervisor_valid", invariants->supervisor_valid, 0U,
+            0U, 1U, "bool", SHELL_KMETRICS_KIND_STATE, "invariants",
+            "supervisor") != OK ||
+        shell_kmetrics_emit_u32(
+            "invariant_update_valid", invariants->update_valid, 0U, 0U, 1U,
+            "bool", SHELL_KMETRICS_KIND_STATE, "invariants", "update") !=
+            OK ||
+        shell_kmetrics_emit_u32(
+            "invariant_recovery_valid", invariants->recovery_valid, 0U, 0U,
+            1U, "bool", SHELL_KMETRICS_KIND_STATE, "invariants",
+            "recovery") != OK ||
+        shell_kmetrics_emit_u32(
+            "invariant_domain_failures", invariants->domain_failures, 0U, 0U,
+            1U, "count", SHELL_KMETRICS_KIND_GAUGE, "invariants",
+            "kernel") != OK ||
+        shell_kmetrics_emit_u32(
+            "invariant_last_error", (uint32_t)invariants->last_error, 0U,
+            0U, invariants->last_error >= 0, "code",
+            SHELL_KMETRICS_KIND_STATE, "invariants", "kernel") != OK) {
+        return ERR_OVERFLOW;
+    }
+    return OK;
+}
+
 static int shell_kmetrics_emit_video(
     const shell_kmetrics_snapshot_t* current,
     const shell_kmetrics_snapshot_t* baseline, uint8_t baseline_valid) {
@@ -2573,6 +2734,7 @@ int shell_kmetrics_emit_machine(
     if (result == OK) result = shell_kmetrics_emit_video(current, baseline, baseline_valid);
     if (result == OK) result = shell_kmetrics_emit_update(current);
     if (result == OK) result = shell_kmetrics_emit_recovery(current, baseline, baseline_valid);
+    if (result == OK) result = shell_kmetrics_emit_invariants(current);
     if (result == OK) result = shell_kmetrics_emit_record_end(sequence, partial);
     if (result != OK) {
         LOG_ERROR("SHELL", "Falha ao emitir metricas PERF1 na serial");

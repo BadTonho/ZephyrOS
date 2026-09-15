@@ -40,6 +40,8 @@ static int cancel_result;
 static int drain_mode;
 static int finish_state;
 static int finish_result;
+static int finish_observed_active;
+static int finish_observed_blocked;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -285,6 +287,8 @@ static void fake_finish(shell_job_context_t* context, shell_job_state_t state,
     (void)context;
     finish_state = state;
     finish_result = result;
+    finish_observed_active = shell_job_is_active();
+    finish_observed_blocked = shell_job_input_blocked();
 }
 
 static const shell_job_definition_t full_definition = {
@@ -321,6 +325,8 @@ static void fixture_reset(void) {
     drain_mode = 0;
     finish_state = -1;
     finish_result = -1;
+    finish_observed_active = -1;
+    finish_observed_blocked = -1;
     shell_job_reset();
 }
 
@@ -396,7 +402,9 @@ static int check_success_and_deadlines(void) {
     fake_ticks = 13U;
     shell_job_poll();
     if (finish_state != SHELL_JOB_STATE_SUCCEEDED || finish_result != OK ||
-        shell_job_is_active() || finish_command_calls != 1U) return 8;
+        shell_job_is_active() || shell_job_input_blocked() ||
+        finish_observed_active || finish_observed_blocked ||
+        finish_command_calls != 1U) return 8;
     if (shell_job_generation_matches(generation)) return 9;
     shell_job_note_stale_event(generation);
     if (shell_job_get_status(&status) != OK) return 10;

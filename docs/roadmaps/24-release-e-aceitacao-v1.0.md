@@ -4,7 +4,8 @@
 
 Em execução. A RLS1 está em `PASS` no commit `d22e07da`, com auditoria
 host-only e artefatos de baseline reproduzidos sobre a árvore limpa. A RLS2
-está em `PASS` com 9/9 sessões QEMU aprovadas; RLS3–RLS5 continuam pendentes.
+está em `PASS` com 9/9 sessões QEMU aprovadas; RLS3 também está em `PASS` com
+9/9 sessões QEMU aprovadas; RLS4–RLS5 continuam pendentes.
 Esta frente prepara uma linha de base reproduzível e suportada para a versão
 1.0.0. Ela não adiciona uma nova API, syscall, formato binário ou driver;
 organiza a correção das falhas que impediriam declarar o sistema estável.
@@ -66,7 +67,8 @@ O relatório produzido pela RLS1 ficará em
 `build_version=0.1.0`, `target_version=1.0.0` e
 `candidate_state=DOCUMENTAL_ONLY`. A execução final deve ocorrer com o
 worktree limpo e não cria tag, assinatura ou publicação; a aceitação da RLS2
-foi registrada como `PASS`, enquanto RLS3–RLS5 continuam pendentes.
+foi registrada como `PASS`; RLS3 também foi aprovada, enquanto RLS4–RLS5
+continuam pendentes.
 
 ### RLS2 — Liveness do Shell e dos jobs
 
@@ -87,22 +89,34 @@ Shell e o caso `qemu:tst5:rls2-shell-liveness`. Os gates `q3check`, build
 limpo, catalogo e host passaram, e a matriz QEMU fixa terminou com 9/9
 sessoes `PASS` no relatorio
 `build/test-results/rls2-shell-liveness/rls2-shell-liveness.json`, schema
-`zephyros-rls2-shell-liveness-v1`. RLS3 continua como proxima etapa.
+`zephyros-rls2-shell-liveness-v1`. RLS3 também foi validada; RLS4 é a próxima
+etapa.
 
 ### RLS3 — Limpeza e invariantes
 
-- [ ] Auditar ownership de buffers, snapshots, descritores, jobs, filas e
+A instrumentacao RLS3 foi integrada ao snapshot `kmetrics machine` por meio
+dos campos agregados `invariant_*`, ao caso `qemu:tst5:rls3-invariants` e ao
+auditor `tools/rls3_invariants.py`. Os gates de qualidade, build limpo,
+catalogo, host e a matriz QEMU terminaram com 9/9 sessoes `PASS` no
+relatorio `build/test-results/rls3-invariants/rls3-invariants.json`. A
+repeticao usa intervalo declarativo de 4 s entre capturas machine, uma espera
+adicional de 3 s antes da captura final e 10 s antes do marcador final para
+drenar a saida serial/VESA; nao houve alteracao funcional no produto. A lane
+`no-vesa/Classic` continua nao aplicavel, e DT100-003, DT100-004 e DT100-005
+permanecem `ACEITA`.
+
+- [x] Auditar ownership de buffers, snapshots, descritores, jobs, filas e
   referências de processo.
-- [ ] Garantir que todos os caminhos de erro liberem ou transfiram seus
+- [x] Garantir que todos os caminhos de erro liberem ou transfiram seus
   recursos exatamente uma vez.
-- [ ] Confirmar que locks e interrupções são restaurados em todos os retornos.
-- [ ] Integrar falhas relevantes ao log da camada que possui o contexto, sem
+- [x] Confirmar que locks e interrupções são restaurados em todos os retornos.
+- [x] Integrar falhas relevantes ao log da camada que possui o contexto, sem
   produzir logging pesado em IRQ ou hot path.
-- [ ] Confirmar que credenciais, permissões, limites e estados do supervisor
+- [x] Confirmar que credenciais, permissões, limites e estados do supervisor
   sejam publicados de forma reproduzível nos diagnósticos.
-- [ ] Confirmar que atualização interrompida, boot não confirmado e rollback
+- [x] Confirmar que atualização interrompida, boot não confirmado e rollback
   não deixem a única imagem inicializável inutilizada.
-- [ ] Manter `health`, `regcheck`, `memcheck`, `schedcheck`, `proccheck` e os
+- [x] Manter `health`, `regcheck`, `memcheck`, `schedcheck`, `proccheck` e os
   diagnósticos de rede/ACPI coerentes depois de ciclos repetidos.
 
 ### RLS4 — Regressão da matriz suportada

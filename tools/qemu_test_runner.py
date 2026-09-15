@@ -40,6 +40,7 @@ QEMU_PORT_RETRIES = 3
 HELLO_RETRY_INTERVAL = 0.5
 QMP_KEY_HOLD_TIME_MS = 20
 QMP_KEY_GAP_SECONDS = 0.025
+QMP_KEY_GAP_MAX_SECONDS = 1.0
 QMP_POINTER_GAP_SECONDS = 0.005
 FRAME_ALLOWED = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.:")
 EVENT_TERMINAL = {"PASS", "FAIL", "SKIP", "BLOCKED"}
@@ -404,7 +405,7 @@ def validate_input_step(step: Any, identifier: str) -> None:
         if step.get("phase") not in {
                 "boot", "baseline", "idle", "load", "ui", "diagnostics",
                 "cleanup", "pressure", "cancel", "commands", "jobs",
-                "scenes", "final"}:
+                "scenes", "audit", "recovery", "repeat", "final"}:
             raise RunnerError(f"fase_entrada_invalida:{identifier}",
                               "catalog_error", True)
         return
@@ -692,6 +693,7 @@ class QemuSession:
         self.qmp_events: list[dict[str, Any]] = []
         self.input_trace: list[dict[str, Any]] = []
         self.input_trace_sequence = 0
+        self.input_key_gap_seconds = QMP_KEY_GAP_SECONDS
         self.awaiting_ready_after_reset = False
         self.restart_waiting = False
         self.restart_detected = False
@@ -868,7 +870,16 @@ class QemuSession:
             "keys": [{"type": "qcode", "data": key} for key in qmp_keys],
             "hold-time": QMP_KEY_HOLD_TIME_MS,
         })
-        time.sleep(QMP_KEY_GAP_SECONDS)
+        time.sleep(self.input_key_gap_seconds)
+
+    def configure_input_timing(self, gap_seconds: float) -> None:
+        if (isinstance(gap_seconds, bool) or
+                not isinstance(gap_seconds, (int, float)) or
+                gap_seconds < QMP_KEY_GAP_SECONDS or
+                gap_seconds > QMP_KEY_GAP_MAX_SECONDS or
+                gap_seconds != gap_seconds):
+            raise RunnerError("intervalo_teclas_invalido", "catalog_error", True)
+        self.input_key_gap_seconds = float(gap_seconds)
 
     def send_key(self, key: str) -> None:
         qmp_key = QMP_KEY_NAMES[key]
@@ -1264,6 +1275,11 @@ def wait_for_case(session: QemuSession, case_id: str, iteration: int,
                 session.progress.mark_state(PROGRESS_RUNNING)
                 heartbeat_reference = time.monotonic()
                 if case and case.get("interaction"):
+                    parameters = case.get("parameters", {})
+                    if (isinstance(parameters, dict) and
+                            "input_key_gap_seconds" in parameters):
+                        session.configure_input_timing(
+                            parameters["input_key_gap_seconds"])
                     session.progress.mark_state(PROGRESS_INPUT_SENT)
                     session.execute_interaction(case["interaction"])
                     session.capture_screenshot("after-input")

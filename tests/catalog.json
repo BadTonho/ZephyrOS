@@ -576,7 +576,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -587,7 +586,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_key",
@@ -605,7 +604,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -616,7 +614,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_mouse",
@@ -692,7 +690,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -703,7 +700,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_process_command",
@@ -721,7 +718,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -732,7 +728,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_app_loader_result",
@@ -750,7 +746,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -761,7 +756,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_user_test_result",
@@ -779,7 +774,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -790,7 +784,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_update_hosted_terminal",
@@ -808,7 +802,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -819,7 +812,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts",
@@ -2972,7 +2965,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
-        "qemu:tst5:perf1-baseline"
+        "qemu:tst5:perf1-baseline",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3701,13 +3695,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
@@ -3814,14 +3807,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_error",
@@ -3926,7 +3918,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -3937,7 +3928,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
@@ -3955,7 +3946,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -3966,7 +3956,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_lifecycle_status",
@@ -4013,7 +4003,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -4024,7 +4013,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
@@ -4071,7 +4060,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -4082,7 +4070,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/taskmanager.h:taskmgr_close",
@@ -13145,7 +13133,8 @@
       "case_ids": [
         "host:core:device-manager",
         "host:core:network-manager",
-        "host:core:state"
+        "host:core:state",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -13168,7 +13157,8 @@
       "case_ids": [
         "host:core:device-manager",
         "host:core:network-manager",
-        "host:core:state"
+        "host:core:state",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -13910,7 +13900,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:service-supervisor"
+        "host:core:service-supervisor",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -18144,7 +18135,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:update-system-slots"
+        "host:core:update-system-slots",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -28881,7 +28873,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:permissions"
+        "host:storage:permissions",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -33374,7 +33367,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:permissions"
+        "host:storage:permissions",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -35828,7 +35822,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:resources"
+        "host:process:resources",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -36269,6 +36264,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:signals",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -36278,7 +36274,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/signal.h:process_signal_validate_state",
@@ -64117,6 +64113,28 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_rls3_case",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_is_rls3_case",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox",
+        "qemu:tst5:rls3-invariants"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
       "kind": "c_function",
       "source": "src/core/kernel_tests_blackbox.c",
@@ -64265,6 +64283,42 @@
       ],
       "tags": [],
       "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report_shell_liveness",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_report_shell_liveness",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report_shell_liveness_value",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_report_shell_liveness_value",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
@@ -71128,7 +71182,8 @@
       "case_ids": [
         "host:core:device-manager",
         "host:core:network-manager",
-        "host:core:state"
+        "host:core:state",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -71149,7 +71204,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:state"
+        "host:core:state",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72519,7 +72575,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:service-supervisor"
+        "host:core:service-supervisor",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -90186,7 +90243,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:update-system-slots"
+        "host:core:update-system-slots",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -121630,7 +121688,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:permissions"
+        "host:storage:permissions",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -137096,7 +137155,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:permissions"
+        "host:storage:permissions",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -140599,7 +140659,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:resources"
+        "host:process:resources",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -141182,9 +141243,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:signals"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/signal.c:process_signal_validate_state",
@@ -144367,7 +144431,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144375,7 +144438,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_finalize_closed_scene",
@@ -144577,7 +144640,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell1:prompt-lifecycle",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -144588,7 +144650,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_process_command",
@@ -144606,7 +144668,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144615,7 +144676,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_prompt_hide",
@@ -144953,7 +145014,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
@@ -144962,7 +145022,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_reset_lifecycle_status",
@@ -145001,7 +145061,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:shell1:prompt-lifecycle",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
@@ -145011,7 +145070,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_suspend_terminal",
@@ -145072,7 +145131,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -145080,7 +145138,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_update_hosted_terminal",
@@ -160784,12 +160842,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_reset",
@@ -160826,12 +160881,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
@@ -162168,6 +162220,28 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_invariants",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_capture_invariants",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:rls3-invariants"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_irq",
       "kind": "c_function",
       "source": "src/shell/shell_kmetrics.c",
@@ -162212,6 +162286,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_count_result_failure",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_count_result_failure",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_indexed_u32",
       "kind": "c_function",
       "source": "src/shell/shell_kmetrics.c",
@@ -162251,6 +162346,28 @@
       "case_ids": [
         "host:shell:diagnostics",
         "qemu:tst5:perf1-baseline"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_invariants",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_emit_invariants",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -162636,6 +162753,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_first_result_error",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_first_result_error",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_kind_name",
       "kind": "c_function",
       "source": "src/shell/shell_kmetrics.c",
@@ -162680,6 +162818,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_recovery_is_critical",
+      "kind": "c_function",
+      "source": "src/shell/shell_kmetrics.c",
+      "symbol": "shell_kmetrics_recovery_is_critical",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot",
       "kind": "c_function",
       "source": "src/shell/shell_kmetrics.c",
@@ -162700,7 +162859,8 @@
         "qemu:tst5:perf4-memory-storage-network",
         "qemu:tst5:perf5-video-ui",
         "qemu:tst5:perf6-kworker-thread",
-        "qemu:tst5:rls2-shell-liveness"
+        "qemu:tst5:rls2-shell-liveness",
+        "qemu:tst5:rls3-invariants"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -170820,7 +170980,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:app",
@@ -170842,7 +171002,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:appcheck",
@@ -170866,7 +171026,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:beep",
@@ -170888,7 +171048,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkcheck",
@@ -170912,7 +171072,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkstat",
@@ -170934,7 +171094,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cache",
@@ -170956,7 +171116,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cachestat",
@@ -170978,7 +171138,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cat",
@@ -171000,7 +171160,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cd",
@@ -171022,7 +171182,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clear",
@@ -171044,7 +171204,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clock",
@@ -171068,7 +171228,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:compress",
@@ -171090,7 +171250,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cpu",
@@ -171112,7 +171272,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:desktop",
@@ -171134,7 +171294,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devcheck",
@@ -171158,7 +171318,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-info",
@@ -171180,7 +171340,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-scan",
@@ -171202,7 +171362,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devices",
@@ -171224,7 +171384,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:display",
@@ -171246,7 +171406,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:echo",
@@ -171268,7 +171428,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:edit",
@@ -171290,7 +171450,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:explorer",
@@ -171312,7 +171472,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:grep",
@@ -171334,7 +171494,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guimode",
@@ -171356,7 +171516,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guitest",
@@ -171378,7 +171538,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:health",
@@ -171402,7 +171562,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:help",
@@ -171424,7 +171584,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:http",
@@ -171446,7 +171606,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:icons",
@@ -171468,7 +171628,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:index",
@@ -171490,7 +171650,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:irqstat",
@@ -171514,7 +171674,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:job",
@@ -171536,7 +171696,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kill",
@@ -171558,7 +171718,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kmetrics",
@@ -171583,7 +171743,7 @@
         "host:shell:dispatch",
         "qemu:tst5:perf1-baseline"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:log",
@@ -171605,7 +171765,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ls",
@@ -171627,7 +171787,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:melody",
@@ -171649,7 +171809,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mem",
@@ -171671,7 +171831,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:memcheck",
@@ -171695,7 +171855,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mount",
@@ -171717,7 +171877,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mouse",
@@ -171739,7 +171899,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:net",
@@ -171763,7 +171923,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:netstat",
@@ -171785,7 +171945,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:nslookup",
@@ -171807,7 +171967,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pagefault",
@@ -171829,7 +171989,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ping",
@@ -171851,7 +172011,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pipetest",
@@ -171873,7 +172033,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkg",
@@ -171895,7 +172055,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkgcheck",
@@ -171917,7 +172077,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:play",
@@ -171939,7 +172099,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:power",
@@ -171961,7 +172121,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:poweroff",
@@ -171983,7 +172143,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:proccheck",
@@ -172007,7 +172167,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:procs",
@@ -172029,7 +172189,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pwd",
@@ -172051,7 +172211,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:q2check",
@@ -172073,7 +172233,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:reboot",
@@ -172095,7 +172255,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:regcheck",
@@ -172119,7 +172279,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:route",
@@ -172143,7 +172303,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:schedcheck",
@@ -172167,7 +172327,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:search",
@@ -172189,7 +172349,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:selecttest",
@@ -172211,7 +172371,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:settings",
@@ -172233,7 +172393,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:shutdown",
@@ -172255,7 +172415,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sigtest",
@@ -172277,7 +172437,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:skbstat",
@@ -172299,7 +172459,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabinfo",
@@ -172321,7 +172481,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabtest",
@@ -172345,7 +172505,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sockstat",
@@ -172369,7 +172529,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stack",
@@ -172391,7 +172551,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stats",
@@ -172413,7 +172573,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stop",
@@ -172435,7 +172595,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:storage",
@@ -172459,7 +172619,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:store",
@@ -172481,7 +172641,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sync",
@@ -172503,7 +172663,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskcfg",
@@ -172525,7 +172685,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskmgr",
@@ -172547,7 +172707,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threads",
@@ -172569,7 +172729,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threadtest",
@@ -172591,7 +172751,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:timer",
@@ -172615,7 +172775,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:tls",
@@ -172639,7 +172799,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:update",
@@ -172661,7 +172821,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:updater",
@@ -172683,7 +172843,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:uptime",
@@ -172705,7 +172865,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usb",
@@ -172727,7 +172887,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usertest",
@@ -172749,7 +172909,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vfs",
@@ -172773,7 +172933,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:view",
@@ -172795,7 +172955,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vmamap",
@@ -172817,7 +172977,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wait",
@@ -172841,7 +173001,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wifi",
@@ -172863,7 +173023,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wm",
@@ -172885,7 +173045,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:workq",
@@ -172909,7 +173069,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wqinfo",
@@ -172933,7 +173093,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "py:tools/release_baseline.py:artifact_record",
@@ -182175,6 +182335,7 @@
         "api:src/include/process/signal.h:process_signal_return",
         "api:src/include/process/signal.h:process_signal_self_test",
         "api:src/include/process/signal.h:process_signal_send",
+        "api:src/include/process/signal.h:process_signal_send_generation",
         "api:src/include/process/signal.h:process_signal_validate_state",
         "c:src/process/signal.c:process_signal_action",
         "c:src/process/signal.c:process_signal_copy_info",
@@ -182191,6 +182352,7 @@
         "c:src/process/signal.c:process_signal_return",
         "c:src/process/signal.c:process_signal_self_test",
         "c:src/process/signal.c:process_signal_send",
+        "c:src/process/signal.c:process_signal_send_generation",
         "c:src/process/signal.c:process_signal_validate_state",
         "c:src/process/signal.c:signal_context_empty",
         "c:src/process/signal.c:signal_deliver_handler",
@@ -183191,15 +183353,8 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/apps/shell.h:shell_handle_app_request",
-        "api:src/include/apps/shell.h:shell_handle_key",
         "api:src/include/apps/shell.h:shell_handle_mouse",
         "api:src/include/apps/shell.h:shell_init",
-        "api:src/include/apps/shell.h:shell_print_prompt",
-        "api:src/include/apps/shell.h:shell_process_command",
-        "api:src/include/apps/shell.h:shell_report_app_loader_result",
-        "api:src/include/apps/shell.h:shell_report_user_test_result",
-        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_begin_operation",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
         "api:src/include/apps/shell_runtime.h:shell_runtime_get_lifecycle_status",
@@ -183207,13 +183362,8 @@
         "api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_error",
         "api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_input_blocked",
         "api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_layer",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
         "api:src/include/apps/shell_runtime.h:shell_runtime_reset_lifecycle_status",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
-        "c:src/shell/shell.c:process_input",
         "c:src/shell/shell.c:shell_finalize_closed_scene",
         "c:src/shell/shell.c:shell_handle_key",
         "c:src/shell/shell.c:shell_handle_mouse",
@@ -183221,8 +183371,6 @@
         "c:src/shell/shell.c:shell_lifecycle_blocking_layer",
         "c:src/shell/shell.c:shell_lifecycle_refresh",
         "c:src/shell/shell.c:shell_lifecycle_scene_active",
-        "c:src/shell/shell.c:shell_print_prompt",
-        "c:src/shell/shell.c:shell_process_command",
         "c:src/shell/shell.c:shell_prompt_hide",
         "c:src/shell/shell.c:shell_prompt_reconcile",
         "c:src/shell/shell.c:shell_prompt_request",
@@ -183234,11 +183382,8 @@
         "c:src/shell/shell.c:shell_runtime_note_lifecycle_error",
         "c:src/shell/shell.c:shell_runtime_note_lifecycle_input_blocked",
         "c:src/shell/shell.c:shell_runtime_note_lifecycle_layer",
-        "c:src/shell/shell.c:shell_runtime_reset_input",
         "c:src/shell/shell.c:shell_runtime_reset_lifecycle_status",
-        "c:src/shell/shell.c:shell_runtime_resume_terminal",
-        "c:src/shell/shell.c:shell_runtime_suspend_terminal",
-        "c:src/shell/shell.c:shell_should_show_prompt"
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal"
       ],
       "tags": [
         "host",
@@ -183479,10 +183624,13 @@
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_text",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_append_u32_field",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_invariants",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_irq",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_process",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_count_result_failure",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_indexed_u32",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_input",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_invariants",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_job",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_lifecycle",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_line",
@@ -183500,8 +183648,10 @@
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_update",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_video",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_work",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_first_result_error",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_kind_name",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_line_start",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_recovery_is_critical",
         "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot"
       ]
     },
@@ -183846,17 +183996,13 @@
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
         "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_close_hosted",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
         "c:src/shell/shell_hosted.c:shell_hosted_close",
         "c:src/shell/shell_hosted.c:shell_hosted_draw",
         "c:src/shell/shell_hosted.c:shell_hosted_key",
         "c:src/shell/shell_hosted.c:shell_hosted_mouse",
         "c:src/shell/shell_hosted.c:shell_hosted_open",
         "c:src/shell/shell_hosted.c:shell_hosted_present_progress",
-        "c:src/shell/shell_hosted.c:shell_hosted_release",
         "c:src/shell/shell_hosted.c:shell_hosted_reset",
-        "c:src/shell/shell_hosted.c:shell_runtime_close_hosted",
         "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible"
       ],
       "tags": [
@@ -186461,6 +186607,7 @@
         "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf5_case",
         "c:src/core/kernel_tests_blackbox.c:blackbox_is_perf6_case",
         "c:src/core/kernel_tests_blackbox.c:blackbox_is_rls2_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_rls3_case",
         "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
         "c:src/core/kernel_tests_blackbox.c:blackbox_length",
         "c:src/core/kernel_tests_blackbox.c:blackbox_marker",
@@ -197440,6 +197587,501 @@
           {
             "op": "text",
             "text": "echo tst5-rls2-shell-liveness"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:rls3-invariants",
+      "scenario": "Auditoria de ownership, locks, seguranca, supervisor e update/recovery",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:rls3-invariants",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 300,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1 + ZMETRIC/1",
+        "input": "qmp-input",
+        "profiles": "baseline,baseline,no-vesa",
+        "modes": "simple,classic,simple-fallback",
+        "iterations": 3,
+        "idle_seconds": 3,
+        "host_sample_interval_seconds": 0.25,
+        "invariant_schema": "zephyros-rls3-invariants-v1",
+        "input_key_gap_seconds": 0.05,
+        "recovery_fixture": "readonly-update",
+        "phases": "boot,baseline,audit,recovery,repeat,final"
+      },
+      "preconditions": "imagem pronta, QEMU com serial, QMP, prompt e fixture readonly-update disponiveis",
+      "action": "executar diagnosticos repetidos e validar invariantes, filas, seguranca e estados de recovery",
+      "expected": "envelopes completos, filas drenadas, ownership e locks restaurados, rollback seguro e prompt presente",
+      "errors": "protocolo invalido, envelope incompleto, timeout, recurso residual, erro permanente ou metrica guest ND",
+      "effects": "somente diagnosticos observacionais em snapshots isolados e artefatos por sessao",
+      "cleanup": "encerrar cada QEMU, descartar alteracoes da fixture e preservar logs e relatorio",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/apps/shell_kmetrics.h:shell_kmetrics_take_snapshot",
+        "api:src/include/core/recovery.h:recovery_get",
+        "api:src/include/core/recovery.h:recovery_get_count",
+        "api:src/include/core/service_supervisor.h:service_supervisor_validate_state",
+        "api:src/include/core/update_system_slots.h:update_system_slots_get_status",
+        "api:src/include/fs/permissions.h:fs_permissions_validate",
+        "api:src/include/process/credentials.h:process_credentials_current",
+        "api:src/include/process/resource.h:process_resource_validate_all",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_rls3_case",
+        "c:src/core/recovery.c:recovery_get",
+        "c:src/core/recovery.c:recovery_get_count",
+        "c:src/core/service_supervisor.c:service_supervisor_validate_state",
+        "c:src/core/update_system_slots.c:update_system_slots_get_status",
+        "c:src/fs/permissions.c:fs_permissions_validate",
+        "c:src/process/credentials.c:process_credentials_current",
+        "c:src/process/resource.c:process_resource_validate_all",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_capture_invariants",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_emit_invariants",
+        "c:src/shell/shell_kmetrics.c:shell_kmetrics_take_snapshot"
+      ],
+      "tags": [
+        "qemu",
+        "rls3",
+        "invariants",
+        "ownership",
+        "security",
+        "recovery",
+        "simple",
+        "classic",
+        "fallback"
+      ],
+      "interaction": {
+        "mode": "qmp-input",
+        "steps": [
+          {
+            "op": "phase",
+            "phase": "boot"
+          },
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 4.0
+          },
+          {
+            "op": "phase",
+            "phase": "baseline"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "wait",
+            "seconds": 3.0
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 4.0
+          },
+          {
+            "op": "phase",
+            "phase": "audit"
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "memcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "wait check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "workq check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "irqstat check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "net check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "netstat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "sockstat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "route"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "vfs"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "acpi status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 4.0
+          },
+          {
+            "op": "phase",
+            "phase": "recovery"
+          },
+          {
+            "op": "text",
+            "text": "update system status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "update system slots"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 4.0
+          },
+          {
+            "op": "phase",
+            "phase": "repeat"
+          },
+          {
+            "op": "text",
+            "text": "regcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1.0
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 2.0
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "memcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "wait check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 0.5
+          },
+          {
+            "op": "text",
+            "text": "workq check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3.0
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 4.0
+          },
+          {
+            "op": "phase",
+            "phase": "final"
+          },
+          {
+            "op": "text",
+            "text": "kmetrics machine"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10.0
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-rls3-invariants"
           },
           {
             "op": "key",

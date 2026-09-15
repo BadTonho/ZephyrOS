@@ -7757,3 +7757,52 @@ dívida.
   268435456 bytes e SHA-256
   `e9717cf7a3aea932bac0c0464f469896597a1c73eeb7b21fba6efd7f1ecb55dd`.
   Estado: RLS2 `PASS`; RLS3 continua como proxima etapa.
+
+## 2026-09-14 - RLS3: limpeza e invariantes
+
+- Implementacao: o snapshot `kmetrics machine` passou a publicar o agregado
+  `invariant_*`, derivado dos validadores existentes de ownership, seguranca,
+  supervisor, update e recovery. O caso
+  `qemu:tst5:rls3-invariants`, o auditor `tools/rls3_invariants.py`, os testes
+  host/Python, o registry, o catalogo e os alvos Windows/Linux foram
+  adicionados. A fixture de update/recovery e `readonly-update` em snapshots
+  isolados; nenhuma tag, release, publicacao, ABI, syscall ou bootloader foi
+  alterado.
+- Estado: RLS3 `PENDING_VALIDATION`. Ainda faltam `make q3check`, build limpo,
+  `make catalog-test`, `make test-rls3-host` e a matriz QEMU 9/9. DT100-003,
+  DT100-004 e DT100-005 permanecem `ACEITA`; nenhuma divida foi quitada nesta
+  etapa.
+
+## 2026-09-15 - RLS3: resultado da validação automatizada
+
+- Gates: `make q3check`, `make clean`, `make`, `make catalog-test` e
+  `make test-rls3-host` passaram. O host executou 37 testes Python da RLS3 e
+  todos os casos host de memória, processos, locks, filas, VFS, rede,
+  supervisor, recovery, update, diagnósticos e black-box.
+- QEMU: o relatório
+  `build/test-results/rls3-invariants/rls3-invariants.json` foi gerado com o
+  schema `zephyros-rls3-invariants-v1` e 9 sessões. O resultado foi `FAIL`,
+  com 6/9 `PASS` em `baseline/Classic` e `no-vesa/Simple`, e 3/9 `FAIL` em
+  `baseline/Simple` por `terminal-observer-ERR_TIMEOUT` reproduzido após o
+  cancelamento do job, sem as amostras finais e o prompt exigidos.
+- O validador distingue degradações opcionais de recovery dos componentes
+  críticos e contabiliza as seis falhas VFS esperadas pelos dois
+  `proccheck`; incrementos adicionais de erros continuam reprovando a sessão.
+  RLS3 permanece pendente, e DT100-003, DT100-004 e DT100-005 continuam
+  `ACEITA`. Nenhuma dívida foi quitada, e não houve tag, release ou publicação.
+
+## 2026-09-15 - RLS3: matriz repetida aprovada
+
+- Ajuste de validação: o caso QMP passou a aguardar 4 s após cada captura
+  `kmetrics machine`, 3 s antes da captura final e 10 s antes do marcador
+  final, somente para permitir a drenagem da saída serial/VESA.
+  Não houve alteração funcional em filas, scheduler, invariantes, ABI,
+  syscalls ou bootloader.
+- QEMU: `make test-rls3-qemu` terminou com 9/9 sessões `PASS` nas lanes
+  `baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`, com seis
+  amostras guest e as fases `boot`, `baseline`, `audit`, `recovery`, `repeat`
+  e `final` em cada sessão. O relatório usa o schema
+  `zephyros-rls3-invariants-v1` em
+  `build/test-results/rls3-invariants/rls3-invariants.json`.
+- DT100-003, DT100-004 e DT100-005 permanecem `ACEITA`. Nenhuma dívida foi
+  quitada, e não houve tag, release ou publicação.

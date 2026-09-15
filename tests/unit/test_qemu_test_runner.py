@@ -194,6 +194,23 @@ class QemuSessionTests(unittest.TestCase):
             self.assertEqual(session.input_trace[0]["text"],
                              "echo x | grep x > /tmp/X")
 
+    def test_configure_input_timing_accepts_bounded_slow_gap(self):
+        session = runner.QemuSession.__new__(runner.QemuSession)
+        session.input_key_gap_seconds = runner.QMP_KEY_GAP_SECONDS
+
+        session.configure_input_timing(0.05)
+
+        self.assertEqual(session.input_key_gap_seconds, 0.05)
+
+    def test_configure_input_timing_rejects_unsafe_gap(self):
+        session = runner.QemuSession.__new__(runner.QemuSession)
+        session.input_key_gap_seconds = runner.QMP_KEY_GAP_SECONDS
+
+        for value in (0.0, 1.1, True, float("nan")):
+            with self.subTest(value=value):
+                with self.assertRaises(runner.RunnerError):
+                    session.configure_input_timing(value)
+
     def test_start_retries_after_serial_port_collision(self):
         class FakeProcess:
             def __init__(self):

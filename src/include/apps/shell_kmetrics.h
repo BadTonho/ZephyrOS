@@ -60,6 +60,17 @@ typedef struct {
 } shell_kmetrics_recovery_snapshot_t;
 
 typedef struct {
+    uint32_t valid;
+    uint32_t ownership_valid;
+    uint32_t security_valid;
+    uint32_t supervisor_valid;
+    uint32_t update_valid;
+    uint32_t recovery_valid;
+    uint32_t domain_failures;
+    int last_error;
+} shell_kmetrics_invariant_snapshot_t;
+
+typedef struct {
     uint32_t ticks;
     uint32_t frequency;
     uint32_t capture_ticks;
@@ -158,6 +169,7 @@ typedef struct {
     int update_capabilities_result;
     int update_status_result;
     int update_slots_result;
+    shell_kmetrics_invariant_snapshot_t invariants;
 } shell_kmetrics_snapshot_t;
 
 typedef struct {

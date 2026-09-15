@@ -1,12 +1,14 @@
 #include "kernel_tests.h"
 
 #include "apps/shell.h"
+#include "apps/shell_runtime.h"
 #include "core/log.h"
 #include "core/timer.h"
 #include "process/process.h"
 #include "video_test.h"
 
 #define KERNEL_TESTS_BLACKBOX_TIMEOUT_TICKS 2500U
+#define KERNEL_TESTS_RLS3_TIMEOUT_TICKS 5000U
 #define KERNEL_TESTS_HW6_TIMEOUT_TICKS 20000U
 #define KERNEL_TESTS_BLACKBOX_TEXT_CAPACITY VIDEO_TEST_TEXT_CAPACITY
 #define KRN6_REQUIRED_COUNT 15U
@@ -17,6 +19,64 @@ static char blackbox_text[KERNEL_TESTS_BLACKBOX_TEXT_CAPACITY];
 static uint8_t blackbox_krn6_seen[KRN6_REQUIRED_COUNT];
 static uint8_t blackbox_sec6_seen[SEC6_REQUIRED_COUNT];
 static uint8_t blackbox_hw6_seen[HW6_REQUIRED_COUNT];
+
+#ifndef ZEPHYROS_HOST_TEST
+static void blackbox_report_shell_liveness_value(const char* name,
+                                                 uint32_t value) {
+    char message[64];
+    char digits[16];
+    uint32_t message_length = 0U;
+    uint32_t digit_count = 0U;
+
+    if (!name) return;
+    while (name[message_length] && message_length + 1U < sizeof(message)) {
+        message[message_length] = name[message_length];
+        message_length++;
+    }
+    if (message_length + 1U >= sizeof(message)) return;
+    message[message_length++] = '=';
+    if (!value) {
+        digits[digit_count++] = '0';
+    } else {
+        while (value && digit_count < sizeof(digits)) {
+            digits[digit_count++] = (char)('0' + value % 10U);
+            value /= 10U;
+        }
+    }
+    while (digit_count && message_length + 1U < sizeof(message)) {
+        message[message_length++] = digits[--digit_count];
+    }
+    message[message_length] = '\0';
+    LOG_ERROR("TST5", message);
+}
+
+static void blackbox_report_shell_liveness(void) {
+    shell_lifecycle_status_t lifecycle;
+
+    if (shell_runtime_get_lifecycle_status(&lifecycle) != OK) {
+        LOG_ERROR("TST5", "RLS3 snapshot de liveness indisponivel");
+        return;
+    }
+    blackbox_report_shell_liveness_value("RLS3 prompt_state",
+                                         lifecycle.prompt_state);
+    blackbox_report_shell_liveness_value("RLS3 operation_active",
+                                         lifecycle.operation_active);
+    blackbox_report_shell_liveness_value("RLS3 input_blocked",
+                                         lifecycle.input_blocked);
+    blackbox_report_shell_liveness_value("RLS3 terminal_active",
+                                         lifecycle.terminal_active);
+    blackbox_report_shell_liveness_value("RLS3 focus_shell",
+                                         lifecycle.focus_shell);
+    blackbox_report_shell_liveness_value("RLS3 scene_active",
+                                         lifecycle.scene_active);
+    blackbox_report_shell_liveness_value("RLS3 job_active",
+                                         lifecycle.job_active);
+    blackbox_report_shell_liveness_value("RLS3 loader_active",
+                                         lifecycle.loader_active);
+    blackbox_report_shell_liveness_value("RLS3 last_layer",
+                                         lifecycle.last_layer);
+}
+#endif
 
 static uint32_t blackbox_length(const char* text) {
     uint32_t length = 0U;
@@ -154,6 +214,13 @@ static int blackbox_is_perf6_case(const char* case_id,
 static int blackbox_is_rls2_case(const char* case_id,
                                  uint32_t case_length) {
     static const char case_name[] = "qemu:tst5:rls2-shell-liveness";
+
+    return blackbox_equals(case_id, case_length, case_name);
+}
+
+static int blackbox_is_rls3_case(const char* case_id,
+                                 uint32_t case_length) {
+    static const char case_name[] = "qemu:tst5:rls3-invariants";
 
     return blackbox_equals(case_id, case_length, case_name);
 }
@@ -388,6 +455,7 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     static const char perf5_case[] = "qemu:tst5:perf5-video-ui";
     static const char perf6_case[] = "qemu:tst5:perf6-kworker-thread";
     static const char rls2_case[] = "qemu:tst5:rls2-shell-liveness";
+    static const char rls3_case[] = "qemu:tst5:rls3-invariants";
 
     if (blackbox_equals(case_id, case_length, shell_case)) return "tst5-shell";
     if (blackbox_equals(case_id, case_length, input_case)) return "tst5-input";
@@ -464,6 +532,9 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     if (blackbox_equals(case_id, case_length, rls2_case)) {
         return "tst5-rls2-shell-liveness";
     }
+    if (blackbox_equals(case_id, case_length, rls3_case)) {
+        return "tst5-rls3-invariants";
+    }
     return 0;
 }
 
@@ -484,6 +555,9 @@ static int blackbox_wait_for_marker(const kernel_tests_runtime_t* runtime,
     int marker_ready;
     uint32_t start = timer_get_ticks();
     uint32_t timeout_ticks = validate_hw6 ? KERNEL_TESTS_HW6_TIMEOUT_TICKS :
+                             marker && blackbox_contains(marker,
+                                                         "rls3-invariants") ?
+                             KERNEL_TESTS_RLS3_TIMEOUT_TICKS :
                              KERNEL_TESTS_BLACKBOX_TIMEOUT_TICKS;
 
     while (timer_get_ticks() - start < timeout_ticks) {
@@ -543,6 +617,11 @@ static int blackbox_wait_for_marker(const kernel_tests_runtime_t* runtime,
         else process_yield();
     }
     if (validate_hw6) blackbox_report_hw6_missing();
+    if (marker && blackbox_contains(marker, "rls3-invariants")) {
+#ifndef ZEPHYROS_HOST_TEST
+        blackbox_report_shell_liveness();
+#endif
+    }
     LOG_ERROR("TST5", "Observer de terminal excedeu o prazo");
     return ERR_TIMEOUT;
 }
@@ -572,7 +651,8 @@ int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
     block_between_polls = blackbox_is_perf3_case(case_id, case_length) ||
                           blackbox_is_perf5_case(case_id, case_length) ||
                           blackbox_is_perf6_case(case_id, case_length) ||
-                          blackbox_is_rls2_case(case_id, case_length);
+                          blackbox_is_rls2_case(case_id, case_length) ||
+                          blackbox_is_rls3_case(case_id, case_length);
     if (validate_krn6) blackbox_reset_krn6_observation();
     if (validate_sec6) blackbox_reset_sec6_observation();
     if (validate_hw6) blackbox_reset_hw6_observation();

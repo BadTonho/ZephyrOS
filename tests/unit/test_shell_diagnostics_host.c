@@ -4489,6 +4489,9 @@ static int test_kmetrics(void) {
     failures += expect_serial_contains("metric=recovery_25_state");
     failures += expect_serial_contains("metric=service_0_restart_attempts");
     failures += expect_serial_contains("metric=recovery_0_last_error");
+    failures += expect_serial_contains("metric=invariant_valid");
+    failures += expect_serial_contains("metric=invariant_ownership_valid");
+    failures += expect_serial_contains("metric=invariant_domain_failures");
     failures += expect_serial_contains("@@ZMETRIC/1 record=end");
     if (video_output_length != 0U) {
         fprintf(stderr, "diagnostics-host: machine escreveu no video\n");

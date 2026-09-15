@@ -41,6 +41,7 @@ TST7_FULL_TIMEOUT ?= 7200
 QEMU_PARALLEL_WORKERS ?= 4
 PERF6_QEMU_WORKERS ?= 2
 RLS2_QEMU_WORKERS ?= 3
+RLS3_QEMU_WORKERS ?= 3
 QEMU_PARALLEL_ARGS ?= --profile smoke
 QEMU_PARALLEL_SOAK_ARGS ?=
 SEC6_QEMU_WORKERS ?= 4
@@ -2351,6 +2352,15 @@ rls2-shell-liveness: $(OS_IMG) tools/rls2_shell_liveness.py tools/perf1_metrics.
 
 test-rls2-qemu: rls2-shell-liveness
 
+test-rls3-host: test-memory-host test-paging-host test-vma-host test-slab-host test-process-host test-process-resource-host test-process-signal-host test-process-ipc-host test-thread-host test-scheduling-host test-permissions-host test-spinlock-host test-shell-job-host test-workqueue-host test-vfs-host test-block-host test-route-host test-net-socket-host test-socket-runtime-host test-network-host test-network-manager-host test-ethernet-host test-service-supervisor-host test-updater-host test-update-system-host test-update-system-slots-host test-recovery-runtime-host test-recovery-menu-host test-recovery-loader-host test-shell-diagnostics-host test-blackbox-host tools/rls3_invariants.py tools/perf1_metrics.py tools/qemu_test_runner.py tests/unit/test_rls3_invariants.py tests/unit/test_qemu_test_runner.py
+	$(PYTHON) -m unittest tests.unit.test_rls3_invariants tests.unit.test_qemu_test_runner
+
+rls3-invariants: $(OS_IMG) tools/rls3_invariants.py tools/perf1_metrics.py tools/qemu_test_runner.py tests/catalog.json tests/coverage/registry.json
+	@if [ ! -f "$(OS_IMG)" ]; then echo "Imagem ausente: $(OS_IMG)"; exit 2; fi
+	$(PYTHON) tools/rls3_invariants.py --qemu "$(QEMU)" --cpu "$(QEMU_TEST_CPU)" --network none --workers "$(RLS3_QEMU_WORKERS)"
+
+test-rls3-qemu: rls3-invariants
+
 test-shell-commands-wifi-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_wifi_host.c tests/catalog.json src/shell/shell_commands_wifi.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/include/core/wifi_manager.h src/include/core/usb_manager.h
 	$(PYTHON) tools/core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
@@ -2527,7 +2537,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
-.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui test-perf6-host test-perf6-qemu perf6-kworker-thread perf6-release test-rls1-host rls1-baseline test-rls2-host test-rls2-qemu rls2-shell-liveness
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui test-perf6-host test-perf6-qemu perf6-kworker-thread perf6-release test-rls1-host rls1-baseline test-rls2-host test-rls2-qemu rls2-shell-liveness test-rls3-host test-rls3-qemu rls3-invariants
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

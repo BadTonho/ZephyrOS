@@ -343,9 +343,9 @@ seções ELF e reutiliza `tools/updater.py audit-image --expect-version 0.1.0`.
 Um relatório `PASS` exige worktree limpo, artefatos completos, boot de 512
 bytes, layout sem sobreposição, imagem de 268435456 bytes, ELF válido e
 auditoria persistente aprovada. Ferramenta obrigatória ausente resulta em
-`BLOCKED`; inconsistência de artefato resulta em `FAIL`. A implementação da
-RLS2 está disponível, mas sua aceitação aguarda os gates e a matriz QEMU;
-RLS3–RLS5 continuam pendentes.
+`BLOCKED`; inconsistência de artefato resulta em `FAIL`. RLS2 está aceita com
+9/9 sessões QEMU PASS; RLS3 está aprovada com 9/9 sessões QEMU PASS; RLS4–RLS5
+continuam pendentes.
 
 Na imagem híbrida, a validação aceita a recalculação determinística do campo
 BPB de setores reservados feita na composição do payload legado; os demais
@@ -803,3 +803,32 @@ combinacao transitiva e exige `zephyr>` depois do ultimo envelope.
 O inventario verificavel de comandos, jobs, cenas e pontos de foco fica em
 `docs/qualidade/rls2-inventario-shell.md`; a sequencia executada permanece
 declarada no registry e e validada pelo runner antes de iniciar o QEMU.
+
+## RLS3 - Limpeza e invariantes
+
+O `kmetrics machine` publica um agregado derivado dos validadores existentes:
+`invariant_valid`, `invariant_ownership_valid`, `invariant_security_valid`,
+`invariant_supervisor_valid`, `invariant_update_valid`,
+`invariant_recovery_valid`, `invariant_domain_failures` e
+`invariant_last_error`. Esses campos sao estados/gauges no envelope
+`ZMETRIC/1`; nao criam syscall, ABI ou logging em IRQ/hot path. O primeiro erro
+observado continua disponivel no campo `invariant_last_error`, enquanto os
+validadores de memoria, recursos, credenciais, permissoes, supervisor,
+update e recovery permanecem responsaveis pelos detalhes de cada dominio.
+
+O auditor `tools/rls3_invariants.py` exige envelopes completos, metricas
+obrigatorias disponiveis, filas e recursos residuais zerados, invariantes de
+ownership/seguranca/supervisor/update/recovery validos e prompt restaurado.
+Ele gera `zephyros-rls3-invariants-v1` em
+`build/test-results/rls3-invariants/rls3-invariants.json`, com seis amostras
+guest por sessao, deltas com wraparound `uint32_t`, fixture `readonly-update`,
+artefatos serial/QMP/input/manifest e amostras host de 250 ms. Falha de
+suporte QMP e `BLOCKED`; coletor host indisponivel e `ND`. As lanes sao
+`baseline/Simple`, `baseline/Classic` e `no-vesa/Simple fallback`, tres
+iteracoes cada; `no-vesa/Classic` nao e aplicavel. A implementacao esta
+com os gates e host aprovados, e a matriz repetida terminou com 9/9 `PASS`.
+O intervalo de 4 s entre capturas machine, a espera adicional de 3 s antes da
+captura final e os 10 s antes do marcador final foram fixados apenas na
+interacao declarativa para drenar a saida serial/VESA; nao houve alteracao
+funcional no produto. O relatorio e a evidencia ficam em
+`build/test-results/rls3-invariants/rls3-invariants.json`.
