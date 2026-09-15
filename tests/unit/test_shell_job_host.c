@@ -3,6 +3,7 @@
 
 #include "apps/shell.h"
 #include "apps/shell_job.h"
+#include "apps/shell_runtime.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/timer.h"
@@ -203,6 +204,10 @@ void shell_handle_app_request(uint32_t request) {
     app_request_calls++;
 }
 
+void shell_handle_key(uint8_t scancode) {
+    shell_job_handle_key(scancode);
+}
+
 void shell_report_user_test_result(void) {
     report_user_calls++;
 }
@@ -217,6 +222,21 @@ void shell_hosted_present_progress(void) {
 
 void shell_runtime_finish_command(void) {
     finish_command_calls++;
+}
+
+void shell_runtime_begin_operation(shell_lifecycle_layer_t layer) {
+    (void)layer;
+}
+
+void shell_runtime_note_lifecycle_layer(shell_lifecycle_layer_t layer) {
+    (void)layer;
+}
+
+void shell_runtime_note_lifecycle_error(int error_code) {
+    (void)error_code;
+}
+
+void shell_runtime_note_lifecycle_input_blocked(void) {
 }
 
 static shell_job_step_result_t fake_step(shell_job_context_t* context) {

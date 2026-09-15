@@ -213,6 +213,16 @@ nem o build freestanding. Os adaptadores `shell_dispatch_cmd_*`
 continuam com uma unica definicao, fora de `shell.c`, e a ordem de consumo dos
 resultados do App Loader permanece a mesma.
 
+Na RLS2, o mesmo bridge expoe o snapshot diagnostico interno de liveness:
+`shell_runtime_begin_operation()`, `shell_runtime_finish_command()` e as
+funcoes `shell_runtime_note_lifecycle_*()` registram geracao, camada, estado
+do prompt, bloqueio de entrada, job, cena, loader, foco e erro final. A leitura
+por `shell_runtime_get_lifecycle_status()` e usada apenas pelo diagnostico
+`kmetrics machine`; ela nao cria syscall, nao altera ABI e nao publica uma
+interface de aplicacao. `shell_runtime_finish_command()` e idempotente para a
+geracao corrente, e os caminhos de cancelamento, erro, timeout e fechamento de
+cena convergem para essa finalizacao antes da reconciliacao do prompt.
+
 As funcoes e estados abaixo continuam privados aos modulos:
 
 - Core: estado dos loaders de `echo`, `mem` e `uptime`.

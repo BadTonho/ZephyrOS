@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "apps/shell_job.h"
+#include "apps/shell_runtime.h"
 #include "core/ethernet.h"
 #include "core/input.h"
 #include "core/irq_deferred.h"
@@ -50,6 +51,7 @@
 #define SHELL_KMETRICS_DOMAIN_SECURITY (1U << 11)
 #define SHELL_KMETRICS_DOMAIN_UPDATE (1U << 12)
 #define SHELL_KMETRICS_DOMAIN_RECOVERY (1U << 13)
+#define SHELL_KMETRICS_DOMAIN_LIFECYCLE (1U << 14)
 
 typedef struct {
     recovery_state_t state;
@@ -80,6 +82,7 @@ typedef struct {
     uint8_t deferred_irq_valid[IRQ_DEFERRED_IRQ_COUNT];
     workqueue_stats_t workqueue;
     shell_job_status_t job;
+    shell_lifecycle_status_t lifecycle;
     vesa_metrics_t vesa;
     video_metrics_t video;
     mouse_render_metrics_t mouse_render;
@@ -130,6 +133,7 @@ typedef struct {
     int mouse_status_result;
     int workqueue_result;
     int job_result;
+    int lifecycle_result;
     int vfs_result;
     int block_result;
     int cache_result;

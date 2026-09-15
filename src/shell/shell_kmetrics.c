@@ -9,7 +9,7 @@
 
 #define SHELL_KMETRICS_LINE_CAPACITY 256U
 #define SHELL_KMETRICS_MACHINE_PREFIX "@@ZMETRIC/1 "
-#define SHELL_KMETRICS_DOMAIN_COUNT 14U
+#define SHELL_KMETRICS_DOMAIN_COUNT 15U
 #define SHELL_KMETRICS_ALL_DOMAINS ((1U << SHELL_KMETRICS_DOMAIN_COUNT) - 1U)
 
 typedef enum {
@@ -321,6 +321,11 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     snapshot->job_result = shell_job_get_status(&snapshot->job);
     if (snapshot->job_result == OK) {
         snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_JOB;
+    }
+    snapshot->lifecycle_result =
+        shell_runtime_get_lifecycle_status(&snapshot->lifecycle);
+    if (snapshot->lifecycle_result == OK) {
+        snapshot->valid_domains |= SHELL_KMETRICS_DOMAIN_LIFECYCLE;
     }
     vesa_get_metrics(&snapshot->vesa);
     snapshot->vesa_available = vesa_get_mode() != NULL &&
@@ -1085,6 +1090,103 @@ static int shell_kmetrics_emit_job(
                             base ? base->stale_events : 0U,
                             baseline_valid && available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "shell_job", "job");
+    return OK;
+}
+
+static int shell_kmetrics_emit_lifecycle(
+    const shell_kmetrics_snapshot_t* current,
+    const shell_kmetrics_snapshot_t* baseline, uint8_t baseline_valid) {
+    const shell_lifecycle_status_t* lifecycle = &current->lifecycle;
+    const shell_lifecycle_status_t* base = baseline ? &baseline->lifecycle : 0;
+    uint8_t available = current->lifecycle_result == OK;
+    uint8_t baseline_available = baseline && baseline->lifecycle_result == OK;
+
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_generation",
+                            lifecycle->generation, 0U, available, "generation",
+                            SHELL_KMETRICS_KIND_GAUGE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_finalization_requests",
+                            lifecycle->finalization_requests,
+                            base ? base->finalization_requests : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_finalizations",
+                            lifecycle->finalizations,
+                            base ? base->finalizations : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_duplicate_finalizations",
+                            lifecycle->duplicate_finalizations,
+                            base ? base->duplicate_finalizations : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_prompt_requests",
+                            lifecycle->prompt_requests,
+                            base ? base->prompt_requests : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_prompt_reconciliations",
+                            lifecycle->prompt_reconciliations,
+                            base ? base->prompt_reconciliations : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_prompt_rendered",
+                            lifecycle->prompt_rendered,
+                            base ? base->prompt_rendered : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_prompt_blocked",
+                            lifecycle->prompt_blocked,
+                            base ? base->prompt_blocked : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_prompt_missing",
+                            lifecycle->prompt_missing,
+                            base ? base->prompt_missing : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_prompt_duplicates",
+                            lifecycle->prompt_duplicates,
+                            base ? base->prompt_duplicates : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_input_blocked_events",
+                            lifecycle->input_blocked_events,
+                            base ? base->input_blocked_events : 0U,
+                            baseline_available && available, "count",
+                            SHELL_KMETRICS_KIND_COUNTER, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_last_error",
+                            lifecycle->last_error, 0U, available, "code",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_last_layer",
+                            lifecycle->last_layer, 0U, available, "enum",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_prompt_state",
+                            lifecycle->prompt_state, 0U, available, "enum",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_operation_active",
+                            lifecycle->operation_active, 0U, available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_input_blocked",
+                            lifecycle->input_blocked, 0U, available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_terminal_active",
+                            lifecycle->terminal_active, 0U, available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_hosted_visible",
+                            lifecycle->hosted_visible, 0U, available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_focus_shell",
+                            lifecycle->focus_shell, 0U, available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_scene_active",
+                            lifecycle->scene_active, 0U, available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_job_active",
+                            lifecycle->job_active, 0U, available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
+    SHELL_KMETRICS_EMIT_U32("shell_lifecycle_loader_active",
+                            lifecycle->loader_active, 0U, available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "shell", "lifecycle");
     return OK;
 }
 
@@ -2463,6 +2565,7 @@ int shell_kmetrics_emit_machine(
     if (result == OK) result = shell_kmetrics_emit_input(current, baseline, baseline_valid);
     if (result == OK) result = shell_kmetrics_emit_work(current, baseline, baseline_valid);
     if (result == OK) result = shell_kmetrics_emit_job(current, baseline, baseline_valid);
+    if (result == OK) result = shell_kmetrics_emit_lifecycle(current, baseline, baseline_valid);
     if (result == OK) result = shell_kmetrics_emit_memory(current, baseline, baseline_valid);
     if (result == OK) result = shell_kmetrics_emit_storage(current, baseline, baseline_valid);
     if (result == OK) result = shell_kmetrics_emit_network(current, baseline, baseline_valid);

@@ -2128,6 +2128,16 @@ int shell_job_get_status(shell_job_status_t* status_out) {
     return OK;
 }
 
+int shell_runtime_get_lifecycle_status(shell_lifecycle_status_t* status_out) {
+    if (!status_out) return ERR_NULL;
+    kmemset(status_out, 0, sizeof(*status_out));
+    status_out->last_error = OK;
+    status_out->prompt_state = SHELL_LIFECYCLE_PROMPT_VISIBLE;
+    status_out->terminal_active = 1U;
+    status_out->focus_shell = 1U;
+    return OK;
+}
+
 int workqueue_copy_info(work_info_t* output, uint32_t max_entries,
                         uint32_t* out_count) {
     if (!output || !out_count) return ERR_NULL;

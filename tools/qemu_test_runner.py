@@ -403,7 +403,8 @@ def validate_input_step(step: Any, identifier: str) -> None:
     if operation == "phase":
         if step.get("phase") not in {
                 "boot", "baseline", "idle", "load", "ui", "diagnostics",
-                "cleanup", "pressure", "cancel", "final"}:
+                "cleanup", "pressure", "cancel", "commands", "jobs",
+                "scenes", "final"}:
             raise RunnerError(f"fase_entrada_invalida:{identifier}",
                               "catalog_error", True)
         return

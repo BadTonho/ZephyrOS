@@ -2448,6 +2448,30 @@ refresh integrado, a recuperacao de managers nao inicializados, inventarios
 parciais, degradacoes opcionais, falhas de PCI e argumentos invalidos sem
 hardware ou armazenamento reais.
 
+## RLS2 - Shell liveness
+
+Depois de `make q3check` e `make clean && make` para a mesma versao, a
+validacao host pode ser executada com:
+
+```text
+make test-rls2-host
+```
+
+A matriz QEMU fixa de nove sessoes e executada com:
+
+```text
+make test-rls2-qemu RLS2_QEMU_WORKERS=3
+```
+
+O relatorio agregado fica em
+`build/test-results/rls2-shell-liveness/rls2-shell-liveness.json`. Cada
+sessao preserva `manifest.json`, `serial.log`, `input.log`, `qmp-events.log` e
+`rls2.json`. A faixa `no-vesa/Classic` nao e executada: o fallback suportado
+e `no-vesa/Simple`.
+
+O inventario auditado de comandos, jobs, cenas e pontos de foco esta em
+`docs/qualidade/rls2-inventario-shell.md`.
+
 ## PERF1: baseline de métricas
 
 Depois dos gates de build, a validação host e a matriz de linha de base podem
@@ -2634,8 +2658,8 @@ visível como `BLOCKED` no relatório.
 268435456 bytes, layout sem sobreposição, ELF válido e auditoria do updater
 aprovada. Ferramenta obrigatória ausente gera `BLOCKED`; artefato, FAT32, ELF,
 layout ou versão inconsistente gera `FAIL`. Esta fase não executa QEMU; a
-matriz de suporte pertence à RLS4. RLS2–RLS5 e a publicação continuam
-pendentes.
+matriz de suporte da RLS2 pertence à validação desta etapa. RLS3–RLS5 e a
+publicação continuam pendentes.
 
 ## Traces Assembly de boot e recuperacao
 

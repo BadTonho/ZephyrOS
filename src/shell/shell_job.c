@@ -57,6 +57,8 @@ static void shell_job_copy_text(char* destination, uint32_t capacity,
 }
 
 static void shell_job_complete(shell_job_state_t state, int result) {
+    shell_runtime_note_lifecycle_layer(SHELL_LIFECYCLE_LAYER_JOB);
+    if (result != OK) shell_runtime_note_lifecycle_error(result);
     shell_job_context.last_error = result;
     shell_job_context.completed_ticks = timer_get_ticks();
     shell_job_context.next_wake_tick = WAIT_TIMEOUT_INFINITE;
@@ -138,10 +140,12 @@ void shell_job_reset(void) {
 int shell_job_start(const shell_job_definition_t* definition,
                    const char* arguments) {
     if (!definition || !definition->command || !definition->step) {
+        shell_runtime_note_lifecycle_error(ERR_NULL);
         LOG_ERROR("SHELL", "Definicao de job invalida");
         return ERR_NULL;
     }
     if (shell_job_is_active()) {
+        shell_runtime_note_lifecycle_error(ERR_STATE);
         LOG_WARN("SHELL", "Tentativa de iniciar job enquanto outro esta ativo");
         return ERR_STATE;
     }
@@ -163,6 +167,7 @@ int shell_job_start(const shell_job_definition_t* definition,
     shell_job_generation_counter++;
     if (!shell_job_generation_counter) shell_job_generation_counter = 1U;
     shell_job_context.generation = shell_job_generation_counter;
+    shell_runtime_begin_operation(SHELL_LIFECYCLE_LAYER_JOB);
     shell_job_definition = definition;
     shell_job_cancel_called = 0U;
     shell_job_drain_error = OK;
@@ -264,7 +269,7 @@ void shell_job_pump_events(void) {
     keyboard_process_events();
     while (ipc_receive(&message)) {
         if (message.type == IPC_MSG_KEYBOARD) {
-            shell_job_handle_key((uint8_t)message.data1);
+            shell_handle_key((uint8_t)message.data1);
         } else if (message.type == IPC_MSG_APP_REQUEST) {
             shell_handle_app_request(message.data1);
         }

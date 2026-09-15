@@ -84,6 +84,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Auditoria SEC2 de memoria e syscalls](qualidade/auditoria-sec2-memoria-syscalls.md) | Matriz de ponteiros, ranges, ownership, handles, erros e fixtures da SEC2 |
 | [Auditoria SEC3 de processos](qualidade/auditoria-sec3-processos.md) | Identidade geracional, estados, callbacks, reparenting e reaping |
 | [Metricas de otimizacao](qualidade/metricas.md) | Linhas-base K1, validacoes K2/K3 e ganho K4 registrado |
+| [Inventario RLS2 do Shell](qualidade/rls2-inventario-shell.md) | Comandos, jobs, cenas, bloqueios e pontos de foco auditados pela RLS2 |
 | [Dividas tecnicas da v1.0.0](qualidade/dividas-tecnicas-v1.0.0.md) | Registro canonico das limitacoes aceitas que devem ser quitadas antes da v1.0.0 |
 | [Registro de validacoes](qualidade/registro-validacoes.md) | Evidencias cronologicas de implementacoes, testes e conclusoes de fase |
 | [Comandos de testes do sistema](qualidade/comandos-testes-sistema.md) | Indice operacional dos gates, testes host-only, QEMU e regressao TST2-TST7 |

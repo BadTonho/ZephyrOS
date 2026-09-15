@@ -18,8 +18,9 @@ segredos.
   `candidate_state=DOCUMENTAL_ONLY`.
 - Implementacao: adicionados `test-rls1-host` e `rls1-baseline` aos
   Makefiles Windows/Linux, teste host dedicado e caso host
-  `host:quality:rls1-baseline` no registry. RLS2–RLS5 continuam pendentes;
-  não houve tag, assinatura ou publicação.
+  `host:quality:rls1-baseline` no registry. A aceitação da RLS2 permanece
+  pendente; RLS3–RLS5 continuam pendentes e não houve tag, assinatura ou
+  publicação.
 - Estado: RLS1 `PASS` no commit `d22e07da`; `q3check`, build limpo, catalogo,
   `make test-rls1-host` (15/15) e o alvo oficial `rls1-baseline` passaram com
   `NM/OBJDUMP` configurados na linha de comando. A auditoria validou os
@@ -7735,3 +7736,24 @@ dívida.
   no fallback e amostras host; nenhuma otimização A/B foi mantida sem ganho.
 
   Estado: PERF5 `PASS`; nenhuma divida tecnica foi quitada.
+
+- RLS2 - liveness do Shell e dos jobs - implementacao registrada em 2026-09-14
+  (America/Sao_Paulo). O Shell recebeu snapshot diagnostico interno por
+  geracao, identificacao da camada atual, contadores de finalizacao/prompt,
+  estados de terminal, foco, cena, job e loader, alem de erros observaveis.
+  `shell_runtime_finish_command()` tornou-se idempotente por operacao; os
+  caminhos de request de aplicativo, encerramento de cena, loader, job e
+  dispatcher convergem para a mesma finalizacao. `Ctrl+C` passou a ser
+  reconhecido mesmo com entrada bloqueada e o runner recebeu as fases
+  `boot`, `baseline`, `commands`, `jobs`, `scenes`, `cancel` e `final`.
+
+  Foram adicionados `tools/rls2_shell_liveness.py`, o caso
+  `qemu:tst5:rls2-shell-liveness`, a matriz de 9 sessoes, o schema
+  `zephyros-rls2-shell-liveness-v1`, testes Python, catalogo, manifestos e os
+  alvos `test-rls2-host`, `test-rls2-qemu` e `rls2-shell-liveness`. A validacao
+  executada passou em `make q3check`, `make clean`, `make`, `make catalog-test`
+  e `make test-rls2-host`; a matriz QEMU terminou com 9/9 sessoes `PASS` em
+  `build/test-results/rls2-shell-liveness/rls2-shell-liveness.json`, imagem de
+  268435456 bytes e SHA-256
+  `e9717cf7a3aea932bac0c0464f469896597a1c73eeb7b21fba6efd7f1ecb55dd`.
+  Estado: RLS2 `PASS`; RLS3 continua como proxima etapa.

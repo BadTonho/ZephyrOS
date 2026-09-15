@@ -343,8 +343,9 @@ seções ELF e reutiliza `tools/updater.py audit-image --expect-version 0.1.0`.
 Um relatório `PASS` exige worktree limpo, artefatos completos, boot de 512
 bytes, layout sem sobreposição, imagem de 268435456 bytes, ELF válido e
 auditoria persistente aprovada. Ferramenta obrigatória ausente resulta em
-`BLOCKED`; inconsistência de artefato resulta em `FAIL`. RLS2–RLS5 continuam
-pendentes e a matriz QEMU pertence à RLS4.
+`BLOCKED`; inconsistência de artefato resulta em `FAIL`. A implementação da
+RLS2 está disponível, mas sua aceitação aguarda os gates e a matriz QEMU;
+RLS3–RLS5 continuam pendentes.
 
 Na imagem híbrida, a validação aceita a recalculação determinística do campo
 BPB de setores reservados feita na composição do payload legado; os demais
@@ -771,3 +772,34 @@ especifica e a rota default; a unidade do prefixo e bits de mascara IPv4.
 Ethernet da mesma interface, sem somar novamente a visao TCP ou os sockets
 AF_UNIX. O encaminhamento multi-NIC nao possui metrica nesta etapa porque
 permanece explicitamente fora da implementacao.
+
+## RLS2 - Liveness do Shell e dos jobs
+
+O snapshot interno de liveness nao e syscall, ABI ou contrato de aplicativo.
+Ele e capturado somente quando `kmetrics machine` e solicitado e publicado no
+mesmo envelope `ZMETRIC/1`. A geracao e monotona por operacao e a finalizacao e
+idempotente para a geracao ativa; chamadas repetidas incrementam
+`shell_lifecycle_duplicate_finalizations` sem redesenhar o prompt.
+
+As camadas `shell_lifecycle_last_layer` usam os valores `0=none`,
+`1=dispatcher`, `2=job`, `3=scene`, `4=focus`, `5=video`, `6=input` e
+`7=loader`. `shell_lifecycle_prompt_state` usa `0=hidden`, `1=requested`,
+`2=visible` e `3=blocked`. Os campos `generation`, `last_layer`, estados e
+flags sao gauges/estados atuais; requests, finalizacoes, reconciliacoes,
+renderizacoes, bloqueios, ausencias, duplicidades e eventos bloqueados sao
+contadores com `overflow=wrap_u32`.
+
+Os campos `shell_lifecycle_operation_active`, `input_blocked`,
+`scene_active`, `job_active` e `loader_active` devem estar em zero no retorno
+final. `terminal_active=1`, `focus_shell=1`, `prompt_state=2` e
+`last_error=0` caracterizam prompt restaurado. Ausencia da fonte de snapshot
+publica `value=ND status=unavailable`; isso reprova a sessao RLS2, mas nao
+altera o comportamento produtivo quando o comando de metricas nao e usado.
+Como `kmetrics machine` e emitido dentro do dispatcher, a amostra do proprio
+comando pode registrar temporariamente `operation_active=1`,
+`last_layer=dispatcher` e `prompt_state=hidden`; o validador aceita somente essa
+combinacao transitiva e exige `zephyr>` depois do ultimo envelope.
+
+O inventario verificavel de comandos, jobs, cenas e pontos de foco fica em
+`docs/qualidade/rls2-inventario-shell.md`; a sequencia executada permanece
+declarada no registry e e validada pelo runner antes de iniciar o QEMU.

@@ -3,8 +3,8 @@
 ## Estado
 
 Em execução. A RLS1 está em `PASS` no commit `d22e07da`, com auditoria
-host-only e artefatos de baseline reproduzidos sobre a árvore limpa. RLS2–RLS5
-continuam pendentes.
+host-only e artefatos de baseline reproduzidos sobre a árvore limpa. A RLS2
+está em `PASS` com 9/9 sessões QEMU aprovadas; RLS3–RLS5 continuam pendentes.
 Esta frente prepara uma linha de base reproduzível e suportada para a versão
 1.0.0. Ela não adiciona uma nova API, syscall, formato binário ou driver;
 organiza a correção das falhas que impediriam declarar o sistema estável.
@@ -65,21 +65,29 @@ O relatório produzido pela RLS1 ficará em
 `build/test-results/rls1-baseline/rls1-baseline.json`, distinguindo
 `build_version=0.1.0`, `target_version=1.0.0` e
 `candidate_state=DOCUMENTAL_ONLY`. A execução final deve ocorrer com o
-worktree limpo e não cria tag, assinatura ou publicação; RLS2–RLS5 permanecem
-pendentes.
+worktree limpo e não cria tag, assinatura ou publicação; a aceitação da RLS2
+foi registrada como `PASS`, enquanto RLS3–RLS5 continuam pendentes.
 
 ### RLS2 — Liveness do Shell e dos jobs
 
-- [ ] Mapear cada comando que cria job, abre cena, bloqueia entrada ou altera o
+- [x] Mapear cada comando que cria job, abre cena, bloqueia entrada ou altera o
   foco.
-- [ ] Garantir retorno único ao prompt após sucesso, erro, cancelamento,
+- [x] Garantir retorno único ao prompt após sucesso, erro, cancelamento,
   timeout, processo encerrado e recurso indisponível.
-- [ ] Reproduzir o caso de tela vazia sem prompt e registrar em qual camada a
+- [x] Reproduzir o caso de tela vazia sem prompt e registrar em qual camada a
   execução terminou: dispatcher, job, cena, foco, vídeo ou entrada.
-- [ ] Validar que erros não deixam o Shell esperando um callback, descritor,
+- [x] Validar que erros não deixam o Shell esperando um callback, descritor,
   processo ou evento que já não existe.
-- [ ] Validar reentrada, `F12`, `Ctrl+C`, fechamento de cenas e comandos
+- [x] Validar reentrada, `F12`, `Ctrl+C`, fechamento de cenas e comandos
   inválidos sem prompt duplicado ou prompt ausente.
+
+A implementacao RLS2 adiciona o snapshot interno de liveness ao `kmetrics
+machine`, finalizacao idempotente por geracao, identificacao das camadas do
+Shell e o caso `qemu:tst5:rls2-shell-liveness`. Os gates `q3check`, build
+limpo, catalogo e host passaram, e a matriz QEMU fixa terminou com 9/9
+sessoes `PASS` no relatorio
+`build/test-results/rls2-shell-liveness/rls2-shell-liveness.json`, schema
+`zephyros-rls2-shell-liveness-v1`. RLS3 continua como proxima etapa.
 
 ### RLS3 — Limpeza e invariantes
 

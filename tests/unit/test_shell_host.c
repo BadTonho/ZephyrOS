@@ -43,6 +43,7 @@ static int fake_settings_open;
 static int fake_updater_open;
 static int fake_appstore_open;
 static int fake_guitest_active;
+static int fake_settings_close_on_key;
 static int fake_input_blocked;
 static int fake_job_blocked;
 static int fake_loader_foreground;
@@ -117,6 +118,7 @@ static void reset_fixture(void) {
     fake_updater_open = 0;
     fake_appstore_open = 0;
     fake_guitest_active = 0;
+    fake_settings_close_on_key = 0;
     fake_input_blocked = 0;
     fake_job_blocked = 0;
     fake_loader_foreground = 0;
@@ -346,7 +348,9 @@ void settings_open(void) {
 }
 
 int settings_handle_key(uint8_t scancode) {
-    (void)scancode;
+    if (fake_settings_close_on_key && scancode == 0x01U) {
+        fake_settings_open = 0;
+    }
     return 0;
 }
 
@@ -409,6 +413,9 @@ void shell_job_handle_key(uint8_t scancode) {
 
 int shell_job_is_active(void) {
     return 0;
+}
+
+void shell_job_request_cancel(void) {
 }
 
 void shell_hosted_present_progress(void) {
@@ -512,9 +519,15 @@ static int test_terminal_lifecycle(void) {
 }
 
 static int test_prompt_lifecycle(void) {
+    shell_lifecycle_status_t lifecycle;
+
     reset_fixture();
     shell_init();
     fake_terminal_active = 1;
+    fake_input_blocked = 1;
+    fake_input_event = SHELL_INPUT_EVENT_NONE;
+    shell_runtime_handle_terminal_key(0U);
+    fake_input_blocked = 0;
     strcpy(fake_input_buffer, "comando-invalido");
     fake_input_event = SHELL_INPUT_EVENT_COMMAND_READY;
     fake_dispatch_result = ERR_INVALID;
@@ -522,6 +535,28 @@ static int test_prompt_lifecycle(void) {
     if (fake_dispatch_calls != 1U || fake_prompt_calls != 1U) return 9;
     shell_print_prompt();
     if (fake_prompt_calls != 1U) return 10;
+    if (shell_runtime_get_lifecycle_status(NULL) != ERR_NULL) return 11;
+    if (shell_runtime_get_lifecycle_status(&lifecycle) != OK ||
+        lifecycle.generation == 0U || lifecycle.finalizations != 1U ||
+        lifecycle.duplicate_finalizations != 0U ||
+        lifecycle.last_error != ERR_INVALID ||
+        lifecycle.prompt_state != SHELL_LIFECYCLE_PROMPT_VISIBLE ||
+        lifecycle.input_blocked_events != 1U ||
+        lifecycle.operation_active != 0U) return 12;
+    shell_runtime_finish_command();
+    if (shell_runtime_get_lifecycle_status(&lifecycle) != OK ||
+        lifecycle.duplicate_finalizations != 1U ||
+        lifecycle.finalizations != 1U) return 13;
+    {
+        uint32_t previous_generation = lifecycle.generation;
+
+        shell_runtime_reset_lifecycle_status();
+        shell_runtime_begin_operation(SHELL_LIFECYCLE_LAYER_INPUT);
+        if (shell_runtime_get_lifecycle_status(&lifecycle) != OK ||
+            lifecycle.generation == 0U ||
+            lifecycle.generation == previous_generation) return 14;
+        shell_runtime_finish_command();
+    }
     return 0;
 }
 
@@ -536,6 +571,24 @@ static int test_redraw_fallback(void) {
     return 0;
 }
 
+static int test_scene_close_lifecycle(void) {
+    shell_lifecycle_status_t lifecycle;
+
+    reset_fixture();
+    shell_init();
+    fake_terminal_active = 1;
+    fake_settings_open = 1;
+    fake_settings_close_on_key = 1;
+    shell_runtime_begin_operation(SHELL_LIFECYCLE_LAYER_SCENE);
+    shell_handle_key(0x01U);
+    if (shell_runtime_get_lifecycle_status(&lifecycle) != OK ||
+        lifecycle.finalizations != 1U || lifecycle.operation_active != 0U ||
+        lifecycle.prompt_state != SHELL_LIFECYCLE_PROMPT_VISIBLE) {
+        return 15;
+    }
+    return 0;
+}
+
 int main(void) {
     int result = 0;
 
@@ -544,6 +597,7 @@ int main(void) {
     if (!result) result = test_terminal_lifecycle();
     if (!result) result = test_prompt_lifecycle();
     if (!result) result = test_redraw_fallback();
+    if (!result) result = test_scene_close_lifecycle();
     coverage_active = 0U;
     coverage_emit(result);
     if (result) {

@@ -815,6 +815,7 @@ SHELL_CORE_BINARY = ROOT / "build" / "tests" / "test_shell_host.exe"
 SHELL_CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_host.c",
     ROOT / "src" / "shell" / "shell.c",
+    ROOT / "src" / "core" / "string.c",
 )
 SHELL_COMMANDS_CORE_RESULT_DIR = ROOT / "build" / "test-results" / "shell-commands-core-host"
 SHELL_COMMANDS_CORE_BINARY = ROOT / "build" / "tests" / "test_shell_commands_core_host.exe"

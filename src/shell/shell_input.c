@@ -256,11 +256,8 @@ shell_input_event_t shell_input_handle_key(uint8_t scancode,
         shell_extended_scancode = 0;
         return SHELL_INPUT_EVENT_NONE;
     }
-    if (input_blocked) return SHELL_INPUT_EVENT_NONE;
-
-    shell_input_resume_terminal(window_manager_active);
-
     if (scancode == SHELL_INPUT_SCANCODE_C && shell_ctrl_mask) {
+        if (!input_blocked) shell_input_resume_terminal(window_manager_active);
         video_print("^C\n", SHELL_INPUT_COLOR_TEXT);
         input_buffer[0] = '\0';
         input_pos = 0;
@@ -268,6 +265,10 @@ shell_input_event_t shell_input_handle_key(uint8_t scancode,
         shell_input_history_reset_navigation();
         return SHELL_INPUT_EVENT_CANCELLED;
     }
+
+    if (input_blocked) return SHELL_INPUT_EVENT_NONE;
+
+    shell_input_resume_terminal(window_manager_active);
 
     if (scancode & 0x80U) {
         shell_extended_scancode = 0;

@@ -246,14 +246,18 @@ static int check_cancel_block_and_limits(void) {
         SHELL_INPUT_EVENT_CANCELLED) return 3;
     if (kstrcmp(shell_input_get_buffer(), "") != 0) return 4;
     shell_input_handle_key(SHELL_INPUT_SCANCODE_CTRL_RELEASE, 1U, 0U);
+    shell_input_handle_key(SHELL_INPUT_SCANCODE_CTRL, 1U, 0U);
+    if (shell_input_handle_key(SHELL_INPUT_SCANCODE_C, 1U, 1U) !=
+        SHELL_INPUT_EVENT_CANCELLED) return 5;
+    shell_input_handle_key(SHELL_INPUT_SCANCODE_CTRL_RELEASE, 1U, 0U);
     shell_input_handle_key(SHELL_INPUT_SCANCODE_EXTENDED, 1U, 0U);
     shell_input_cancel_extended();
     shell_input_handle_key(SHELL_INPUT_SCANCODE_A, 1U, 0U);
     for (uint32_t index = 1U; index < SHELL_BUFFER_SIZE; index++) {
         shell_input_handle_key(SHELL_INPUT_SCANCODE_A, 1U, 0U);
     }
-    if (kstrlen(shell_input_get_buffer()) != SHELL_BUFFER_SIZE - 1U) return 5;
-    if (!log_calls) return 6;
+    if (kstrlen(shell_input_get_buffer()) != SHELL_BUFFER_SIZE - 1U) return 6;
+    if (!log_calls) return 7;
     return 0;
 }
 
