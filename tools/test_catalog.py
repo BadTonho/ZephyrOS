@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import sys
@@ -566,6 +567,9 @@ def discover_surfaces(root: Path) -> list[dict[str, Any]]:
     for path in sorted(path for path in (source_root / "include").rglob("*.h")
                        if owned(path)):
         surfaces.extend(discover_header_apis(path, root))
+    release_tool = root / "tools" / "release_baseline.py"
+    if release_tool.is_file():
+        surfaces.extend(discover_python_functions(release_tool, root))
     surfaces.extend(discover_commands(root))
     surfaces.extend(discover_syscalls(root))
     ordered = sorted(surfaces, key=lambda item: item["id"])
@@ -575,6 +579,28 @@ def discover_surfaces(root: Path) -> list[dict[str, Any]]:
             raise CatalogError(f"superficie descoberta duplicada: {item['id']}")
         seen.add(item["id"])
     return ordered
+
+
+def discover_python_functions(path: Path, root: Path) -> list[dict[str, Any]]:
+    """Registra as funções do auditor host-only no inventário de qualidade."""
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except (OSError, SyntaxError) as error:
+        raise CatalogError(f"python invalido em {path}") from error
+    source = relative_path(path, root)
+    result = []
+    for item in tree.body:
+        if not isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        result.append({
+            "id": f"py:{source}:{item.name}",
+            "kind": "python_function",
+            "source": source,
+            "symbol": item.name,
+            "linkage": "module",
+            "owner": "quality",
+        })
+    return result
 
 
 def empty_catalog() -> dict[str, Any]:
@@ -779,6 +805,7 @@ def surface_defaults(discovered: dict[str, Any]) -> dict[str, Any]:
         "api_function": "public-header",
         "shell_command": "shell-dispatcher",
         "syscall": "application-abi",
+        "python_function": "quality-tool",
     }
     surface.setdefault("layer", layer_by_kind.get(surface.get("kind"), "unknown"))
     surface.setdefault("preconditions", "definir no caso de teste associado")
@@ -1024,18 +1051,21 @@ def validate_catalog(catalog: dict[str, Any], root: Path, strict: bool = False) 
             errors.append(f"superficie duplicada: {identifier}")
         identifiers.add(identifier)
         if item.get("kind") not in {"c_function", "asm_entry", "api_function",
-                                     "shell_command", "syscall"}:
+                                     "shell_command", "syscall", "python_function"}:
             errors.append(f"tipo de superficie invalido: {identifier}")
         prefixes = {
             "c_function": "c:", "asm_entry": "asm:",
             "api_function": "api:", "shell_command": "command:",
             "syscall": "syscall:",
+            "python_function": "py:",
         }
         expected_prefix = prefixes.get(item.get("kind"), "")
         if expected_prefix and not identifier.startswith(expected_prefix):
             errors.append(f"id incompatível com tipo: {identifier}")
         source = item.get("source")
-        if not isinstance(source, str) or not source.startswith("src/"):
+        valid_source = isinstance(source, str) and (
+            source.startswith("src/") or source.startswith("tools/"))
+        if not valid_source:
             errors.append(f"fonte invalida: {identifier}")
         elif not (root / source).is_file():
             errors.append(f"fonte inexistente em {identifier}: {source}")

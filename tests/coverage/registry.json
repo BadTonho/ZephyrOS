@@ -11675,6 +11675,63 @@
           "post_action": {"type": "none", "steps": []}
         }
       }
+    },
+    {
+      "id": "rls1-release-baseline-host",
+      "domain": "release-baseline",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": ["host:quality:rls1-baseline"],
+      "surface_ids": [
+        "py:tools/release_baseline.py:artifact_record",
+        "py:tools/release_baseline.py:build_layout",
+        "py:tools/release_baseline.py:contains_absolute_path",
+        "py:tools/release_baseline.py:parse_nm_listing",
+        "py:tools/release_baseline.py:parse_objdump_sections",
+        "py:tools/release_baseline.py:run_tool_version",
+        "py:tools/release_baseline.py:symbols_report",
+        "py:tools/release_baseline.py:validate_boot_artifact",
+        "py:tools/release_baseline.py:validate_fat32",
+        "py:tools/release_baseline.py:version_from_header"
+      ],
+      "evidence": "PENDING: q3check, build limpo, catalogo e host PASS; auditoria explicita FAIL apenas por worktree_dirty; alvo oficial BLOCKED por NM/OBJDUMP nao configurados",
+      "case_definition": {
+        "id": "host:quality:rls1-baseline",
+        "scenario": "Auditoria host-only da linha de base dos artefatos de release",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "schema": "zephyros-rls1-baseline-v1",
+          "build_version": "0.1.0",
+          "target_version": "1.0.0",
+          "candidate_state": "DOCUMENTAL_ONLY"
+        },
+        "preconditions": "Python 3 e fixtures temporarias disponiveis",
+        "action": "validar hashes, tamanhos, versoes, layout, FAT32, ELF, ferramentas e estados de auditoria",
+        "expected": "contratos PASS, FAIL e BLOCKED distinguem artefato invalido de ferramenta ausente",
+        "errors": "hash divergente, tamanho invalido, versao ambigua, sobreposicao, FAT32/ELF invalido ou ferramenta ausente",
+        "effects": "somente fixtures temporarias e relatorio host; nenhum artefato do produto e alterado",
+        "cleanup": "remover fixtures temporarias e preservar apenas o teste e o catalogo",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "py:tools/release_baseline.py:artifact_record",
+          "py:tools/release_baseline.py:build_layout",
+          "py:tools/release_baseline.py:contains_absolute_path",
+          "py:tools/release_baseline.py:parse_nm_listing",
+          "py:tools/release_baseline.py:parse_objdump_sections",
+          "py:tools/release_baseline.py:run_tool_version",
+          "py:tools/release_baseline.py:symbols_report",
+          "py:tools/release_baseline.py:validate_boot_artifact",
+          "py:tools/release_baseline.py:validate_fat32",
+          "py:tools/release_baseline.py:version_from_header"
+        ]
+      }
     }
   ]
 }

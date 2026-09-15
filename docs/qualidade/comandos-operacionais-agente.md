@@ -2601,6 +2601,42 @@ com três amostras por sessão. A imagem auditada continua sendo um artefato
 interno `0.1.0`; a criação da tag, assinatura e publicação ficam reservadas ao
 procedimento RLS5 do Roadmap 24.
 
+## RLS1: linha de base dos artefatos
+
+RLS1 audita a imagem interna atual sem alterar a versão do produto, criar tag,
+assinar ou publicar release. A distinção obrigatória é `build_version=0.1.0`,
+`target_version=1.0.0` e `candidate_state=DOCUMENTAL_ONLY`.
+
+```text
+make q3check
+make clean
+make
+make catalog-test
+make test-rls1-host
+make rls1-baseline
+```
+
+O alvo `rls1-baseline` depende de `kernel.elf`, dos binários de boot e do
+loader de recovery e grava
+`build/test-results/rls1-baseline/rls1-baseline.json`. O auditor registra
+hashes SHA-256, tamanhos, commit e estado do worktree, versões sem caminhos
+pessoais, LBAs, partição/BPB FAT32, assinatura da imagem, símbolos `NM`,
+seções `OBJDUMP` e a auditoria persistente de
+`tools/updater.py audit-image --expect-version 0.1.0`. Também preserva
+`symbols.txt` e `objdump-sections.txt` junto do relatório.
+
+Se o toolchain cruzado não expuser `i686-elf-nm` e `i686-elf-objdump` no
+`PATH`, configure `NM` e `OBJDUMP` no `Makefile.local` ou passe essas variáveis
+ao alvo. A ausência de qualquer ferramenta obrigatória deve permanecer
+visível como `BLOCKED` no relatório.
+
+`PASS` exige worktree limpo, artefatos válidos, boot de 512 bytes, imagem de
+268435456 bytes, layout sem sobreposição, ELF válido e auditoria do updater
+aprovada. Ferramenta obrigatória ausente gera `BLOCKED`; artefato, FAT32, ELF,
+layout ou versão inconsistente gera `FAIL`. Esta fase não executa QEMU; a
+matriz de suporte pertence à RLS4. RLS2–RLS5 e a publicação continuam
+pendentes.
+
 ## Traces Assembly de boot e recuperacao
 
 Os traces QEMU de Assembly devem ser executados individualmente, com um ID de

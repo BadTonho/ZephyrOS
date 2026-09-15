@@ -323,7 +323,33 @@ O schema é `zephyros-perf6-kworker-release-v1` e o relatório agregado fica em
 versão continua `0.1.0`, com `v0.1.0-rc1` como tag operacional padrão; a
 verificação criptográfica usa `tools/updater.py` e os formatos assinados
 existentes. A matriz e o release permanecem pendentes até a execução dos
-gates; nenhuma dívida é quitada por instrumentação ou inferência.
+gates; nenhuma dívida é quitada por instrumentação ou inferência. A validação
+executada em 2026-09-14 terminou 9/9 sessões `PASS`, e
+`perf6-release` aprovou a imagem interna `0.1.0`; nenhuma tag, assinatura ou
+publicação foi criada. A RLS1 é a linha de base documental que antecede o
+congelamento da candidata 1.0.0.
+
+## RLS1 - linha de base e artefatos
+
+O auditor `tools/release_baseline.py` produz o schema
+`zephyros-rls1-baseline-v1` em
+`build/test-results/rls1-baseline/rls1-baseline.json`. O relatório mantém
+`build_version=0.1.0`, `target_version=1.0.0` e
+`candidate_state=DOCUMENTAL_ONLY`; não altera `src/include/core/version.h`,
+não cria tag e não publica release. Ele registra hashes, tamanhos, origem Git,
+estado do worktree, versões de ferramentas, layout legado, FAT32, símbolos e
+seções ELF e reutiliza `tools/updater.py audit-image --expect-version 0.1.0`.
+
+Um relatório `PASS` exige worktree limpo, artefatos completos, boot de 512
+bytes, layout sem sobreposição, imagem de 268435456 bytes, ELF válido e
+auditoria persistente aprovada. Ferramenta obrigatória ausente resulta em
+`BLOCKED`; inconsistência de artefato resulta em `FAIL`. RLS2–RLS5 continuam
+pendentes e a matriz QEMU pertence à RLS4.
+
+Na imagem híbrida, a validação aceita a recalculação determinística do campo
+BPB de setores reservados feita na composição do payload legado; os demais
+bytes de boot, a assinatura, os LBAs e as estruturas FAT32 continuam sendo
+comparados e validados.
 
 ## Registros
 

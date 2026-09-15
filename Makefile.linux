@@ -15,6 +15,7 @@ NASM ?= nasm
 GCC ?= i686-elf-gcc
 LD ?= i686-elf-ld
 NM ?= i686-elf-nm
+OBJDUMP ?= i686-elf-objdump
 HOST_CC ?= cc
 HOST_SANITIZE_CC ?= clang
 QEMU ?= qemu-system-i386
@@ -2333,6 +2334,13 @@ perf6-release: $(OS_IMG) tools/updater.py
 	@if [ ! -f "$(OS_IMG)" ]; then echo "Imagem ausente: $(OS_IMG)"; exit 2; fi
 	$(PYTHON) tools/updater.py audit-image --image "$(OS_IMG)" --expect-version 0.1.0
 
+test-rls1-host: tools/release_baseline.py tests/unit/test_release_baseline.py
+	$(PYTHON) -m unittest tests.unit.test_release_baseline
+
+rls1-baseline: $(OS_IMG) $(KERNEL_ELF) $(RECOVERY_LOADER_BIN) $(RECOVERY_LOADER_PADDED_BIN) tools/release_baseline.py
+	@mkdir -p "$(BUILD_DIR)/test-results/rls1-baseline"
+	$(PYTHON) tools/release_baseline.py collect --repo-root . --output "$(BUILD_DIR)/test-results/rls1-baseline/rls1-baseline.json" --image "$(OS_IMG)" --boot "$(BOOT_BIN)" --stage2 "$(STAGE2_BIN)" --kernel "$(KERNEL_BIN)" --recovery-loader "$(RECOVERY_LOADER_BIN)" --recovery-loader-padded "$(RECOVERY_LOADER_PADDED_BIN)" --kernel-elf "$(KERNEL_ELF)" --nm "$(NM)" --objdump "$(OBJDUMP)" --nasm "$(NASM)" --gcc "$(GCC)" --ld "$(LD)" --make "$(MAKE_TOOL)" --python "$(PYTHON)" --build-version 0.1.0 --target-version 1.0.0
+
 test-shell-commands-wifi-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_wifi_host.c tests/catalog.json src/shell/shell_commands_wifi.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/include/core/wifi_manager.h src/include/core/usb_manager.h
 	$(PYTHON) tools/core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
@@ -2509,7 +2517,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
-.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui test-perf6-host test-perf6-qemu perf6-kworker-thread perf6-release
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui test-perf6-host test-perf6-qemu perf6-kworker-thread perf6-release test-rls1-host rls1-baseline
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

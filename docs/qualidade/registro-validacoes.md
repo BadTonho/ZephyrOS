@@ -7,6 +7,26 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-14 - RLS1: linha de base e artefatos
+
+- Implementacao: criado `tools/release_baseline.py` com o schema
+  `zephyros-rls1-baseline-v1`, os estados `PASS`, `FAIL` e `BLOCKED`, hashes,
+  tamanhos, origem Git, versões de ferramentas sem caminhos pessoais,
+  validação de boot/layout/FAT32/assinatura e extração de símbolos/seções do
+  `kernel.elf`. A auditoria reutiliza `tools/updater.py` e mantém
+  `build_version=0.1.0`, `target_version=1.0.0` e
+  `candidate_state=DOCUMENTAL_ONLY`.
+- Implementacao: adicionados `test-rls1-host` e `rls1-baseline` aos
+  Makefiles Windows/Linux, teste host dedicado e caso host
+  `host:quality:rls1-baseline` no registry. RLS2–RLS5 continuam pendentes;
+  não houve tag, assinatura ou publicação.
+- Estado: RLS1 implementada; `q3check`, build limpo, catalogo e
+  `make test-rls1-host` passaram. A auditoria explicita validou os artefatos,
+  layout, FAT32, updater, simbolos e secoes, mas permanece `FAIL` somente por
+  `worktree_dirty`; o alvo oficial tambem fica `BLOCKED` quando `NM/OBJDUMP`
+  nao estao configurados. O relatorio esta em
+  `build/test-results/rls1-baseline/rls1-baseline.json`.
+
 ## 2026-09-14 - PERF6: kworker como thread e preparação do release
 
 - Implementacao: a `kworker` passou a ser criada por `thread_create_kernel()`

@@ -2,10 +2,11 @@
 
 ## Estado
 
-Planejado. Esta frente prepara uma linha de base reproduzível e suportada para
-a versão 1.0.0. Ela não adiciona uma nova API, syscall, formato binário ou
-driver; organiza a correção das falhas que impediriam declarar o sistema
-estável.
+Em execução. A RLS1 já possui auditoria host-only e artefatos versionados em
+desenvolvimento; os gates finais dependem da execução sobre a árvore limpa.
+Esta frente prepara uma linha de base reproduzível e suportada para a versão
+1.0.0. Ela não adiciona uma nova API, syscall, formato binário ou driver;
+organiza a correção das falhas que impediriam declarar o sistema estável.
 
 ## Objetivo
 
@@ -44,18 +45,27 @@ antivírus ou carregamento dinâmico de módulos.
 
 ### RLS1 — Linha de base e artefatos
 
-- [ ] Fixar a identificação da versão 1.0.0, a origem dos fontes e o conjunto
-  de ferramentas aceito.
-- [ ] Registrar tamanho, checksum, layout de LBAs, símbolos e seções da
+- [x] Fixar a identificação documental da versão 1.0.0, mantendo o build em
+  0.1.0, registrando a origem dos fontes e o conjunto de ferramentas aceito.
+- [x] Criar o auditor `tools/release_baseline.py` com o schema
+  `zephyros-rls1-baseline-v1` e os estados `PASS`, `FAIL` e `BLOCKED`.
+- [x] Registrar tamanho, checksum, layout de LBAs, símbolos e seções da
   imagem gerada.
-- [ ] Confirmar que `boot.bin` continua com 512 bytes e que kernel, recovery
+- [x] Confirmar que `boot.bin` continua com 512 bytes e que kernel, recovery
   loader e FAT32 não se sobrepõem.
-- [ ] Reproduzir o build limpo em uma configuração documentada, sem caminhos
+- [x] Reproduzir o build limpo em uma configuração documentada, sem caminhos
   pessoais ou ferramentas implícitas.
-- [ ] Definir os artefatos que podem ser distribuídos e os que são apenas
+- [x] Definir os artefatos que podem ser distribuídos e os que são apenas
   intermediários de validação.
-- [ ] Fixar a matriz de compatibilidade entre kernel, recovery, bootloader,
+- [x] Fixar a matriz de compatibilidade entre kernel, recovery, bootloader,
   filesystem, pacotes e slots A/B da atualização.
+
+O relatório produzido pela RLS1 ficará em
+`build/test-results/rls1-baseline/rls1-baseline.json`, distinguindo
+`build_version=0.1.0`, `target_version=1.0.0` e
+`candidate_state=DOCUMENTAL_ONLY`. A execução final deve ocorrer com o
+worktree limpo e não cria tag, assinatura ou publicação; RLS2–RLS5 permanecem
+pendentes.
 
 ### RLS2 — Liveness do Shell e dos jobs
 

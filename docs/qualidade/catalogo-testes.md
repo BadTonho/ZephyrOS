@@ -4,8 +4,8 @@
 
 ## Resumo
 
-- Superfícies ativas: **7769**
-- Casos de teste: **201**
+- Superfícies ativas: **7798**
+- Casos de teste: **202**
 - Superfícies aposentadas: **61**
 
 | Tipo | Quantidade |
@@ -13,19 +13,20 @@
 | `api_function` | 1670 |
 | `asm_entry` | 101 |
 | `c_function` | 5878 |
+| `python_function` | 29 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7681 |
+| `COVERED` | 7691 |
 | `MANUAL` | 0 |
-| `PENDING` | 88 |
+| `PENDING` | 107 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 201 |
+| `AUTOMATED` | 202 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -47,6 +48,7 @@
 | `kernel` | 66 |
 | `memory` | 202 |
 | `process` | 339 |
+| `quality` | 29 |
 | `settings` | 62 |
 | `shell` | 1127 |
 | `taskbar` | 48 |
@@ -7721,6 +7723,40 @@
 | `c:src/wm/wm.c:wm_toggle_window` | `src/wm/wm.c` | `wm_toggle_window` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_update_cpu_stats` | `src/wm/wm.c` | `wm_update_cpu_stats` | `wm` | `COVERED` | 1 |
 
+### python_function
+
+| ID | Fonte | Símbolo | Proprietário | Status | Casos |
+|---|---|---|---|---|---:|
+| `py:tools/release_baseline.py:artifact_record` | `tools/release_baseline.py` | `artifact_record` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:audit` | `tools/release_baseline.py` | `audit` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:base_report` | `tools/release_baseline.py` | `base_report` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:build_layout` | `tools/release_baseline.py` | `build_layout` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:ceil_sectors` | `tools/release_baseline.py` | `ceil_sectors` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:command_available` | `tools/release_baseline.py` | `command_available` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:contains_absolute_path` | `tools/release_baseline.py` | `contains_absolute_path` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:display_command` | `tools/release_baseline.py` | `display_command` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:git_source` | `tools/release_baseline.py` | `git_source` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:main` | `tools/release_baseline.py` | `main` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:normalize_command` | `tools/release_baseline.py` | `normalize_command` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:normalize_tool_version` | `tools/release_baseline.py` | `normalize_tool_version` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:parse_nm_listing` | `tools/release_baseline.py` | `parse_nm_listing` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:parse_objdump_sections` | `tools/release_baseline.py` | `parse_objdump_sections` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:parser` | `tools/release_baseline.py` | `parser` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:read_at` | `tools/release_baseline.py` | `read_at` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:repo_relative` | `tools/release_baseline.py` | `repo_relative` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:run_listing` | `tools/release_baseline.py` | `run_listing` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:run_tool_version` | `tools/release_baseline.py` | `run_tool_version` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:sha256_file` | `tools/release_baseline.py` | `sha256_file` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:status_from_errors` | `tools/release_baseline.py` | `status_from_errors` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:symbols_report` | `tools/release_baseline.py` | `symbols_report` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:tool_versions` | `tools/release_baseline.py` | `tool_versions` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:updater_audit` | `tools/release_baseline.py` | `updater_audit` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:validate_boot_artifact` | `tools/release_baseline.py` | `validate_boot_artifact` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:validate_fat32` | `tools/release_baseline.py` | `validate_fat32` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:validate_image` | `tools/release_baseline.py` | `validate_image` | `quality` | `PENDING` | 0 |
+| `py:tools/release_baseline.py:version_from_header` | `tools/release_baseline.py` | `version_from_header` | `quality` | `COVERED` | 1 |
+| `py:tools/release_baseline.py:write_report` | `tools/release_baseline.py` | `write_report` | `quality` | `PENDING` | 0 |
+
 ### shell_command
 
 | ID | Fonte | Símbolo | Proprietário | Status | Casos |
@@ -7942,6 +7978,7 @@
 | `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
 | `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
 | `host:quality:qemu-parallel` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | Python, catalogo e ferramentas host disponiveis | validar selecao, workers, seeds, comandos, execucao mockada e relatorios agregados | casos independentes sao coordenados sem perda de artefatos e falhas preservam o diagnostico | selecao invalida, worker fora do limite, timeout, parada ou resultado inconsistente | somente processos e artefatos temporarios do teste host | processos mockados encerrados e artefatos temporarios liberados |
+| `host:quality:rls1-baseline` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | Python 3 e fixtures temporarias disponiveis | validar hashes, tamanhos, versoes, layout, FAT32, ELF, ferramentas e estados de auditoria | contratos PASS, FAIL e BLOCKED distinguem artefato invalido de ferramenta ausente | hash divergente, tamanho invalido, versao ambigua, sobreposicao, FAT32/ELF invalido ou ferramenta ausente | somente fixtures temporarias e relatorio host; nenhum artefato do produto e alterado | remover fixtures temporarias e preservar apenas o teste e o catalogo |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar os caminhos internos de appcheck, q2check, regcheck e blkcheck, incluindo dispatchers, jobs, loader, migracao de aplicativos, fixtures de entrada, validacoes de servicos, scheduler, dispositivos, USB, ACPI, energia, pacotes, imagens ZAPP e limpeza | helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real | estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8147,6 +8184,25 @@
 - `c:src/shell/shell.c:shell_prompt_request`
 - `c:src/shell/shell_hosted.c:shell_hosted_release`
 - `c:src/shell/shell_hosted.c:shell_runtime_close_hosted`
+- `py:tools/release_baseline.py:audit`
+- `py:tools/release_baseline.py:base_report`
+- `py:tools/release_baseline.py:ceil_sectors`
+- `py:tools/release_baseline.py:command_available`
+- `py:tools/release_baseline.py:display_command`
+- `py:tools/release_baseline.py:git_source`
+- `py:tools/release_baseline.py:main`
+- `py:tools/release_baseline.py:normalize_command`
+- `py:tools/release_baseline.py:normalize_tool_version`
+- `py:tools/release_baseline.py:parser`
+- `py:tools/release_baseline.py:read_at`
+- `py:tools/release_baseline.py:repo_relative`
+- `py:tools/release_baseline.py:run_listing`
+- `py:tools/release_baseline.py:sha256_file`
+- `py:tools/release_baseline.py:status_from_errors`
+- `py:tools/release_baseline.py:tool_versions`
+- `py:tools/release_baseline.py:updater_audit`
+- `py:tools/release_baseline.py:validate_image`
+- `py:tools/release_baseline.py:write_report`
 
 ## Aposentadas
 
