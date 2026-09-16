@@ -74,6 +74,12 @@ def sample_catalog(case_ids=None, surface_ids=None):
 
 
 class CatalogContractTests(unittest.TestCase):
+    def test_discovery_includes_rls4_quality_tool(self):
+        surfaces = test_catalog.discover_surfaces(test_catalog.ROOT)
+        surface_ids = {surface["id"] for surface in surfaces}
+        self.assertIn(
+            "py:tools/rls4_supported_matrix.py:matrix_plan", surface_ids)
+
     def test_registry_accepts_explicit_direct_coverage(self):
         catalog = sample_catalog()
         registry = {

@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CATALOG = Path("tests/catalog.json")
 DEFAULT_VIEW = Path("docs/qualidade/catalogo-testes.md")
 DEFAULT_COVERAGE_REGISTRY = Path("tests/coverage/registry.json")
+QUALITY_PYTHON_TOOLS = ("release_baseline.py", "rls4_supported_matrix.py")
 SCHEMA = "zephyros-test-catalog-v1"
 COVERAGE_REGISTRY_SCHEMA = "zephyros-coverage-registry-v1"
 EXCLUDED_SOURCE_PARTS = {"vendor", "build", "generated"}
@@ -567,9 +568,10 @@ def discover_surfaces(root: Path) -> list[dict[str, Any]]:
     for path in sorted(path for path in (source_root / "include").rglob("*.h")
                        if owned(path)):
         surfaces.extend(discover_header_apis(path, root))
-    release_tool = root / "tools" / "release_baseline.py"
-    if release_tool.is_file():
-        surfaces.extend(discover_python_functions(release_tool, root))
+    for tool_name in QUALITY_PYTHON_TOOLS:
+        quality_tool = root / "tools" / tool_name
+        if quality_tool.is_file():
+            surfaces.extend(discover_python_functions(quality_tool, root))
     surfaces.extend(discover_commands(root))
     surfaces.extend(discover_syscalls(root))
     ordered = sorted(surfaces, key=lambda item: item["id"])

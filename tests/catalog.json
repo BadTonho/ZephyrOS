@@ -576,6 +576,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -586,7 +587,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_key",
@@ -604,6 +605,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -614,7 +616,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_mouse",
@@ -690,6 +692,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -700,7 +703,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_process_command",
@@ -718,6 +721,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -728,7 +732,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_app_loader_result",
@@ -746,6 +750,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -756,7 +761,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_user_test_result",
@@ -774,6 +779,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -784,7 +790,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_update_hosted_terminal",
@@ -802,6 +808,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -812,7 +819,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts",
@@ -3695,12 +3702,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
@@ -3807,13 +3815,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:hosted",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_error",
@@ -3918,6 +3927,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -3928,7 +3938,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
@@ -3946,6 +3956,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -3956,7 +3967,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_lifecycle_status",
@@ -4003,6 +4014,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -4013,7 +4025,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
@@ -4060,6 +4072,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -4070,7 +4083,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/taskmanager.h:taskmgr_close",
@@ -23078,11 +23091,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
@@ -23100,11 +23114,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
@@ -23122,11 +23137,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device",
@@ -23144,11 +23160,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_at",
@@ -23166,11 +23183,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_by_id",
@@ -23188,11 +23206,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_count",
@@ -23210,11 +23229,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_init",
@@ -23232,11 +23252,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_read",
@@ -23254,11 +23275,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_write",
@@ -23276,11 +23298,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rng.h:rng_get_bytes",
@@ -62132,9 +62155,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:input"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/input.c:input_get_metrics",
@@ -99515,9 +99541,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/ehci.c:ehci_dma_pointer_phys",
@@ -99533,9 +99562,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/ehci.c:ehci_enumerate_port",
@@ -100286,9 +100318,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/ehci.c:ehci_set_port_empty",
@@ -101259,9 +101294,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_get_metrics",
@@ -108840,9 +108878,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-msc"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_msc.c:msc_control_request",
@@ -108858,9 +108899,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-msc"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_msc.c:msc_copy_field",
@@ -109002,9 +109046,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-msc"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_msc.c:msc_reset_recovery",
@@ -144431,6 +144478,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144438,7 +144486,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_finalize_closed_scene",
@@ -144640,6 +144688,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell1:prompt-lifecycle",
         "qemu:tst5:apps",
         "qemu:tst5:input",
@@ -144650,7 +144699,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_process_command",
@@ -144668,6 +144717,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144676,7 +144726,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_prompt_hide",
@@ -145014,6 +145064,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
         "qemu:tst5:network",
@@ -145022,7 +145073,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_reset_lifecycle_status",
@@ -145061,6 +145112,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:shell1:prompt-lifecycle",
         "qemu:shell4:apps-packages",
         "qemu:tst5:apps",
@@ -145070,7 +145122,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_suspend_terminal",
@@ -145131,6 +145183,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -145138,7 +145191,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_update_hosted_terminal",
@@ -160842,9 +160895,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:hosted"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_reset",
@@ -160881,9 +160937,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:hosted"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
@@ -170980,7 +171039,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:app",
@@ -171002,7 +171061,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:appcheck",
@@ -171026,7 +171085,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:beep",
@@ -171048,7 +171107,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:blkcheck",
@@ -171072,7 +171131,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:blkstat",
@@ -171094,7 +171153,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cache",
@@ -171116,7 +171175,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cachestat",
@@ -171138,7 +171197,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cat",
@@ -171160,7 +171219,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cd",
@@ -171182,7 +171241,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:clear",
@@ -171204,7 +171263,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:clock",
@@ -171228,7 +171287,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:compress",
@@ -171250,7 +171309,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cpu",
@@ -171272,7 +171331,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:desktop",
@@ -171294,7 +171353,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:devcheck",
@@ -171318,7 +171377,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:device-info",
@@ -171340,7 +171399,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:device-scan",
@@ -171362,7 +171421,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:devices",
@@ -171384,7 +171443,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:display",
@@ -171406,7 +171465,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:echo",
@@ -171428,7 +171487,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:edit",
@@ -171450,7 +171509,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:explorer",
@@ -171472,7 +171531,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:grep",
@@ -171494,7 +171553,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:guimode",
@@ -171516,7 +171575,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:guitest",
@@ -171538,7 +171597,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:health",
@@ -171562,7 +171621,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:help",
@@ -171584,7 +171643,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:http",
@@ -171606,7 +171665,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:icons",
@@ -171628,7 +171687,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:index",
@@ -171650,7 +171709,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:irqstat",
@@ -171674,7 +171733,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:job",
@@ -171696,7 +171755,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:kill",
@@ -171718,7 +171777,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:kmetrics",
@@ -171743,7 +171802,7 @@
         "host:shell:dispatch",
         "qemu:tst5:perf1-baseline"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:log",
@@ -171765,7 +171824,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:ls",
@@ -171787,7 +171846,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:melody",
@@ -171809,7 +171868,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mem",
@@ -171831,7 +171890,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:memcheck",
@@ -171855,7 +171914,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mount",
@@ -171877,7 +171936,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mouse",
@@ -171899,7 +171958,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:net",
@@ -171923,7 +171982,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:netstat",
@@ -171945,7 +172004,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:nslookup",
@@ -171967,7 +172026,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pagefault",
@@ -171989,7 +172048,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:ping",
@@ -172011,7 +172070,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pipetest",
@@ -172033,7 +172092,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pkg",
@@ -172055,7 +172114,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pkgcheck",
@@ -172077,7 +172136,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:play",
@@ -172099,7 +172158,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:power",
@@ -172121,7 +172180,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:poweroff",
@@ -172143,7 +172202,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:proccheck",
@@ -172167,7 +172226,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:procs",
@@ -172189,7 +172248,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pwd",
@@ -172211,7 +172270,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:q2check",
@@ -172233,7 +172292,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:reboot",
@@ -172255,7 +172314,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:regcheck",
@@ -172279,7 +172338,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:route",
@@ -172303,7 +172362,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:schedcheck",
@@ -172327,7 +172386,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:search",
@@ -172349,7 +172408,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:selecttest",
@@ -172371,7 +172430,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:settings",
@@ -172393,7 +172452,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:shutdown",
@@ -172415,7 +172474,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sigtest",
@@ -172437,7 +172496,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:skbstat",
@@ -172459,7 +172518,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:slabinfo",
@@ -172481,7 +172540,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:slabtest",
@@ -172505,7 +172564,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sockstat",
@@ -172529,7 +172588,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stack",
@@ -172551,7 +172610,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stats",
@@ -172573,7 +172632,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stop",
@@ -172595,7 +172654,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:storage",
@@ -172619,7 +172678,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:store",
@@ -172641,7 +172700,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sync",
@@ -172663,7 +172722,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:taskcfg",
@@ -172685,7 +172744,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:taskmgr",
@@ -172707,7 +172766,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:threads",
@@ -172729,7 +172788,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:threadtest",
@@ -172751,7 +172810,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:timer",
@@ -172775,7 +172834,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:tls",
@@ -172799,7 +172858,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:update",
@@ -172821,7 +172880,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:updater",
@@ -172843,7 +172902,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:uptime",
@@ -172865,7 +172924,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:usb",
@@ -172887,7 +172946,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:usertest",
@@ -172909,7 +172968,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:vfs",
@@ -172933,7 +172992,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:view",
@@ -172955,7 +173014,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:vmamap",
@@ -172977,7 +173036,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wait",
@@ -173001,7 +173060,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wifi",
@@ -173023,7 +173082,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wm",
@@ -173045,7 +173104,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:workq",
@@ -173069,7 +173128,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wqinfo",
@@ -173093,7 +173152,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "py:tools/release_baseline.py:artifact_record",
@@ -173646,6 +173705,552 @@
       "status": "PENDING",
       "case_ids": [],
       "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_arguments",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_arguments",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_case_for_catalog",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_case_for_catalog",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_child_status",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_child_status",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_failure_status",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_failure_status",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_fallback_case",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_fallback_case",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_image_metadata",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_image_metadata",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_job_failure",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_job_failure",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_lane_plan",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_lane_plan",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_mode_case",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_mode_case",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_network_for_profile",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_network_for_profile",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_parse_records",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_parse_records",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_profile_plan",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_profile_plan",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_prompt_observed",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_prompt_observed",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_read_serial",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_read_serial",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_relative_path",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_relative_path",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_run_child",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_run_child",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_run_job",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_run_job",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_safe_command",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_safe_command",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_sample_host",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_sample_host",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_sample_interval",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_sample_interval",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:_storage_args",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "_storage_args",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:build_report",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "build_report",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:main",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "main",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:matrix_plan",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "matrix_plan",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:parser",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "parser",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:prepare_case",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "prepare_case",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:run",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "run",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:select_cases",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "select_cases",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "py:tools/rls4_supported_matrix.py:worker_count",
+      "kind": "python_function",
+      "source": "tools/rls4_supported_matrix.py",
+      "symbol": "worker_count",
+      "linkage": "module",
+      "owner": "quality",
+      "layer": "quality-tool",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "syscall:0",
@@ -175804,6 +176409,7 @@
         "c:src/core/input.c:input_dispatch",
         "c:src/core/input.c:input_dispatch_key",
         "c:src/core/input.c:input_dispatch_pointer",
+        "c:src/core/input.c:input_get_flow_metrics",
         "c:src/core/input.c:input_get_metrics",
         "c:src/core/input.c:input_init",
         "c:src/core/input.c:input_irq_restore",
@@ -178625,6 +179231,8 @@
         "c:src/drivers/ehci.c:ehci_copy_status",
         "c:src/drivers/ehci.c:ehci_deadline_expired",
         "c:src/drivers/ehci.c:ehci_disable",
+        "c:src/drivers/ehci.c:ehci_dma_layout_valid",
+        "c:src/drivers/ehci.c:ehci_dma_pointer_phys",
         "c:src/drivers/ehci.c:ehci_enumerate_port",
         "c:src/drivers/ehci.c:ehci_find",
         "c:src/drivers/ehci.c:ehci_find_device_record",
@@ -178660,6 +179268,7 @@
         "c:src/drivers/ehci.c:ehci_reset_bulk_toggles",
         "c:src/drivers/ehci.c:ehci_reset_controller",
         "c:src/drivers/ehci.c:ehci_reset_port",
+        "c:src/drivers/ehci.c:ehci_schedule_valid",
         "c:src/drivers/ehci.c:ehci_set_port_empty",
         "c:src/drivers/ehci.c:ehci_start_controller",
         "c:src/drivers/ehci.c:ehci_submit_sync",
@@ -178827,6 +179436,7 @@
         "c:src/drivers/keyboard.c:keyboard_bottom_half",
         "c:src/drivers/keyboard.c:keyboard_controller_reset",
         "c:src/drivers/keyboard.c:keyboard_controller_reset_available",
+        "c:src/drivers/keyboard.c:keyboard_get_flow_metrics",
         "c:src/drivers/keyboard.c:keyboard_get_metrics",
         "c:src/drivers/keyboard.c:keyboard_handler",
         "c:src/drivers/keyboard.c:keyboard_init",
@@ -179039,6 +179649,16 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_get_device",
+        "api:src/include/drivers/pci.h:pci_get_device_at",
+        "api:src/include/drivers/pci.h:pci_get_device_by_id",
+        "api:src/include/drivers/pci.h:pci_get_device_count",
+        "api:src/include/drivers/pci.h:pci_init",
+        "api:src/include/drivers/pci.h:pci_read",
+        "api:src/include/drivers/pci.h:pci_write",
         "c:src/drivers/pci.c:inl",
         "c:src/drivers/pci.c:outl",
         "c:src/drivers/pci.c:pci_enable_bus_mastering",
@@ -179613,12 +180233,15 @@
         "c:src/drivers/usb_msc.c:msc_build_block_id",
         "c:src/drivers/usb_msc.c:msc_bulk_in",
         "c:src/drivers/usb_msc.c:msc_bulk_out",
+        "c:src/drivers/usb_msc.c:msc_bulk_transfer",
+        "c:src/drivers/usb_msc.c:msc_control_request",
         "c:src/drivers/usb_msc.c:msc_copy_field",
         "c:src/drivers/usb_msc.c:msc_is_candidate",
         "c:src/drivers/usb_msc.c:msc_prepare_record",
         "c:src/drivers/usb_msc.c:msc_read_u32_be",
         "c:src/drivers/usb_msc.c:msc_record_index",
         "c:src/drivers/usb_msc.c:msc_register_device",
+        "c:src/drivers/usb_msc.c:msc_reset_bulk_toggles",
         "c:src/drivers/usb_msc.c:msc_reset_recovery",
         "c:src/drivers/usb_msc.c:msc_scsi_prepare",
         "c:src/drivers/usb_msc.c:msc_scsi_read_sector",
@@ -182531,6 +183154,53 @@
       ]
     },
     {
+      "id": "host:rls4:supported-matrix",
+      "scenario": "Agregacao host-only da regressao da matriz de hardware e fallback suportada",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 7200,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "schema": "zephyros-rls4-supported-matrix-v1",
+        "profiles": "baseline,no-acpi,network,no-nic,usb-hid,no-usb,usb-storage,no-storage,no-vesa,no-audio",
+        "modes": "simple,classic",
+        "iterations": 3,
+        "not_applicable": "no-vesa/classic",
+        "workers_default": 4,
+        "network": "restricted-user-e1000-or-none",
+        "fixtures": "isolated"
+      },
+      "preconditions": "Python, imagem, QEMU, catalogo e fixtures de armazenamento disponiveis",
+      "action": "executar casos existentes de Shell, diagnosticos, hardware, storage e update/recovery em snapshots isolados",
+      "expected": "57 sessoes primarias PASS, fallback coerente, prompt restaurado, filas drenadas e nenhuma escrita persistente",
+      "errors": "envelope ausente ou incompleto, chaves duplicadas, protocolo, timeout, prompt ausente, FAIL filho ou QMP indisponivel",
+      "effects": "somente processos QEMU, snapshots, fixtures e relatorios",
+      "cleanup": "encerrar QEMU, descartar snapshots e preservar manifestos e logs",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "py:tools/rls4_supported_matrix.py:_fallback_case",
+        "py:tools/rls4_supported_matrix.py:_prompt_observed",
+        "py:tools/rls4_supported_matrix.py:build_report",
+        "py:tools/rls4_supported_matrix.py:matrix_plan",
+        "py:tools/rls4_supported_matrix.py:prepare_case",
+        "py:tools/rls4_supported_matrix.py:run",
+        "py:tools/rls4_supported_matrix.py:select_cases",
+        "py:tools/rls4_supported_matrix.py:worker_count"
+      ],
+      "tags": [
+        "quality",
+        "release",
+        "rls4",
+        "matrix",
+        "hardware",
+        "shell",
+        "fallback"
+      ]
+    },
+    {
       "id": "host:security:tls",
       "scenario": "Contrato host-only da politica TLS com dependencias falsas",
       "owner": "quality",
@@ -183353,8 +184023,15 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/apps/shell.h:shell_handle_app_request",
+        "api:src/include/apps/shell.h:shell_handle_key",
         "api:src/include/apps/shell.h:shell_handle_mouse",
         "api:src/include/apps/shell.h:shell_init",
+        "api:src/include/apps/shell.h:shell_print_prompt",
+        "api:src/include/apps/shell.h:shell_process_command",
+        "api:src/include/apps/shell.h:shell_report_app_loader_result",
+        "api:src/include/apps/shell.h:shell_report_user_test_result",
+        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_begin_operation",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
         "api:src/include/apps/shell_runtime.h:shell_runtime_get_lifecycle_status",
@@ -183362,8 +184039,13 @@
         "api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_error",
         "api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_input_blocked",
         "api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_layer",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
         "api:src/include/apps/shell_runtime.h:shell_runtime_reset_lifecycle_status",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
+        "c:src/shell/shell.c:process_input",
         "c:src/shell/shell.c:shell_finalize_closed_scene",
         "c:src/shell/shell.c:shell_handle_key",
         "c:src/shell/shell.c:shell_handle_mouse",
@@ -183371,6 +184053,8 @@
         "c:src/shell/shell.c:shell_lifecycle_blocking_layer",
         "c:src/shell/shell.c:shell_lifecycle_refresh",
         "c:src/shell/shell.c:shell_lifecycle_scene_active",
+        "c:src/shell/shell.c:shell_print_prompt",
+        "c:src/shell/shell.c:shell_process_command",
         "c:src/shell/shell.c:shell_prompt_hide",
         "c:src/shell/shell.c:shell_prompt_reconcile",
         "c:src/shell/shell.c:shell_prompt_request",
@@ -183382,8 +184066,11 @@
         "c:src/shell/shell.c:shell_runtime_note_lifecycle_error",
         "c:src/shell/shell.c:shell_runtime_note_lifecycle_input_blocked",
         "c:src/shell/shell.c:shell_runtime_note_lifecycle_layer",
+        "c:src/shell/shell.c:shell_runtime_reset_input",
         "c:src/shell/shell.c:shell_runtime_reset_lifecycle_status",
-        "c:src/shell/shell.c:shell_runtime_suspend_terminal"
+        "c:src/shell/shell.c:shell_runtime_resume_terminal",
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal",
+        "c:src/shell/shell.c:shell_should_show_prompt"
       ],
       "tags": [
         "host",
@@ -183996,13 +184683,17 @@
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
         "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_close_hosted",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
         "c:src/shell/shell_hosted.c:shell_hosted_close",
         "c:src/shell/shell_hosted.c:shell_hosted_draw",
         "c:src/shell/shell_hosted.c:shell_hosted_key",
         "c:src/shell/shell_hosted.c:shell_hosted_mouse",
         "c:src/shell/shell_hosted.c:shell_hosted_open",
         "c:src/shell/shell_hosted.c:shell_hosted_present_progress",
+        "c:src/shell/shell_hosted.c:shell_hosted_release",
         "c:src/shell/shell_hosted.c:shell_hosted_reset",
+        "c:src/shell/shell_hosted.c:shell_runtime_close_hosted",
         "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible"
       ],
       "tags": [

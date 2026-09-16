@@ -132,6 +132,8 @@ QEMU_PROFILE_ARGS = {
     "no-audio": [],
     "no-storage": [],
 }
+QEMU_INPUT_TRANSPORT_DEFAULT = "default"
+QEMU_INPUT_TRANSPORT_PS2_FALLBACK = "ps2-fallback"
 QEMU_COMMON_ARGS = ["-accel", "tcg,thread=single"]
 QEMU_FIXTURE_NAMES = {"readonly", "readonly-update"}
 TST6_MAX_ITERATIONS = 1000
@@ -248,6 +250,27 @@ def validate_fixture(name: str | None) -> None:
 def qemu_profile_capabilities(name: str) -> list[str]:
     validate_qemu_profile(name)
     return list(QEMU_PROFILE_CAPABILITIES[name])
+
+
+def qemu_profile_args(name: str, input_transport: str =
+                      QEMU_INPUT_TRANSPORT_DEFAULT) -> list[str]:
+    validate_qemu_profile(name)
+    if input_transport == QEMU_INPUT_TRANSPORT_DEFAULT:
+        return list(QEMU_PROFILE_ARGS[name])
+    if input_transport != QEMU_INPUT_TRANSPORT_PS2_FALLBACK:
+        raise RunnerError(f"transporte_input_invalido:{input_transport}",
+                          "catalog_error", True)
+    args = list(QEMU_PROFILE_ARGS[name])
+    filtered: list[str] = []
+    index = 0
+    while index < len(args):
+        if (args[index] == "-device" and index + 1 < len(args) and
+                args[index + 1].startswith("usb-kbd,")):
+            index += 2
+            continue
+        filtered.append(args[index])
+        index += 1
+    return filtered
 
 
 def frame_crc(prefix: str) -> int:
@@ -726,7 +749,11 @@ class QemuSession:
             "-serial", f"tcp:127.0.0.1:{self.serial_port},server=on,wait=on",
             "-qmp", f"tcp:127.0.0.1:{self.qmp_port},server=on,wait=off",
         ])
-        command.extend(QEMU_PROFILE_ARGS[qemu_profile])
+        command.extend(qemu_profile_args(
+            qemu_profile,
+            getattr(self.arguments, "input_transport",
+                    QEMU_INPUT_TRANSPORT_DEFAULT),
+        ))
         if qemu_profile in ("usb-storage", "usb-storage-ehci"):
             storage_image = resolve_path(
                 getattr(self.arguments, "storage_image", None),

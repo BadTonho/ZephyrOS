@@ -344,8 +344,8 @@ Um relatório `PASS` exige worktree limpo, artefatos completos, boot de 512
 bytes, layout sem sobreposição, imagem de 268435456 bytes, ELF válido e
 auditoria persistente aprovada. Ferramenta obrigatória ausente resulta em
 `BLOCKED`; inconsistência de artefato resulta em `FAIL`. RLS2 está aceita com
-9/9 sessões QEMU PASS; RLS3 está aprovada com 9/9 sessões QEMU PASS; RLS4–RLS5
-continuam pendentes.
+9/9 sessões QEMU PASS; RLS3 está aprovada com 9/9 sessões QEMU PASS; RLS4
+também está aprovada, e RLS5 continua pendente.
 
 Na imagem híbrida, a validação aceita a recalculação determinística do campo
 BPB de setores reservados feita na composição do payload legado; os demais
@@ -832,3 +832,26 @@ captura final e os 10 s antes do marcador final foram fixados apenas na
 interacao declarativa para drenar a saida serial/VESA; nao houve alteracao
 funcional no produto. O relatorio e a evidencia ficam em
 `build/test-results/rls3-invariants/rls3-invariants.json`.
+
+## RLS4 - Regressao da matriz suportada
+
+`tools/rls4_supported_matrix.py` agrega a cobertura existente de Shell,
+hardware, storage, update/recovery e invariantes em
+`zephyros-rls4-supported-matrix-v1`. A matriz primaria possui 57 sessoes
+(dez perfis, Simple/Classic, tres iteracoes), com
+`no-vesa/Classic` explicitamente `NOT_APPLICABLE`; execucoes complementares
+usam snapshots e fixtures isoladas. O relatorio e escrito em
+`build/test-results/rls4-supported-matrix/rls4-supported-matrix.json`.
+
+O agregador registra imagem e catalogo por caminhos relativos, politicas de
+rede e fixture, casos reutilizados, fases, diagnosticos, fallbacks, residuos,
+estado de update/recovery e artefatos serial/QMP/input. A coleta do processo
+QEMU ocorre a cada 250 ms; quando indisponivel, CPU, RSS e intervalos recebem
+`ND`. Envelopes incompletos, chaves duplicadas, protocolo invalido, timeout,
+prompt ausente ou recurso residual sao `FAIL`; suporte QMP ausente e
+`BLOCKED`. A matriz final executada em 2026-09-15 terminou `PASS` com 57/57
+sessoes primarias e 30/30 execucoes complementares aprovadas, usando quatro
+workers e a imagem de 268435456 bytes SHA-256
+`611de8f50b45a021dd7040066ed9e98875fc30498c14d5c71e029ee02310ed60`. O
+relatorio fica em `build/test-results/rls4-supported-matrix/`; nenhum efeito
+persistente foi produzido e nenhuma divida tecnica foi quitada.

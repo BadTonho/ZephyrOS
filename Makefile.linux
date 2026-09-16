@@ -42,6 +42,7 @@ QEMU_PARALLEL_WORKERS ?= 4
 PERF6_QEMU_WORKERS ?= 2
 RLS2_QEMU_WORKERS ?= 3
 RLS3_QEMU_WORKERS ?= 3
+RLS4_QEMU_WORKERS ?= 4
 QEMU_PARALLEL_ARGS ?= --profile smoke
 QEMU_PARALLEL_SOAK_ARGS ?=
 SEC6_QEMU_WORKERS ?= 4
@@ -2361,6 +2362,15 @@ rls3-invariants: $(OS_IMG) tools/rls3_invariants.py tools/perf1_metrics.py tools
 
 test-rls3-qemu: rls3-invariants
 
+test-rls4-host: test-rls2-host test-rls3-host test-hw1-host test-hw3-host test-hw4-host test-hw5-host test-hw6-host test-shell5-host test-shell6-host test-sto7-host tools/rls4_supported_matrix.py tools/perf1_metrics.py tools/qemu_test_runner.py tests/unit/test_rls4_supported_matrix.py tests/unit/test_qemu_test_runner.py
+	$(PYTHON) -m unittest tests.unit.test_rls4_supported_matrix tests.unit.test_qemu_test_runner
+
+rls4-supported-matrix: $(OS_IMG) $(STORAGE_FIXTURES_STAMP) tools/rls4_supported_matrix.py tools/perf1_metrics.py tools/qemu_test_runner.py tests/catalog.json tests/coverage/registry.json
+	@if [ ! -f "$(OS_IMG)" ]; then echo "Imagem ausente: $(OS_IMG)"; exit 2; fi
+	$(PYTHON) tools/rls4_supported_matrix.py --qemu "$(QEMU)" --cpu "$(QEMU_TEST_CPU)" --workers "$(RLS4_QEMU_WORKERS)" --storage-image "$(STORAGE_VALID_IMG)" --no-space-image "$(STORAGE_NO_SPACE_IMG)"
+
+test-rls4-qemu: rls4-supported-matrix
+
 test-shell-commands-wifi-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_wifi_host.c tests/catalog.json src/shell/shell_commands_wifi.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/include/core/wifi_manager.h src/include/core/usb_manager.h
 	$(PYTHON) tools/core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
@@ -2537,7 +2547,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
-.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui test-perf6-host test-perf6-qemu perf6-kworker-thread perf6-release test-rls1-host rls1-baseline test-rls2-host test-rls2-qemu rls2-shell-liveness test-rls3-host test-rls3-qemu rls3-invariants
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui test-perf6-host test-perf6-qemu perf6-kworker-thread perf6-release test-rls1-host rls1-baseline test-rls2-host test-rls2-qemu rls2-shell-liveness test-rls3-host test-rls3-qemu rls3-invariants test-rls4-host test-rls4-qemu rls4-supported-matrix
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

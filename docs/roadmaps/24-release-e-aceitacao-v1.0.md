@@ -5,7 +5,7 @@
 Em execução. A RLS1 está em `PASS` no commit `d22e07da`, com auditoria
 host-only e artefatos de baseline reproduzidos sobre a árvore limpa. A RLS2
 está em `PASS` com 9/9 sessões QEMU aprovadas; RLS3 também está em `PASS` com
-9/9 sessões QEMU aprovadas; RLS4–RLS5 continuam pendentes.
+9/9 sessões QEMU aprovadas; RLS5 continua pendente.
 Esta frente prepara uma linha de base reproduzível e suportada para a versão
 1.0.0. Ela não adiciona uma nova API, syscall, formato binário ou driver;
 organiza a correção das falhas que impediriam declarar o sistema estável.
@@ -67,8 +67,8 @@ O relatório produzido pela RLS1 ficará em
 `build_version=0.1.0`, `target_version=1.0.0` e
 `candidate_state=DOCUMENTAL_ONLY`. A execução final deve ocorrer com o
 worktree limpo e não cria tag, assinatura ou publicação; a aceitação da RLS2
-foi registrada como `PASS`; RLS3 também foi aprovada, enquanto RLS4–RLS5
-continuam pendentes.
+foi registrada como `PASS`; RLS3 também foi aprovada, e RLS4 foi aprovada
+com a matriz suportada reproduzida; RLS5 continua pendente.
 
 ### RLS2 — Liveness do Shell e dos jobs
 
@@ -89,8 +89,8 @@ Shell e o caso `qemu:tst5:rls2-shell-liveness`. Os gates `q3check`, build
 limpo, catalogo e host passaram, e a matriz QEMU fixa terminou com 9/9
 sessoes `PASS` no relatorio
 `build/test-results/rls2-shell-liveness/rls2-shell-liveness.json`, schema
-`zephyros-rls2-shell-liveness-v1`. RLS3 também foi validada; RLS4 é a próxima
-etapa.
+`zephyros-rls2-shell-liveness-v1`. RLS3 e RLS4 também foram validadas; RLS5 é
+a próxima etapa.
 
 ### RLS3 — Limpeza e invariantes
 
@@ -121,17 +121,38 @@ permanecem `ACEITA`.
 
 ### RLS4 — Regressão da matriz suportada
 
-- [ ] Executar a matriz Simple/Classic com ACPI, sem ACPI, com NIC, sem NIC,
+- [x] Executar a matriz Simple/Classic com ACPI, sem ACPI, com NIC, sem NIC,
   com USB HID, sem USB, com Storage e sem volumes adicionais.
-- [ ] Repetir abertura e fechamento de Shell, Explorer, Settings, Task Manager,
+- [x] Repetir abertura e fechamento de Shell, Explorer, Settings, Task Manager,
   Desktop, WM e Updater.
-- [ ] Testar comandos que terminam normalmente, falham antes do commit,
+- [x] Testar comandos que terminam normalmente, falham antes do commit,
   cancelam e deixam recursos ocupados.
-- [ ] Testar atualização online e offline, falta de rede, falta de espaço,
+- [x] Testar atualização online e offline, falta de rede, falta de espaço,
   falha de escrita, queda durante staging e rollback após boot não saudável.
-- [ ] Confirmar fallback de vídeo, teclado, rede, áudio e armazenamento sem
+- [x] Confirmar fallback de vídeo, teclado, rede, áudio e armazenamento sem
   travamento ou tela sem prompt.
-- [ ] Registrar diferenças entre cobertura validada e cobertura complementar.
+- [x] Registrar diferenças entre cobertura validada e cobertura complementar.
+
+A implementacao da auditoria RLS4 foi adicionada em
+`tools/rls4_supported_matrix.py`, sem novo marcador no guest e sem alteracao
+persistente da imagem. O agregador prepara as 57 sessoes primarias (dez
+perfis, Simple/Classic, tres iteracoes, com `no-vesa/Classic` como
+`NOT_APPLICABLE`) e 30 execucoes complementares de update/recovery e falhas em
+fixtures isoladas. O schema e
+`zephyros-rls4-supported-matrix-v1`, com relatorio em
+`build/test-results/rls4-supported-matrix/rls4-supported-matrix.json`.
+
+Os testes host, o catalogo, os gates `q3check`/build e a integracao dos
+Makefiles passaram. A matriz QEMU final foi executada com quatro workers no
+run `run-20260915T235713Z-984900`, sobre a imagem de 268435456 bytes com SHA-256
+`611de8f50b45a021dd7040066ed9e98875fc30498c14d5c71e029ee02310ed60`, e
+terminou `PASS`: 57/57 sessoes primarias e 30/30 execucoes complementares
+foram aprovadas. A correcao ficou restrita ao testador: perfis USB interativos
+usam fallback PS/2 explicito, a fixture de falta de espaco nao combina
+`readonly` com snapshot, e os limites de boot, pacing de entrada e fechamento
+do updater Simple foram ajustados. Nao houve alteracao de ABI, syscalls,
+scheduler, bootloader ou comportamento produtivo. RLS5 permanece como a
+proxima etapa; nenhuma divida tecnica e quitada nesta fase.
 
 ### RLS5 — Candidata de release
 

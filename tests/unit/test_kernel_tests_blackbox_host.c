@@ -267,6 +267,12 @@ static int check_krn6_observer_failures(void) {
     if (!run_case(&runtime, "qemu:tst5:krn6-diagnostics",
                   "krn6-diagnostics", HOST_TERMINAL_ABSENT,
                   ERR_TIMEOUT)) return 32;
+    if (!run_case(&runtime, "qemu:tst5:rls2-shell-liveness",
+                  "tst5-rls2-shell-liveness", HOST_TERMINAL_ABSENT,
+                  ERR_TIMEOUT)) return 34;
+    if (!run_case(&runtime, "qemu:tst5:rls3-invariants",
+                  "tst5-rls3-invariants", HOST_TERMINAL_ABSENT,
+                  ERR_TIMEOUT)) return 35;
     return 0;
 }
 

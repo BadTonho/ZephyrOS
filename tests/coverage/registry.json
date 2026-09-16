@@ -15,6 +15,52 @@
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
     },
+    "rls4_supported_matrix": {
+      "case_ids": [
+        "host:rls4:supported-matrix"
+      ],
+      "child_cases": [
+        "qemu:tst5:rls2-shell-liveness",
+        "qemu:tst5:rls3-invariants",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:matrix:network",
+        "qemu:tst6:matrix:usb-hid",
+        "qemu:tst6:matrix:usb-storage",
+        "qemu:tst6:sec6:no-vesa",
+        "qemu:hw1:no-acpi",
+        "qemu:hw1:no-audio",
+        "qemu:hw1:no-nic",
+        "qemu:hw1:no-storage",
+        "qemu:hw1:no-usb",
+        "qemu:shell5:system-update",
+        "qemu:tst5:update-recovery",
+        "qemu:tst6:fault:update",
+        "qemu:tst6:fault:recovery",
+        "qemu:tst6:fault:block",
+        "qemu:tst6:fault:block-cache",
+        "qemu:tst6:fault:network",
+        "qemu:tst5:storage"
+      ],
+      "profiles": [
+        "baseline",
+        "no-acpi",
+        "network",
+        "no-nic",
+        "usb-hid",
+        "no-usb",
+        "usb-storage",
+        "no-storage",
+        "no-vesa",
+        "no-audio"
+      ],
+      "modes": ["simple", "classic"],
+      "iterations": 3,
+      "workers_default": 4,
+      "artifact_directory": "build/test-results/rls4-supported-matrix",
+      "network_policy": "restricted-user-e1000-or-none",
+      "statuses": ["PASS", "FAIL", "BLOCKED", "NOT_APPLICABLE"],
+      "artifact_schema": "zephyros-rls4-supported-matrix-v1"
+    },
     "shell5_system_update": {
       "case_ids": [
         "qemu:shell5:system-update",
@@ -12112,6 +12158,64 @@
           ],
           "post_action": {"type": "none", "steps": []}
         }
+      }
+    },
+    {
+      "id": "rls4-supported-matrix-host",
+      "domain": "release-matrix",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "integration",
+      "case_ids": ["host:rls4:supported-matrix"],
+      "surface_ids": [
+        "py:tools/rls4_supported_matrix.py:build_report",
+        "py:tools/rls4_supported_matrix.py:matrix_plan",
+        "py:tools/rls4_supported_matrix.py:prepare_case",
+        "py:tools/rls4_supported_matrix.py:_fallback_case",
+        "py:tools/rls4_supported_matrix.py:select_cases",
+        "py:tools/rls4_supported_matrix.py:worker_count",
+        "py:tools/rls4_supported_matrix.py:run",
+        "py:tools/rls4_supported_matrix.py:_prompt_observed"
+      ],
+      "evidence": "PASS: q3check, build limpo, catalogo e test-rls4-host; matriz QEMU final com quatro workers no run run-20260915T235713Z-984900 sobre a imagem de 268435456 bytes SHA-256 611de8f50b45a021dd7040066ed9e98875fc30498c14d5c71e029ee02310ed60, com 57/57 sessoes primarias e 30/30 complementares aprovadas; perfis USB usam fallback PS/2 explicito, fixture de falta de espaco nao combina readonly com snapshot, e limites/pacing/fechamento Simple foram corrigidos no testador; sem alteracao de ABI, syscalls, scheduler, bootloader ou comportamento produtivo; nenhuma divida tecnica quitada",
+      "case_definition": {
+        "id": "host:rls4:supported-matrix",
+        "scenario": "Agregacao host-only da regressao da matriz de hardware e fallback suportada",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 7200,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "schema": "zephyros-rls4-supported-matrix-v1",
+          "profiles": "baseline,no-acpi,network,no-nic,usb-hid,no-usb,usb-storage,no-storage,no-vesa,no-audio",
+          "modes": "simple,classic",
+          "iterations": 3,
+          "not_applicable": "no-vesa/classic",
+          "workers_default": 4,
+          "network": "restricted-user-e1000-or-none",
+          "fixtures": "isolated"
+        },
+        "preconditions": "Python, imagem, QEMU, catalogo e fixtures de armazenamento disponiveis",
+        "action": "executar casos existentes de Shell, diagnosticos, hardware, storage e update/recovery em snapshots isolados",
+        "expected": "57 sessoes primarias PASS, fallback coerente, prompt restaurado, filas drenadas e nenhuma escrita persistente",
+        "errors": "envelope ausente ou incompleto, chaves duplicadas, protocolo, timeout, prompt ausente, FAIL filho ou QMP indisponivel",
+        "effects": "somente processos QEMU, snapshots, fixtures e relatorios",
+        "cleanup": "encerrar QEMU, descartar snapshots e preservar manifestos e logs",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "py:tools/rls4_supported_matrix.py:build_report",
+          "py:tools/rls4_supported_matrix.py:matrix_plan",
+          "py:tools/rls4_supported_matrix.py:prepare_case",
+          "py:tools/rls4_supported_matrix.py:_fallback_case",
+          "py:tools/rls4_supported_matrix.py:select_cases",
+          "py:tools/rls4_supported_matrix.py:worker_count",
+          "py:tools/rls4_supported_matrix.py:run",
+          "py:tools/rls4_supported_matrix.py:_prompt_observed"
+        ],
+        "tags": ["quality", "release", "rls4", "matrix", "hardware", "shell", "fallback"]
       }
     },
     {

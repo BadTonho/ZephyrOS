@@ -7806,3 +7806,41 @@ dívida.
   `build/test-results/rls3-invariants/rls3-invariants.json`.
 - DT100-003, DT100-004 e DT100-005 permanecem `ACEITA`. Nenhuma dívida foi
   quitada, e não houve tag, release ou publicação.
+
+## 2026-09-15 - RLS4: regressao da matriz suportada
+
+- Implementacao: adicionados `tools/rls4_supported_matrix.py`, o teste host
+  `tests/unit/test_rls4_supported_matrix.py`, os alvos Windows/Linux, o caso
+  `host:rls4:supported-matrix`, o registry e o catalogo renderizado.
+  O agregador reutiliza os casos de RLS2/RLS3, hardware, Shell, storage e
+  update/recovery, com 57 sessoes primarias e 30 execucoes complementares em
+  fixtures isoladas. `no-vesa/Classic` e `NOT_APPLICABLE`.
+- Evidencia: testes unitarios direcionados (38 casos), `make q3check`, build
+  limpo, `make catalog-test` e `make test-rls4-host` passaram. A matriz QEMU
+  foi executada em paralelo com quatro workers sobre a imagem SHA-256
+  `889502efcfb22fff8c2dba38262add1deddeecd2c3bdfaaa924dd6fd07d9355c` e
+  terminou `BLOCKED`, com 45/57 sessoes primarias aprovadas; foram
+  reproduzidas falhas `terminal-observer-ERR_TIMEOUT` nos perfis USB e
+  `qmp_indisponivel` na fixture de falta de espaco. O build limpo posterior
+  gerou a imagem de 268435456 bytes com SHA-256 diferente, portanto a matriz
+  ainda deve ser repetida na imagem final antes do aceite.
+- Estado: RLS4 `PENDING_VALIDATION`. O artefato usa o schema
+  `zephyros-rls4-supported-matrix-v1` em
+  `build/test-results/rls4-supported-matrix/rls4-supported-matrix.json`;
+  dados host indisponiveis sao `ND` e suporte QMP ausente e `BLOCKED`.
+  Nenhuma alteracao de produto, imagem persistente, tag, release ou divida
+  tecnica foi feita nesta etapa.
+
+## 2026-09-15 - RLS4: validacao final aprovada
+
+- Correcao do testador: perfis USB interativos usam fallback PS/2 explicito;
+  a fixture de falta de espaco nao combina `readonly` com snapshot; limites de
+  boot, pacing de entrada e fechamento do updater Simple foram ajustados.
+- `make test-rls4-qemu RLS4_QEMU_WORKERS=4` terminou `PASS` no run
+  `run-20260915T235713Z-984900`: 57/57 sessoes primarias e 30/30 execucoes
+  complementares aprovadas. A imagem tinha 268435456 bytes e SHA-256
+  `611de8f50b45a021dd7040066ed9e98875fc30498c14d5c71e029ee02310ed60`.
+- O relatorio usa o schema `zephyros-rls4-supported-matrix-v1` em
+  `build/test-results/rls4-supported-matrix/rls4-supported-matrix.json`.
+  Nao houve alteracao de ABI, syscalls, scheduler, bootloader ou produto
+  persistente; nenhuma divida tecnica foi quitada. RLS5 continua pendente.

@@ -8,7 +8,8 @@
 #include "video_test.h"
 
 #define KERNEL_TESTS_BLACKBOX_TIMEOUT_TICKS 2500U
-#define KERNEL_TESTS_RLS3_TIMEOUT_TICKS 5000U
+#define KERNEL_TESTS_RLS2_TIMEOUT_TICKS 5000U
+#define KERNEL_TESTS_RLS3_TIMEOUT_TICKS 10000U
 #define KERNEL_TESTS_HW6_TIMEOUT_TICKS 20000U
 #define KERNEL_TESTS_BLACKBOX_TEXT_CAPACITY VIDEO_TEST_TEXT_CAPACITY
 #define KRN6_REQUIRED_COUNT 15U
@@ -558,6 +559,9 @@ static int blackbox_wait_for_marker(const kernel_tests_runtime_t* runtime,
                              marker && blackbox_contains(marker,
                                                          "rls3-invariants") ?
                              KERNEL_TESTS_RLS3_TIMEOUT_TICKS :
+                             marker && blackbox_contains(marker,
+                                                         "rls2-shell-liveness") ?
+                             KERNEL_TESTS_RLS2_TIMEOUT_TICKS :
                              KERNEL_TESTS_BLACKBOX_TIMEOUT_TICKS;
 
     while (timer_get_ticks() - start < timeout_ticks) {

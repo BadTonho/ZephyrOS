@@ -112,6 +112,21 @@ class CatalogAndStatusTests(unittest.TestCase):
         self.assertIn("-qmp", command)
         self.assertEqual(command[-2:], ["-vga", "none"])
 
+    def test_ps2_fallback_removes_only_usb_keyboard(self):
+        args = runner.qemu_profile_args(
+            "usb-hid", runner.QEMU_INPUT_TRANSPORT_PS2_FALLBACK)
+        self.assertNotIn("usb-kbd,bus=tst6usb.0", args)
+        self.assertIn("usb-mouse,bus=tst6usb.0", args)
+
+    def test_default_input_transport_keeps_usb_keyboard(self):
+        args = runner.qemu_profile_args("usb-hid")
+        self.assertIn("usb-kbd,bus=tst6usb.0", args)
+
+    def test_unknown_input_transport_is_rejected(self):
+        with self.assertRaisesRegex(runner.RunnerError,
+                                    "transporte_input_invalido"):
+            runner.qemu_profile_args("usb-hid", "invalid")
+
 
 class QemuSessionTests(unittest.TestCase):
     def test_reset_protocol_discards_stale_frames_until_ready(self):

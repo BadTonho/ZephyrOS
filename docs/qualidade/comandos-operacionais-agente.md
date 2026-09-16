@@ -2507,6 +2507,35 @@ drenagem da saida serial/VESA; a coleta host continua em 250 ms e nenhuma
 alteracao funcional foi feita no produto. O relatorio registra o resultado em
 `build/test-results/rls3-invariants/rls3-invariants.json`.
 
+## RLS4 - Regressao da matriz suportada
+
+Depois dos gates de build e catalogo, execute a validacao host e a matriz com
+o limite de paralelismo desejado:
+
+```text
+make test-rls4-host
+make test-rls4-qemu RLS4_QEMU_WORKERS=4
+make rls4-supported-matrix RLS4_QEMU_WORKERS=4
+```
+
+O agregador usa os casos existentes de RLS2/RLS3, hardware, Shell, storage e
+update/recovery. Sao dez perfis (`baseline`, `no-acpi`, `network`, `no-nic`,
+`usb-hid`, `no-usb`, `usb-storage`, `no-storage`, `no-vesa` e `no-audio`),
+Simple/Classic e tres iteracoes. `no-vesa/Classic` e
+`NOT_APPLICABLE`; o fallback suportado e `no-vesa/Simple`. A matriz principal
+tem 57 sessoes e a cobertura complementar executa fixtures isoladas para
+update/recovery, falta de espaco e falhas de rede/armazenamento.
+
+O relatorio fica em
+`build/test-results/rls4-supported-matrix/rls4-supported-matrix.json`, com
+schema `zephyros-rls4-supported-matrix-v1`. Cada sessao preserva manifesto,
+serial, QMP, input, resultado individual e amostras do processo QEMU a cada
+250 ms. A rede dos perfis aplicaveis usa `user,model=e1000,restrict=on`; os
+demais perfis usam `none`. Host indisponivel e `ND`; protocolo invalido,
+envelope incompleto, timeout, prompt ausente ou caso reprovado e `FAIL`;
+suporte QMP ausente e `BLOCKED`. A RLS4 so pode ser marcada `PASS` com
+57/57 sessoes aprovadas e sem efeito persistente na imagem.
+
 ## PERF1: baseline de métricas
 
 Depois dos gates de build, a validação host e a matriz de linha de base podem
