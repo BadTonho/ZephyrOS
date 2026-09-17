@@ -855,3 +855,25 @@ workers e a imagem de 268435456 bytes SHA-256
 `611de8f50b45a021dd7040066ed9e98875fc30498c14d5c71e029ee02310ed60`. O
 relatorio fica em `build/test-results/rls4-supported-matrix/`; nenhum efeito
 persistente foi produzido e nenhuma divida tecnica foi quitada.
+
+## RLS5 - Candidata documental de release
+
+`tools/rls5_release_candidate.py` produz o schema
+`zephyros-rls5-release-candidate-v1` em
+`build/test-results/rls5-release/rls5-release.json`. A auditoria distingue a
+versao construida `0.1.0` da versao-alvo `1.0.0` e publica
+`candidate_state=DOCUMENTAL_ONLY` com o rotulo operacional `v0.1.0-rc1`.
+
+O relatorio reutiliza a identidade da imagem e as evidencias PASS da RLS1 e
+da RLS4, exigindo 57/57 sessoes e 30/30 complementares da matriz, alem de
+`tools/updater.py audit-image --expect-version 0.1.0`. O contrato de recovery
+registra `update_system_slots_boot_confirm`, estado saudavel
+`boot_state=NONE` sem slot pendente, limite de duas tentativas e rollback por
+fixtures de system slots. Nenhuma tag, assinatura nova, publicacao ou escrita
+persistente e criada.
+
+Worktree sujo, versao divergente, hash/tamanho diferente, layout inconsistente
+ou evidencias invalidas resultam em `FAIL`; relatorio obrigatorio, imagem ou
+ferramenta ausente resulta em `BLOCKED`. A RLS5 nao repete a matriz QEMU: ela
+confirma que a evidencia RLS4 aprovada corresponde exatamente a imagem
+candidata. Coleta host indisponivel nao e usada como sinal de aprovacao.

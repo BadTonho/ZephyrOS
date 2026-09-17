@@ -7844,3 +7844,25 @@ dívida.
   `build/test-results/rls4-supported-matrix/rls4-supported-matrix.json`.
   Nao houve alteracao de ABI, syscalls, scheduler, bootloader ou produto
   persistente; nenhuma divida tecnica foi quitada. RLS5 continua pendente.
+
+## 2026-09-17 - RLS5: candidata documental de release
+
+- Implementacao: adicionados `tools/rls5_release_candidate.py`,
+  `tests/unit/test_rls5_release_candidate.py`, os alvos host/candidato nos
+  Makefiles, o caso `host:quality:rls5-release-candidate`, o registry e o
+  catalogo renderizado. O auditor reutiliza RLS1, RLS4 e
+  `tools/updater.py audit-image`, sem alterar versao, imagem persistente,
+  bootloader, ABI, syscalls, tag, assinatura ou publicacao.
+- Contrato: `build_version=0.1.0`, `target_version=1.0.0`,
+  `candidate_state=DOCUMENTAL_ONLY`, `candidate_label=v0.1.0-rc1`, boot
+  saudavel por `update_system_slots_boot_confirm`, estado confirmado
+  `boot_state=NONE` sem slot pendente, limite de duas tentativas e rollback
+  pelas fixtures existentes.
+- Estado: `PENDING_VALIDATION`. `make q3check`, `make clean`, `make`,
+  `make catalog-test` e `make test-rls5-host` passaram. A auditoria RLS1
+  executada com os binarios `NM`/`OBJDUMP` locais gerou `FAIL` por
+  `worktree_dirty`; `make rls5-candidate` gerou `BLOCKED` por
+  `rls4_report_ausente`, `rls1_nao_aprovado` e `worktree_dirty`. A imagem
+  atual tem 268435456 bytes e a matriz RLS4 precisa ser regenerada para essa
+  imagem final antes do aceite. Nenhuma divida tecnica foi quitada e nenhuma
+  tag, assinatura ou publicacao foi criada.

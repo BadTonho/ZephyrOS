@@ -2536,6 +2536,34 @@ envelope incompleto, timeout, prompt ausente ou caso reprovado e `FAIL`;
 suporte QMP ausente e `BLOCKED`. A RLS4 so pode ser marcada `PASS` com
 57/57 sessoes aprovadas e sem efeito persistente na imagem.
 
+## RLS5 - Candidata documental de release
+
+A RLS5 audita a candidata atual sem mudar `src/include/core/version.h`, criar
+tag, assinar ou publicar release. Execute os gates e, por ultimo, gere a
+auditoria da candidata:
+
+```text
+make q3check
+make clean && make
+make catalog-test
+make test-rls5-host
+make rls1-baseline
+make rls5-candidate
+```
+
+O alvo `rls5-candidate` gera
+`build/test-results/rls5-release/rls5-release.json` com schema
+`zephyros-rls5-release-candidate-v1`. O resultado `PASS` exige worktree
+limpo, versao construida `0.1.0`, alvo `1.0.0`, imagem de 268435456 bytes,
+RLS1 e RLS4 aprovadas para a mesma identidade da imagem e auditoria do updater
+aprovada. A RLS4 deve conter 57/57 sessoes e 30/30 complementares.
+
+O relatorio registra `DOCUMENTAL_ONLY`, `v0.1.0-rc1`, a politica de boot
+saudavel/rollback e flags de publicacao todas falsas. Ausencia de evidencia,
+imagem ou ferramenta e `BLOCKED`; divergencia de hash, versao, layout,
+worktree ou contrato e `FAIL`. Nenhuma tag, assinatura ou publicacao e criada
+nesta etapa.
+
 ## PERF1: baseline de métricas
 
 Depois dos gates de build, a validação host e a matriz de linha de base podem

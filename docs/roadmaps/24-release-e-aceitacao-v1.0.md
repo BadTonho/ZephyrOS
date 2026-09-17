@@ -164,6 +164,22 @@ proxima etapa; nenhuma divida tecnica e quitada nesta fase.
   o procedimento de recuperação da candidata.
 - [ ] Publicar a matriz de suporte e as limitações aceitas da 1.0.0.
 
+A implementacao da auditoria RLS5 foi adicionada em
+`tools/rls5_release_candidate.py`, com o schema
+`zephyros-rls5-release-candidate-v1` e o relatorio em
+`build/test-results/rls5-release/rls5-release.json`. O auditor preserva
+`build_version=0.1.0`, `target_version=1.0.0`,
+`candidate_state=DOCUMENTAL_ONLY` e o rotulo operacional `v0.1.0-rc1`.
+Ele reutiliza as evidencias RLS1/RLS4 e a auditoria offline do updater, sem
+criar tag, assinatura, publicacao ou alterar a imagem persistente.
+
+Enquanto a validacao final nao for executada em um commit limpo, a RLS5 fica
+`PENDING_VALIDATION`. Ausencia de RLS1/RLS4, imagem ou updater e publicada
+como `BLOCKED`; inconsistencia de versao, hash, layout, worktree ou
+evidencia e `FAIL`. O contrato de boot saudavel usa
+`update_system_slots_boot_confirm()`, estado confirmado `boot_state=NONE` sem
+slot pendente, limite de duas tentativas e rollback pelas fixtures existentes.
+
 ## Contratos e invariantes
 
 - App API, syscalls, layouts binários, `taskmanager.h`, bootloader e

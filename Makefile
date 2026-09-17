@@ -2371,6 +2371,13 @@ rls4-supported-matrix: $(OS_IMG) $(STORAGE_FIXTURES_STAMP) tools\rls4_supported_
 
 test-rls4-qemu: rls4-supported-matrix
 
+test-rls5-host: test-rls1-host tools\rls5_release_candidate.py tools\release_baseline.py tests\unit\test_rls5_release_candidate.py
+	$(PYTHON) -m unittest tests.unit.test_rls5_release_candidate tests.unit.test_release_baseline
+
+rls5-candidate: $(OS_IMG) tools\rls5_release_candidate.py tools\release_baseline.py tools\updater.py
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	$(PYTHON) tools\rls5_release_candidate.py collect --repo-root . --output "$(BUILD_DIR)\test-results\rls5-release\rls5-release.json" --image "$(OS_IMG)" --rls1-report "$(BUILD_DIR)\test-results\rls1-baseline\rls1-baseline.json" --rls4-report "$(BUILD_DIR)\test-results\rls4-supported-matrix\rls4-supported-matrix.json" --version-header "src\include\core\version.h" --python "$(PYTHON)"
+
 test-shell-commands-wifi-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_wifi_host.c tests\catalog.json src\shell\shell_commands_wifi.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\wifi_manager.h src\include\core\usb_manager.h
 	python tools\core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
@@ -2547,7 +2554,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
-.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui test-perf6-host test-perf6-qemu perf6-kworker-thread perf6-release test-rls1-host rls1-baseline test-rls2-host test-rls2-qemu rls2-shell-liveness test-rls3-host test-rls3-qemu rls3-invariants test-rls4-host test-rls4-qemu rls4-supported-matrix
+.PHONY: test-perf1-host test-perf1-qemu perf1-baseline test-perf2-host test-perf2-qemu perf2-responsiveness test-perf3-host test-perf3-qemu perf3-scheduler-idle test-perf4-host test-perf4-qemu perf4-memory-storage-network test-perf5-host test-perf5-qemu perf5-video-ui test-perf6-host test-perf6-qemu perf6-kworker-thread perf6-release test-rls1-host rls1-baseline test-rls2-host test-rls2-qemu rls2-shell-liveness test-rls3-host test-rls3-qemu rls3-invariants test-rls4-host test-rls4-qemu rls4-supported-matrix test-rls5-host rls5-candidate
 .PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host

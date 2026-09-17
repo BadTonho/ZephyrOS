@@ -17,7 +17,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CATALOG = Path("tests/catalog.json")
 DEFAULT_VIEW = Path("docs/qualidade/catalogo-testes.md")
 DEFAULT_COVERAGE_REGISTRY = Path("tests/coverage/registry.json")
-QUALITY_PYTHON_TOOLS = ("release_baseline.py", "rls4_supported_matrix.py")
+QUALITY_PYTHON_TOOLS = (
+    "release_baseline.py", "rls4_supported_matrix.py",
+    "rls5_release_candidate.py",
+)
 SCHEMA = "zephyros-test-catalog-v1"
 COVERAGE_REGISTRY_SCHEMA = "zephyros-coverage-registry-v1"
 EXCLUDED_SOURCE_PARTS = {"vendor", "build", "generated"}

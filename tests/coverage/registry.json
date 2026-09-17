@@ -12219,6 +12219,68 @@
       }
     },
     {
+      "id": "rls5-release-candidate-host",
+      "domain": "release-candidate",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": ["host:quality:rls5-release-candidate"],
+      "surface_ids": [
+        "py:tools/rls5_release_candidate.py:relative_path",
+        "py:tools/rls5_release_candidate.py:contains_personal_path",
+        "py:tools/rls5_release_candidate.py:sha256_file",
+        "py:tools/rls5_release_candidate.py:image_record",
+        "py:tools/rls5_release_candidate.py:read_json",
+        "py:tools/rls5_release_candidate.py:_run_git",
+        "py:tools/rls5_release_candidate.py:git_state",
+        "py:tools/rls5_release_candidate.py:_require_report_identity",
+        "py:tools/rls5_release_candidate.py:_artifact_summary",
+        "py:tools/rls5_release_candidate.py:validate_rls1",
+        "py:tools/rls5_release_candidate.py:validate_rls4",
+        "py:tools/rls5_release_candidate.py:run_updater_audit",
+        "py:tools/rls5_release_candidate.py:base_report",
+        "py:tools/rls5_release_candidate.py:_status",
+        "py:tools/rls5_release_candidate.py:build_report",
+        "py:tools/rls5_release_candidate.py:write_report",
+        "py:tools/rls5_release_candidate.py:parser",
+        "py:tools/rls5_release_candidate.py:main"
+      ],
+      "evidence": "PENDING_VALIDATION: q3check, build limpo, catalogo e test-rls5-host passaram; rls1-baseline gerou FAIL por worktree_dirty; rls5-candidate gerou BLOCKED por rls4_report_ausente, rls1_nao_aprovado e worktree_dirty; a matriz RLS4 deve ser regenerada para a imagem final antes do aceite",
+      "case_definition": {
+        "id": "host:quality:rls5-release-candidate",
+        "scenario": "Auditoria host-only da candidata documental 0.1.0 para a futura 1.0.0",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "schema": "zephyros-rls5-release-candidate-v1",
+          "build_version": "0.1.0",
+          "target_version": "1.0.0",
+          "candidate_state": "DOCUMENTAL_ONLY",
+          "candidate_label": "v0.1.0-rc1",
+          "boot_attempt_limit": 2
+        },
+        "preconditions": "Python, imagem candidata, RLS1/RLS4 PASS e updater disponiveis",
+        "action": "validar identidade da imagem e evidencias de release sem criar tag, assinatura ou publicacao",
+        "expected": "candidata DOCUMENTAL_ONLY, imagem exata, politica de rollback e contrato de boot saudavel",
+        "errors": "evidencia ausente BLOCKED; relatorio, versao, hash, updater ou worktree divergente FAIL",
+        "effects": "somente relatorio em build/test-results/rls5-release",
+        "cleanup": "nenhuma mutacao do produto ou imagem; preservar o relatorio para auditoria",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "py:tools/rls5_release_candidate.py:build_report",
+          "py:tools/rls5_release_candidate.py:validate_rls1",
+          "py:tools/rls5_release_candidate.py:validate_rls4",
+          "py:tools/rls5_release_candidate.py:main"
+        ],
+        "tags": ["quality", "release", "rls5", "candidate", "rollback"]
+      }
+    },
+    {
       "id": "rls1-release-baseline-host",
       "domain": "release-baseline",
       "owner": "quality",

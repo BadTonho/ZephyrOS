@@ -80,6 +80,12 @@ class CatalogContractTests(unittest.TestCase):
         self.assertIn(
             "py:tools/rls4_supported_matrix.py:matrix_plan", surface_ids)
 
+    def test_discovery_includes_rls5_quality_tool(self):
+        surfaces = test_catalog.discover_surfaces(test_catalog.ROOT)
+        surface_ids = {surface["id"] for surface in surfaces}
+        self.assertIn(
+            "py:tools/rls5_release_candidate.py:build_report", surface_ids)
+
     def test_registry_accepts_explicit_direct_coverage(self):
         catalog = sample_catalog()
         registry = {
