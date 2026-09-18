@@ -250,6 +250,14 @@ Internet. Enquanto esses itens estiverem pendentes, a versao deve permanecer
 
 ## Pode ficar para depois da 1.0.0
 
+## Ordem adicional de execucao antes da 1.0.0
+
+As pendencias de produto seguem esta ordem e nao devem ser tratadas como
+concluidas apenas pela auditoria RLS5:
+
+1. [Roadmap 25 - DHCP, DNS e acesso externo](25-rede-dhcp-dns-e-acesso-externo-v1.0.md)
+2. [Roadmap 26 - ISO instalavel e boot](26-iso-instalavel-e-boot-v1.0.md)
+
 As seguintes capacidades não devem bloquear a primeira versão, desde que suas
 ausências estejam documentadas:
 

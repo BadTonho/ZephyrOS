@@ -10,6 +10,13 @@ backlog pós-1.0.
 
 ## Estado de referencia
 
+## Continuidade do ciclo 1.0.0
+
+Depois do Roadmap 24, a ordem de aceite do produto e:
+
+1. [25 - DHCP, DNS e acesso externo](25-rede-dhcp-dns-e-acesso-externo-v1.0.md)
+2. [26 - ISO instalavel e boot](26-iso-instalavel-e-boot-v1.0.md)
+
 O Roadmap 17 é a infraestrutura permanente de testes e regressão do sistema.
 Ele não pertence a uma versão específica e deve ser executado durante todas as
 frentes, inclusive depois da versão 1.0.0 e durante qualquer migração de

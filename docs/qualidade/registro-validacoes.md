@@ -7880,3 +7880,12 @@ dívida.
 - Os perfis QEMU com `restrict=on` sao evidencias de isolamento e fallback; nao
   devem ser registrados como acesso a Internet. Nenhuma tag, assinatura ou
   publicacao foi criada.
+
+## 2026-09-17 - Novos roadmaps para aceite de produto
+
+- Apos RLS5, a ordem de fechamento da 1.0.0 foi documentada em duas frentes:
+  Roadmap 25 para DHCP, DNS e acesso externo; depois Roadmap 26 para ISO
+  instalavel, instalacao, reboot e funcionamento basico.
+- A candidata continua em `0.1.0` e `DOCUMENTAL_ONLY` ate as duas frentes
+  produzirem evidencia para a mesma imagem e commit. Nenhuma versao, tag ou
+  release foi criada.

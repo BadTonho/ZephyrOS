@@ -206,6 +206,13 @@ criada.
 
 ## Contratos e invariantes
 
+## Continuidade do aceite de produto
+
+A continuidade desta frente esta dividida em duas etapas, nesta ordem:
+
+1. [Roadmap 25 - DHCP, DNS e acesso externo](25-rede-dhcp-dns-e-acesso-externo-v1.0.md);
+2. [Roadmap 26 - ISO instalavel e boot](26-iso-instalavel-e-boot-v1.0.md).
+
 - App API, syscalls, layouts binários, `taskmanager.h`, bootloader e
   `stage2.asm` permanecem inalterados, salvo roadmap específico aprovado.
 - Nenhum comando pode deixar o terminal sem estado observável ou sem uma

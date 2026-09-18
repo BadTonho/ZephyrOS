@@ -1,5 +1,10 @@
 # ZephyrOS
 
+## Roadmaps adicionais da 1.0.0
+
+- [25 - DHCP, DNS e acesso externo](roadmaps/25-rede-dhcp-dns-e-acesso-externo-v1.0.md)
+- [26 - ISO instalavel e boot](roadmaps/26-iso-instalavel-e-boot-v1.0.md)
+
 Sistema operacional desenvolvido do zero em C + Assembly (x86).
 
 ---
