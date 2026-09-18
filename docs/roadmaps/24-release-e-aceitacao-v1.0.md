@@ -180,6 +180,30 @@ evidencia e `FAIL`. O contrato de boot saudavel usa
 `update_system_slots_boot_confirm()`, estado confirmado `boot_state=NONE` sem
 slot pendente, limite de duas tentativas e rollback pelas fixtures existentes.
 
+## Aceitacao de produto ainda pendente
+
+RLS1-RLS5 foram implementadas e a candidata documental `0.1.0` foi validada
+no commit `e70f38c4`, com `candidate_state=DOCUMENTAL_ONLY` e rotulo
+operacional `v0.1.0-rc1`. Isso encerra a auditoria documental desta frente,
+mas nao autoriza declarar ou publicar a `1.0.0`.
+
+Antes da declaracao da release, ainda e obrigatorio:
+
+- [ ] gerar `build/zephyros.iso` como ISO instalavel e distribuivel;
+- [ ] testar boot da ISO, instalacao em disco vazio, reboot pelo sistema
+  instalado e funcionamento basico do Shell, armazenamento e entrada;
+- [ ] validar recovery/reinstalacao e documentar o procedimento para o usuario;
+- [ ] validar rede externa com DHCP, IPv4, ARP, DNS e TCP/HTTP ou HTTPS;
+- [ ] registrar evidencia da rede usando a mesma ISO/imagem candidata, sem
+  `restrict=on` e sem considerar fixtures isoladas como Internet;
+- [ ] repetir o gate final da release sobre os artefatos instalaveis.
+
+O relatorio RLS5 em
+`build/test-results/rls5-release/rls5-release.json` continua sendo uma
+auditoria documental da imagem `0.1.0`; ele nao e uma aprovacao de instalacao
+nem de conectividade externa. Nenhuma tag, assinatura ou publicacao foi
+criada.
+
 ## Contratos e invariantes
 
 - App API, syscalls, layouts binários, `taskmanager.h`, bootloader e

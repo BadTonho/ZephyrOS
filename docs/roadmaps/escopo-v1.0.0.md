@@ -221,6 +221,33 @@ atualização, e não apenas depois que o Roadmap 18 terminar.
 A etapa pós-1.0.0 de Rust não é uma etapa de preparação da 1.0.0. Ela só começa
 depois do Roadmap 24 e da publicação da base 1.0.0.
 
+## Requisitos adicionais de produto para a 1.0.0
+
+As auditorias RLS1-RLS5 validam a base do sistema e a candidata documental,
+mas nao substituem a aceitacao do produto instalavel. Para declarar a 1.0.0,
+os seguintes itens tambem precisam de evidencia para a mesma versao:
+
+- [ ] Gerar uma ISO instalavel e distribuivel, identificada como artefato
+  oficial da release.
+- [ ] Inicializar a ISO em uma maquina virtual limpa e em pelo menos um
+  destino de instalacao suportado.
+- [ ] Instalar o sistema em um disco vazio, reiniciar pelo disco instalado e
+  confirmar o uso basico do Shell, armazenamento e entrada.
+- [ ] Documentar limites, particionamento, recovery e procedimento para
+  reinstalar ou recuperar a instalacao.
+- [ ] Validar conectividade externa em uma configuracao explicitamente
+  autorizada: DHCP, IPv4, ARP, DNS e uma conexao TCP/HTTP ou HTTPS observavel.
+- [ ] Repetir a validacao de rede com a ISO e a imagem instaladas, sem usar
+  fixtures de rede isoladas como substituto de acesso externo.
+- [ ] Registrar logs, imagem/ISO, perfil, endereco obtido, resolucao DNS,
+  destino de teste e resultado da conectividade.
+
+`build/zephyros.img` e uma imagem bruta de disco usada nas validacoes atuais;
+ela nao deve ser descrita como ISO instalavel. Os perfis QEMU com
+`restrict=on` comprovam isolamento e fallback, mas nao comprovam acesso a
+Internet. Enquanto esses itens estiverem pendentes, a versao deve permanecer
+`0.1.0` e `DOCUMENTAL_ONLY`.
+
 ## Pode ficar para depois da 1.0.0
 
 As seguintes capacidades não devem bloquear a primeira versão, desde que suas

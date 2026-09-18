@@ -7866,3 +7866,17 @@ dívida.
   atual tem 268435456 bytes e a matriz RLS4 precisa ser regenerada para essa
   imagem final antes do aceite. Nenhuma divida tecnica foi quitada e nenhuma
   tag, assinatura ou publicacao foi criada.
+## 2026-09-17 - Limite da candidata documental e aceite da 1.0.0
+
+- RLS5 foi validada com `PASS` no commit `e70f38c4`, mantendo
+  `build_version=0.1.0`, `target_version=1.0.0`,
+  `candidate_state=DOCUMENTAL_ONLY` e `candidate_label=v0.1.0-rc1`.
+- A imagem bruta `build/zephyros.img` foi auditada e a matriz RLS4 correspondente
+  terminou com 57/57 sessoes primarias e 30/30 execucoes complementares. Isso
+  comprova a base bootavel usada no QEMU, nao uma ISO instalavel.
+- Decisao de produto: a `1.0.0` permanece pendente ate existir uma ISO
+  distribuivel, uma instalacao em disco vazio com reboot validado e evidencia
+  de conectividade externa com DHCP, DNS e trafego TCP/HTTP ou HTTPS.
+- Os perfis QEMU com `restrict=on` sao evidencias de isolamento e fallback; nao
+  devem ser registrados como acesso a Internet. Nenhuma tag, assinatura ou
+  publicacao foi criada.
