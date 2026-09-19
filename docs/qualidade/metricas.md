@@ -722,6 +722,23 @@ conclusoes duplicadas, erro residual ou buffer ativo sao condicoes de
 diagnostico. Nao ha alegacao de ownership DMA transferido, zero-copy real ou
 comparacao de desempenho nesta etapa.
 
+## NET1 - DHCP, DNS e conectividade externa
+
+O snapshot `kmetrics machine` publica `dhcp_initialized`, `dhcp_state`,
+`dhcp_bound`, endereco, gateway, servidor DNS, lease e contadores de
+Discover/Offer/Request/ACK/NAK/timeout. IPv4 publica configuracao, endereco,
+gateway, pacotes e bytes; DNS publica configuracao, servidor, estado, IP
+resolvido, consultas, respostas e timeouts; TCP publica conexoes, segmentos,
+bytes e timeouts; HTTP publica estado, codigo, requisicoes, respostas, bytes e
+timeouts. Contadores usam `overflow=wrap_u32`; gauges e estados nao usam delta.
+
+O caso positivo usa `user,model=e1000` sem `restrict=on` e exige lease DHCP
+automatico, DNS resolvido e resposta HTTP/HTTPS observavel. O perfil restrito
+usa `restrict=on` e nunca conta como Internet. O perfil `no-nic` exige
+ausencia de interface, retorno ao prompt e nenhum socket ou buffer residual.
+Campos de getters indisponiveis permanecem `value=ND` e nao sao convertidos em
+zero.
+
 ## NET2 - Sockets genericos e filas AF_UNIX
 
 `socket_status_t` publica sockets ativos e pico, criacoes, fechamentos,

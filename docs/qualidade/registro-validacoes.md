@@ -7889,3 +7889,49 @@ dívida.
 - A candidata continua em `0.1.0` e `DOCUMENTAL_ONLY` ate as duas frentes
   produzirem evidencia para a mesma imagem e commit. Nenhuma versao, tag ou
   release foi criada.
+
+## 2026-09-17 - NET1: gates executados e acesso externo pendente
+
+- Implementado `tools/net1_external_connectivity.py` com schema
+  `zephyros-net1-external-connectivity-v1`, 12 sessoes (external/Simple,
+  external/Classic, restricted/Simple e no-nic/Simple), quatro workers por
+  padrao e coleta host a cada 250 ms.
+- O `kmetrics machine` passou a publicar estados e contadores de DHCP, IPv4,
+  DNS, TCP e HTTP, sem alterar ABI, syscalls, bootloader, formato da imagem ou
+  a versao `0.1.0`. O perfil restrito usa `restrict=on`; o perfil no-NIC nao
+  adiciona dispositivo de rede.
+- `make q3check`, `make clean`, `make`, `make catalog-test` e
+  `make test-net1-host` passaram. A suíte host incluiu os casos DHCP, DNS, TCP,
+  HTTP, E1000, sockets, buffers, network manager e diagnósticos, além de 37
+  testes Python do auditor/runner.
+- `make test-net1-qemu` foi executado sobre a imagem recém-gerada com quatro
+  workers. O relatório `build/test-results/net1-external-connectivity/`
+  registrou 6/12 sessões PASS: todas as três `restricted/Simple` e todas as
+  três `no-nic/Simple`. As seis sessões externas falharam por
+  `dns_nao_comprovado`: DHCP automático, IPv4, gateway e servidor DNS foram
+  observados, e seis consultas UDP válidas foram transmitidas a `10.0.2.3:53`,
+  mas não houve resposta DNS nem HTTP externo.
+- A captura auxiliar confirmou checksum IPv4/UDP válido e ARP resolvido; a
+  comparação RTL8139 reproduziu o mesmo zero de respostas, então a evidência
+  atual não atribui o problema exclusivamente ao E1000. O runner passou a
+  enviar `/` por scancode ABNT2 `0x73`, eliminando a rejeição falsa da URL.
+- NET1 permanece `FAIL`/`VALIDACAO PENDENTE`; o Roadmap 26 continua bloqueado
+  até uma sessão externa comprovar DNS e TCP/HTTP ou HTTPS. Nenhuma versão,
+  tag, publicação ou alteração de ABI/syscall/bootloader foi feita.
+
+## 2026-09-19 - NET1: matriz externa aprovada
+
+- A matriz `make test-net1-qemu` foi repetida fora do sandbox de execução, com
+  quatro workers, sobre a mesma imagem `build/zephyros.img` e o mesmo commit.
+- O relatório `build/test-results/net1-external-connectivity/`
+  (`zephyros-net1-external-connectivity-v1`) terminou `PASS`: 12/12 sessões,
+  sendo 3 external/Simple, 3 external/Classic, 3 restricted/Simple e 3
+  no-nic/Simple.
+- As seis sessões externas obtiveram DHCP automático, IPv4/gateway/DNS,
+  resolveram `example.com` e concluíram HTTP. As lanes restrita e no-NIC
+  confirmaram os estados negativos, com prompt restaurado e sem sockets,
+  buffers ou filas residuais.
+- A execução anterior dentro do sandbox registrou 6/12 porque o processo
+  QEMU estava impedido de acessar a rede externa. A repetição com a permissão
+  operacional adequada passou sem mudança em código produtivo, ABI, syscall,
+  bootloader ou imagem persistente.

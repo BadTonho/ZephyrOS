@@ -522,6 +522,15 @@ static int check_receive_errors_and_queue(void) {
 
     fill_frame(frame);
     if (e1000_init(&device, "e1000-rx", &interface) != OK) return 1;
+    e1000_host_inject_rx(interface.driver_context, frame, sizeof(frame),
+                         HOST_E1000_RX_DD | HOST_E1000_RX_EOP, 0U);
+    host_mmio[HOST_E1000_ICR / 4U] = 0U;
+    if (interface.service_pending(interface.driver_context) != OK) return 2;
+    if (interface.rx_pending(interface.driver_context, &pending) != OK ||
+        !pending) return 2;
+    if (interface.receive_frame(interface.driver_context, output,
+                                sizeof(output), &length, &received) != OK ||
+        !received || length != HOST_FRAME_LENGTH) return 2;
     regs.int_no = 32U + HOST_IRQ_LINE;
     host_mmio[HOST_E1000_ICR / 4U] = HOST_E1000_RXO | HOST_E1000_RXSEQ;
     e1000_host_inject_rx(interface.driver_context, frame, sizeof(frame),

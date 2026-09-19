@@ -498,6 +498,29 @@ int shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     snapshot->ethernet_result = ethernet_get_status(&snapshot->ethernet);
     snapshot->network_result =
         network_manager_get_status(&snapshot->network);
+    snapshot->network_interface_result =
+        network_manager_get_interface(0U, &snapshot->network_interface);
+    snapshot->network_interface_valid =
+        snapshot->network_interface_result == OK;
+    snapshot->network_ethernet_result = ERR_NOT_FOUND;
+    if (snapshot->network_interface_valid) {
+        network_interface_text_t interface_text;
+
+        if (network_manager_format_text(&snapshot->network_interface,
+                                        &interface_text) == OK) {
+            snapshot->network_ethernet_result =
+                network_manager_get_ethernet_diagnostic(
+                    interface_text.id, &snapshot->network_ethernet);
+        } else {
+            snapshot->network_interface_result = ERR_STATE;
+            snapshot->network_interface_valid = 0U;
+        }
+    }
+    snapshot->dhcp_result = dhcp_get_status(&snapshot->dhcp);
+    snapshot->dns_result = dns_get_status(&snapshot->dns);
+    snapshot->ipv4_result = ipv4_get_status(&snapshot->ipv4);
+    snapshot->tcp_result = tcp_get_status(&snapshot->tcp);
+    snapshot->http_result = http_get_status(&snapshot->http);
     snapshot->net_buffer_result =
         net_buffer_get_stats(&snapshot->net_buffer);
     snapshot->sk_buff_result = skb_get_stats(&snapshot->sk_buff);
@@ -1792,6 +1815,16 @@ static int shell_kmetrics_emit_network(
         baseline ? &baseline->net_sockets : 0;
     const route_status_t* routes = &current->routes;
     const route_status_t* base_routes = baseline ? &baseline->routes : 0;
+    const dhcp_status_t* dhcp = &current->dhcp;
+    const dhcp_status_t* base_dhcp = baseline ? &baseline->dhcp : 0;
+    const dns_status_t* dns = &current->dns;
+    const dns_status_t* base_dns = baseline ? &baseline->dns : 0;
+    const ipv4_status_t* ipv4 = &current->ipv4;
+    const ipv4_status_t* base_ipv4 = baseline ? &baseline->ipv4 : 0;
+    const tcp_status_t* tcp = &current->tcp;
+    const tcp_status_t* base_tcp = baseline ? &baseline->tcp : 0;
+    const http_status_t* http = &current->http;
+    const http_status_t* base_http = baseline ? &baseline->http : 0;
     uint8_t available = current->ethernet_result == OK &&
                         current->network_result == OK;
     uint8_t ethernet_available = current->ethernet_result == OK;
@@ -1804,6 +1837,17 @@ static int shell_kmetrics_emit_network(
     uint8_t net_sockets_available = current->net_socket_result == OK &&
                                     net_sockets->initialized;
     uint8_t routes_available = current->route_result == OK && routes->initialized;
+    uint8_t dhcp_available = current->dhcp_result == OK && dhcp->initialized;
+    uint8_t dns_available = current->dns_result == OK && dns->initialized;
+    uint8_t ipv4_available = current->ipv4_result == OK && ipv4->initialized;
+    uint8_t tcp_available = current->tcp_result == OK && tcp->initialized;
+    uint8_t http_available = current->http_result == OK && http->initialized;
+    uint8_t interface_available = current->network_interface_valid;
+    uint8_t driver_available = current->network_ethernet_result == OK;
+    const network_ethernet_diagnostic_t* base_network_ethernet =
+        baseline ? &baseline->network_ethernet : 0;
+    uint8_t base_driver_available = baseline &&
+                                    baseline->network_ethernet_result == OK;
     uint8_t base_ethernet_available = baseline &&
                                       baseline->ethernet_result == OK;
     uint8_t base_buffers_available = baseline &&
@@ -1821,6 +1865,186 @@ static int shell_kmetrics_emit_network(
     uint8_t base_routes_available = baseline &&
                                     baseline->route_result == OK &&
                                     base_routes->initialized;
+    uint8_t base_dhcp_available = baseline && baseline->dhcp_result == OK &&
+                                  base_dhcp->initialized;
+    uint8_t base_dns_available = baseline && baseline->dns_result == OK &&
+                                 base_dns->initialized;
+    uint8_t base_ipv4_available = baseline && baseline->ipv4_result == OK &&
+                                  base_ipv4->initialized;
+    uint8_t base_tcp_available = baseline && baseline->tcp_result == OK &&
+                                 base_tcp->initialized;
+    uint8_t base_http_available = baseline && baseline->http_result == OK &&
+                                  base_http->initialized;
+
+    SHELL_KMETRICS_EMIT_U32("dhcp_initialized", dhcp->initialized, 0U,
+                            dhcp_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "dhcp", "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_state", (uint32_t)dhcp->state, 0U,
+                            dhcp_available, "state", SHELL_KMETRICS_KIND_STATE,
+                            "dhcp", "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_bound",
+                            dhcp->state == DHCP_STATE_BOUND ? 1U : 0U, 0U,
+                            dhcp_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "dhcp", "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_lease_seconds", dhcp->lease.lease_seconds,
+                            0U, dhcp_available, "second",
+                            SHELL_KMETRICS_KIND_GAUGE, "dhcp", "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_lease_remaining_seconds",
+                            dhcp->lease_remaining_seconds, 0U, dhcp_available,
+                            "second", SHELL_KMETRICS_KIND_GAUGE, "dhcp",
+                            "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_address", dhcp->lease.address, 0U,
+                            dhcp_available, "ipv4", SHELL_KMETRICS_KIND_STATE,
+                            "dhcp", "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_gateway", dhcp->lease.gateway, 0U,
+                            dhcp_available, "ipv4", SHELL_KMETRICS_KIND_STATE,
+                            "dhcp", "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_dns_server", dhcp->lease.dns_server, 0U,
+                            dhcp_available, "ipv4", SHELL_KMETRICS_KIND_STATE,
+                            "dhcp", "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_discovers", dhcp->discovers_tx,
+                            base_dhcp_available ? base_dhcp->discovers_tx : 0U,
+                            baseline_valid && base_dhcp_available && dhcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dhcp",
+                            "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_offers", dhcp->offers_rx,
+                            base_dhcp_available ? base_dhcp->offers_rx : 0U,
+                            baseline_valid && base_dhcp_available && dhcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dhcp",
+                            "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_requests", dhcp->requests_tx,
+                            base_dhcp_available ? base_dhcp->requests_tx : 0U,
+                            baseline_valid && base_dhcp_available && dhcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dhcp",
+                            "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_acks", dhcp->acks_rx,
+                            base_dhcp_available ? base_dhcp->acks_rx : 0U,
+                            baseline_valid && base_dhcp_available && dhcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dhcp",
+                            "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_naks", dhcp->naks_rx,
+                            base_dhcp_available ? base_dhcp->naks_rx : 0U,
+                            baseline_valid && base_dhcp_available && dhcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dhcp",
+                            "network");
+    SHELL_KMETRICS_EMIT_U32("dhcp_timeouts", dhcp->timeouts,
+                            base_dhcp_available ? base_dhcp->timeouts : 0U,
+                            baseline_valid && base_dhcp_available && dhcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dhcp",
+                            "network");
+
+    SHELL_KMETRICS_EMIT_U32("dns_initialized", dns->initialized, 0U,
+                            dns_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "dns", "network");
+    SHELL_KMETRICS_EMIT_U32("dns_configured", dns->configured, 0U,
+                            dns_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "dns", "network");
+    SHELL_KMETRICS_EMIT_U32("dns_server", dns->server_ip, 0U, dns_available,
+                            "ipv4", SHELL_KMETRICS_KIND_STATE, "dns", "network");
+    SHELL_KMETRICS_EMIT_U32("dns_state", (uint32_t)dns->state, 0U,
+                            dns_available, "state", SHELL_KMETRICS_KIND_STATE,
+                            "dns", "network");
+    SHELL_KMETRICS_EMIT_U32("dns_result_ip", dns->result_ip, 0U,
+                            dns_available, "ipv4", SHELL_KMETRICS_KIND_STATE,
+                            "dns", "network");
+    SHELL_KMETRICS_EMIT_U32("dns_queries", dns->queries_tx,
+                            base_dns_available ? base_dns->queries_tx : 0U,
+                            baseline_valid && base_dns_available && dns_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dns", "network");
+    SHELL_KMETRICS_EMIT_U32("dns_replies", dns->replies_rx,
+                            base_dns_available ? base_dns->replies_rx : 0U,
+                            baseline_valid && base_dns_available && dns_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dns", "network");
+    SHELL_KMETRICS_EMIT_U32("dns_timeouts", dns->timeouts,
+                            base_dns_available ? base_dns->timeouts : 0U,
+                            baseline_valid && base_dns_available && dns_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "dns", "network");
+
+    SHELL_KMETRICS_EMIT_U32("ipv4_initialized", ipv4->initialized, 0U,
+                            ipv4_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "ipv4", "network");
+    SHELL_KMETRICS_EMIT_U32("ipv4_configured", ipv4->configured, 0U,
+                            ipv4_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "ipv4", "network");
+    SHELL_KMETRICS_EMIT_U32("ipv4_address", ipv4->local_ip, 0U,
+                            ipv4_available, "ipv4", SHELL_KMETRICS_KIND_STATE,
+                            "ipv4", "network");
+    SHELL_KMETRICS_EMIT_U32("ipv4_gateway", ipv4->gateway, 0U,
+                            ipv4_available, "ipv4", SHELL_KMETRICS_KIND_STATE,
+                            "ipv4", "network");
+    SHELL_KMETRICS_EMIT_U32("ipv4_rx_packets", ipv4->rx_packets,
+                            base_ipv4_available ? base_ipv4->rx_packets : 0U,
+                            baseline_valid && base_ipv4_available && ipv4_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "ipv4", "network");
+    SHELL_KMETRICS_EMIT_U32("ipv4_tx_packets", ipv4->tx_packets,
+                            base_ipv4_available ? base_ipv4->tx_packets : 0U,
+                            baseline_valid && base_ipv4_available && ipv4_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "ipv4", "network");
+    SHELL_KMETRICS_EMIT_U32("ipv4_rx_bytes", ipv4->rx_bytes,
+                            base_ipv4_available ? base_ipv4->rx_bytes : 0U,
+                            baseline_valid && base_ipv4_available && ipv4_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "ipv4", "network");
+    SHELL_KMETRICS_EMIT_U32("ipv4_tx_bytes", ipv4->tx_bytes,
+                            base_ipv4_available ? base_ipv4->tx_bytes : 0U,
+                            baseline_valid && base_ipv4_available && ipv4_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "ipv4", "network");
+
+    SHELL_KMETRICS_EMIT_U32("tcp_initialized", tcp->initialized, 0U,
+                            tcp_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "tcp", "network");
+    SHELL_KMETRICS_EMIT_U32("tcp_connections", tcp->connection_count, 0U,
+                            tcp_available, "count", SHELL_KMETRICS_KIND_GAUGE,
+                            "tcp", "network");
+    SHELL_KMETRICS_EMIT_U32("tcp_segments_tx", tcp->segments_tx,
+                            base_tcp_available ? base_tcp->segments_tx : 0U,
+                            baseline_valid && base_tcp_available && tcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "tcp", "network");
+    SHELL_KMETRICS_EMIT_U32("tcp_segments_rx", tcp->segments_rx,
+                            base_tcp_available ? base_tcp->segments_rx : 0U,
+                            baseline_valid && base_tcp_available && tcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "tcp", "network");
+    SHELL_KMETRICS_EMIT_U32("tcp_bytes_tx", tcp->bytes_tx,
+                            base_tcp_available ? base_tcp->bytes_tx : 0U,
+                            baseline_valid && base_tcp_available && tcp_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "tcp", "network");
+    SHELL_KMETRICS_EMIT_U32("tcp_bytes_rx", tcp->bytes_rx,
+                            base_tcp_available ? base_tcp->bytes_rx : 0U,
+                            baseline_valid && base_tcp_available && tcp_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "tcp", "network");
+    SHELL_KMETRICS_EMIT_U32("tcp_timeouts", tcp->timeouts,
+                            base_tcp_available ? base_tcp->timeouts : 0U,
+                            baseline_valid && base_tcp_available && tcp_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "tcp", "network");
+
+    SHELL_KMETRICS_EMIT_U32("http_initialized", http->initialized, 0U,
+                            http_available, "bool", SHELL_KMETRICS_KIND_STATE,
+                            "http", "network");
+    SHELL_KMETRICS_EMIT_U32("http_state", (uint32_t)http->state, 0U,
+                            http_available, "state", SHELL_KMETRICS_KIND_STATE,
+                            "http", "network");
+    SHELL_KMETRICS_EMIT_U32("http_status_code", http->status_code, 0U,
+                            http_available, "code", SHELL_KMETRICS_KIND_STATE,
+                            "http", "network");
+    SHELL_KMETRICS_EMIT_U32("http_requests", http->requests_started,
+                            base_http_available ? base_http->requests_started : 0U,
+                            baseline_valid && base_http_available && http_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "http", "network");
+    SHELL_KMETRICS_EMIT_U32("http_requests_tx", http->requests_tx,
+                            base_http_available ? base_http->requests_tx : 0U,
+                            baseline_valid && base_http_available && http_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "http", "network");
+    SHELL_KMETRICS_EMIT_U32("http_responses", http->responses_rx,
+                            base_http_available ? base_http->responses_rx : 0U,
+                            baseline_valid && base_http_available && http_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "http", "network");
+    SHELL_KMETRICS_EMIT_U32("http_bytes_rx", http->bytes_rx,
+                            base_http_available ? base_http->bytes_rx : 0U,
+                            baseline_valid && base_http_available && http_available,
+                            "byte", SHELL_KMETRICS_KIND_BYTES, "http", "network");
+    SHELL_KMETRICS_EMIT_U32("http_timeouts", http->timeouts,
+                            base_http_available ? base_http->timeouts : 0U,
+                            baseline_valid && base_http_available && http_available,
+                            "count", SHELL_KMETRICS_KIND_COUNTER, "http", "network");
 
     SHELL_KMETRICS_EMIT_U32("network_interfaces", network->interface_count, 0U,
                             available, "count", SHELL_KMETRICS_KIND_GAUGE,
@@ -1868,6 +2092,43 @@ static int shell_kmetrics_emit_network(
                             baseline_valid && base_ethernet_available &&
                                 ethernet_available, "count",
                             SHELL_KMETRICS_KIND_COUNTER, "ethernet", "network");
+    SHELL_KMETRICS_EMIT_U32("network_interface_state",
+                            (uint32_t)current->network_interface.state, 0U,
+                            interface_available, "state",
+                            SHELL_KMETRICS_KIND_STATE, "network", "network");
+    SHELL_KMETRICS_EMIT_U32("network_interface_link",
+                            (uint32_t)current->network_interface.link, 0U,
+                            interface_available, "state",
+                            SHELL_KMETRICS_KIND_STATE, "network", "network");
+    SHELL_KMETRICS_EMIT_U32("network_interface_ethernet_attached",
+                            current->network_interface.ethernet_attached, 0U,
+                            interface_available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "network", "network");
+    SHELL_KMETRICS_EMIT_U32("network_interface_l3_active",
+                            current->network_interface.l3_active, 0U,
+                            interface_available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "network", "network");
+    SHELL_KMETRICS_EMIT_U32("network_interface_dhcp_pending",
+                            current->network_interface.dhcp_pending, 0U,
+                            interface_available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "network", "network");
+    SHELL_KMETRICS_EMIT_U32("ethernet_driver_link_up",
+                            current->network_ethernet.interface.driver.link_up,
+                            0U, driver_available, "bool",
+                            SHELL_KMETRICS_KIND_STATE, "ethernet", "network");
+    SHELL_KMETRICS_EMIT_U32("ethernet_driver_rx_queue_depth",
+                            current->network_ethernet.driver_queue_depth, 0U,
+                            driver_available, "count",
+                            SHELL_KMETRICS_KIND_GAUGE, "ethernet", "network");
+    if (shell_kmetrics_emit_u32(
+            "ethernet_driver_tx_errors",
+            current->network_ethernet.interface.driver.tx_errors,
+            base_network_ethernet ?
+                base_network_ethernet->interface.driver.tx_errors : 0U,
+            baseline_valid && base_driver_available, driver_available,
+            "count", SHELL_KMETRICS_KIND_COUNTER, "ethernet", "network") != OK) {
+        return ERR_OVERFLOW;
+    }
     SHELL_KMETRICS_EMIT_U32("net_buffer_initialized", buffers->initialized, 0U,
                             buffers_available, "bool", SHELL_KMETRICS_KIND_STATE,
                             "net_buffer", "network");

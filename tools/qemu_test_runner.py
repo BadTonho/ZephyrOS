@@ -76,12 +76,14 @@ QEMU_PROFILE_NAMES = {
     "baseline", "minimal", "network", "usb-hid", "usb-storage", "audio",
     "display", "pci", "no-acpi", "no-nic", "no-usb", "no-vesa",
     "no-audio", "no-storage", "usb-storage-ehci", "network-dual",
+    "network-restricted",
 }
 QEMU_PROFILE_CAPABILITIES = {
     "baseline": ["acpi", "pci", "vga", "network-e1000"],
     "minimal": ["pci", "vga"],
     "network": ["pci", "network-e1000"],
     "network-dual": ["pci", "network-e1000", "network-dual"],
+    "network-restricted": ["pci", "network-e1000", "network-restricted"],
     "usb-hid": ["usb", "usb-hid"],
     "usb-storage": ["usb", "usb-hid", "usb-storage-readonly"],
     "usb-storage-ehci": ["usb", "usb-storage-readonly"],
@@ -104,6 +106,10 @@ QEMU_PROFILE_ARGS = {
         "-device", "e1000,netdev=hw5net0,id=hw5nic0",
         "-netdev", "user,id=hw5net1,restrict=on",
         "-device", "e1000,netdev=hw5net1,id=hw5nic1",
+    ],
+    "network-restricted": [
+        "-netdev", "user,id=net1,restrict=on",
+        "-device", "e1000,netdev=net1,id=net1nic",
     ],
     "usb-hid": [
         "-device", "piix3-usb-uhci,id=tst6usb",
@@ -743,7 +749,8 @@ class QemuSession:
             "-drive", f"file={image},format=raw,if=none,id=bootdisk",
             "-device", "ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1",
         ])
-        if self.arguments.network and qemu_profile != "network-dual":
+        if self.arguments.network and qemu_profile not in {
+                "network-dual", "network-restricted"}:
             command.extend(["-nic", self.arguments.network])
         command.extend([
             "-serial", f"tcp:127.0.0.1:{self.serial_port},server=on,wait=on",
@@ -899,6 +906,12 @@ class QemuSession:
         })
         time.sleep(self.input_key_gap_seconds)
 
+    def _send_qmp_scancode(self, scancode: int) -> None:
+        self.qmp.command("human-monitor-command", {
+            "command-line": f"sendkey 0x{scancode:02x}",
+        })
+        time.sleep(self.input_key_gap_seconds)
+
     def configure_input_timing(self, gap_seconds: float) -> None:
         if (isinstance(gap_seconds, bool) or
                 not isinstance(gap_seconds, (int, float)) or
@@ -929,7 +942,8 @@ class QemuSession:
             elif character == ".":
                 keys = ["dot"]
             elif character == "/":
-                keys = ["slash"]
+                self._send_qmp_scancode(0x73)
+                continue
             elif character == ":":
                 keys = ["shift", "semicolon"]
             elif character == "|":

@@ -213,6 +213,14 @@ A continuidade desta frente esta dividida em duas etapas, nesta ordem:
 1. [Roadmap 25 - DHCP, DNS e acesso externo](25-rede-dhcp-dns-e-acesso-externo-v1.0.md);
 2. [Roadmap 26 - ISO instalavel e boot](26-iso-instalavel-e-boot-v1.0.md).
 
+O NET1 foi implementado e validado como a primeira frente desta continuidade.
+Na execucao autorizada fora do sandbox, a matriz QEMU terminou `PASS` com
+12/12 sessoes: 6 externas com DHCP/DNS/HTTP, 3 restritas e 3 sem NIC, todas
+com prompt restaurado e sem residuos. A primeira execucao dentro do sandbox
+falhou por bloqueio de acesso externo do processo QEMU; essa limitacao do
+ambiente nao alterou o produto nem o runner. O Roadmap 26 esta liberado para
+iniciar a validacao da ISO.
+
 - App API, syscalls, layouts binários, `taskmanager.h`, bootloader e
   `stage2.asm` permanecem inalterados, salvo roadmap específico aprovado.
 - Nenhum comando pode deixar o terminal sem estado observável ou sem uma

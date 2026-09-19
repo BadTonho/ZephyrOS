@@ -195,17 +195,34 @@ class QemuSessionTests(unittest.TestCase):
             self.assertIn(["shift", "semicolon"], sent)
             self.assertEqual(session.input_trace[0]["text"], "pci-00:03.0")
 
+    def test_send_text_uses_abnt2_slash_usage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            session = runner.QemuSession.__new__(runner.QemuSession)
+            session.artifact_dir = Path(directory)
+            session.input_trace = []
+            sent = []
+            scancodes = []
+            session._send_qmp_keys = sent.append
+            session._send_qmp_scancode = scancodes.append
+            with patch.object(runner.time, "sleep"):
+                session.send_text("http://example.com/")
+            self.assertEqual(scancodes, [0x73, 0x73, 0x73])
+            self.assertNotIn(["slash"], sent)
+
     def test_send_text_supports_pipeline_and_redirect_operators(self):
         with tempfile.TemporaryDirectory() as directory:
             session = runner.QemuSession.__new__(runner.QemuSession)
             session.artifact_dir = Path(directory)
             session.input_trace = []
             sent = []
+            scancodes = []
             session._send_qmp_keys = sent.append
+            session._send_qmp_scancode = scancodes.append
             with patch.object(runner.time, "sleep"):
                 session.send_text("echo x | grep x > /tmp/X")
             self.assertIn(["shift", "backslash"], sent)
             self.assertIn(["shift", "dot"], sent)
+            self.assertEqual(scancodes, [0x73, 0x73])
             self.assertEqual(session.input_trace[0]["text"],
                              "echo x | grep x > /tmp/X")
 

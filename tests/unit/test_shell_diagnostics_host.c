@@ -3006,6 +3006,64 @@ int network_manager_get_status(network_manager_status_t* status) {
     return OK;
 }
 
+int network_manager_get_interface(uint32_t index,
+                                  network_interface_info_t* info) {
+    if (!info) return ERR_NULL;
+    if (index != 0U) return ERR_NOT_FOUND;
+    kmemset(info, 0, sizeof(*info));
+    info->state = NETWORK_INTERFACE_ACTIVE;
+    info->link = NETWORK_LINK_UP;
+    info->ethernet_attached = 1U;
+    info->l3_active = 1U;
+    return OK;
+}
+
+int network_manager_format_text(const network_interface_info_t* info,
+                                network_interface_text_t* text) {
+    if (!info || !text) return ERR_NULL;
+    kmemset(text, 0, sizeof(*text));
+    text->id[0] = 'f';
+    text->id[1] = 'i';
+    text->id[2] = 'x';
+    return OK;
+}
+
+int network_manager_get_ethernet_diagnostic(
+    const char* id, network_ethernet_diagnostic_t* diagnostic) {
+    if (!id || !diagnostic) return ERR_NULL;
+    kmemset(diagnostic, 0, sizeof(*diagnostic));
+    diagnostic->layer.initialized = 1U;
+    diagnostic->interface.attached = 1U;
+    diagnostic->interface.driver.initialized = 1U;
+    diagnostic->interface.driver.link_up = 1U;
+    return OK;
+}
+
+int dhcp_get_status(dhcp_status_t* status) {
+    if (!status) return ERR_NULL;
+    return ERR_UNAVAILABLE;
+}
+
+int dns_get_status(dns_status_t* status) {
+    if (!status) return ERR_NULL;
+    return ERR_UNAVAILABLE;
+}
+
+int ipv4_get_status(ipv4_status_t* status) {
+    if (!status) return ERR_NULL;
+    return ERR_UNAVAILABLE;
+}
+
+int tcp_get_status(tcp_status_t* status) {
+    if (!status) return ERR_NULL;
+    return ERR_UNAVAILABLE;
+}
+
+int http_get_status(http_status_t* status) {
+    if (!status) return ERR_NULL;
+    return ERR_UNAVAILABLE;
+}
+
 const char* update_system_slots_state_name(update_system_slots_state_t state) {
     if (state == UPDATE_SYSTEM_SLOTS_STATE_READY) return "READY";
     if (state == UPDATE_SYSTEM_SLOTS_STATE_DEGRADED) return "DEGRADED";

@@ -747,11 +747,9 @@ static int e1000_service_pending(void* driver_context) {
     device->pending_irq_causes = 0U;
     device->pending_rx_interrupts = 0U;
     e1000_irq_restore(flags);
-    if (!causes) return OK;
-    device->status.rx_interrupts += rx_interrupts;
+    if (causes) device->status.rx_interrupts += rx_interrupts;
     if (causes & (E1000_INT_RXT0 | E1000_INT_RXO)) {
         device->rx_pending = 1U;
-        e1000_poll_rx_descriptors(device);
     }
     if (causes & E1000_INT_LSC) e1000_update_link(device);
     if (causes & E1000_INT_RXO) {
@@ -759,6 +757,11 @@ static int e1000_service_pending(void* driver_context) {
         device->status.rx_dropped++;
     }
     if (causes & E1000_INT_RXSEQ) device->status.rx_errors++;
+    e1000_update_link(device);
+    e1000_poll_rx_descriptors(device);
+    if (device->rx_queue_head != device->rx_queue_tail) {
+        device->rx_pending = 1U;
+    }
     return OK;
 }
 

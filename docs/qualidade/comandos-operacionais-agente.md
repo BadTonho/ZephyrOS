@@ -2448,6 +2448,24 @@ refresh integrado, a recuperacao de managers nao inicializados, inventarios
 parciais, degradacoes opcionais, falhas de PCI e argumentos invalidos sem
 hardware ou armazenamento reais.
 
+## NET1 - conectividade externa
+
+Os contratos host-only e a matriz QEMU da rede externa sao executados com:
+
+```text
+make test-net1-host
+make test-net1-qemu NET1_EXTERNAL_HOST=example.com NET1_EXTERNAL_URL=http://example.com/ NET1_QEMU_NETWORK=user,model=e1000 NET1_QEMU_WORKERS=4
+```
+
+O alvo QEMU gera `build/test-results/net1-external-connectivity/` com o
+relatorio `net1-external-connectivity.json`, manifestos, `serial.log`,
+`input.log` e `qmp-events.log` por sessao. A rede positiva nao usa
+`restrict=on`; as sessoes `restricted` e `no-nic` sao fallbacks negativos e
+nao podem ser contadas como acesso externo. O host, a URL e os workers podem
+ser sobrescritos pelas variaveis `NET1_EXTERNAL_HOST`, `NET1_EXTERNAL_URL`,
+`NET1_QEMU_NETWORK` e `NET1_QEMU_WORKERS`. Nenhum token ou credencial deve
+aparecer nos artefatos.
+
 ## RLS2 - Shell liveness
 
 Depois de `make q3check` e `make clean && make` para a mesma versao, a

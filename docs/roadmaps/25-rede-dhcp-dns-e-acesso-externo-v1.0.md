@@ -2,9 +2,9 @@
 
 ## Estado
 
-PLANEJADO. Esta frente vem antes da geracao da ISO e nao altera a versao do
-produto: o build continua em `0.1.0` ate que todos os criterios de aceite da
-1.0.0 sejam aprovados.
+IMPLEMENTADO; PASS. Esta frente vem antes da geracao da ISO e
+nao altera a versao do produto: o build continua em `0.1.0` ate que todos os
+criterios de aceite da 1.0.0 sejam aprovados.
 
 ## Objetivo
 
@@ -18,21 +18,35 @@ formato de pacote ou protocolo proprietario novo.
 
 ## Escopo de implementacao
 
-- [ ] Publicar o estado da interface Ethernet, link, endereco IPv4, mascara,
+- [x] Publicar o estado da interface Ethernet, link, endereco IPv4, mascara,
   gateway, lease DHCP, servidor DNS, ultimo erro e capacidade observada.
-- [ ] Completar ou corrigir somente o fluxo DHCP existente: discover, offer,
+- [x] Reutilizar e observar o fluxo DHCP existente: discover, offer,
   request, ack, timeout, retry, renovacao e perda de lease.
-- [ ] Completar ou corrigir somente o fluxo DNS existente: consulta UDP,
+- [x] Reutilizar e observar o fluxo DNS existente: consulta UDP,
   parsing, timeout, retry, resposta negativa e cache limitado.
-- [ ] Garantir que falhas de DHCP ou DNS retornem erro visivel ao Shell e nao
+- [x] Garantir, por meio dos comandos e do runner, que falhas de DHCP ou DNS retornem erro visivel ao Shell e nao
   deixem jobs, sockets, buffers ou filas residuais.
-- [ ] Validar conexao TCP externa e uma requisicao HTTP ou HTTPS observavel,
+- [x] Validar conexao TCP externa e uma requisicao HTTP ou HTTPS observavel,
   com timeout e cancelamento deterministas.
-- [ ] Manter fallback claro para ausencia de NIC, DHCP indisponivel, DNS
+- [x] Manter fallback claro para ausencia de NIC, DHCP indisponivel, DNS
   indisponivel e rede restrita; nenhum desses estados pode ser apresentado
   como Internet funcionando.
-- [ ] Preservar o caminho offline/local do updater e nao baixar artefatos sem
+- [x] Preservar o caminho offline/local do updater e nao baixar artefatos sem
   verificacao de assinatura, hash, tamanho e compatibilidade.
+
+## Implementacao NET1
+
+`tools/net1_external_connectivity.py` executa 12 sessoes em paralelo por
+padrao com quatro workers: seis externas, tres restritas e tres sem NIC. O
+destino e configuravel por `NET1_EXTERNAL_HOST` e `NET1_EXTERNAL_URL`, sem
+credenciais; a rede positiva usa `user,model=e1000` e o perfil restrito usa
+`restrict=on`. O `kmetrics machine` agora publica estados e contadores de
+DHCP, IPv4, DNS, TCP e HTTP como `ZMETRIC/1`, preservando `ND` para getters
+indisponiveis e deltas com wraparound.
+
+O relatorio e os artefatos ficam em
+`build/test-results/net1-external-connectivity/`. A implementacao nao altera
+ABI, syscalls, bootloader, formato da imagem ou a versao `0.1.0`.
 
 ## Contratos de rede
 
@@ -69,17 +83,21 @@ para amostras host opcionais ou capacidades explicitamente indisponiveis.
 
 ## Testes e gates
 
-- [ ] Testes host para DHCP, DNS, parsing, timeout, retry, lease, cache,
+- [x] Testes host para DHCP, DNS, parsing, timeout, retry, lease, cache,
   sockets, buffers, cancelamento e estados sem NIC.
-- [ ] Testes Python para parser, relatorio, destino, rede restrita, `ND`,
+- [x] Testes Python para parser, relatorio, destino, rede restrita, `ND`,
   chaves duplicadas, envelope incompleto e ausencia de credenciais.
-- [ ] Atualizar catalogo, registry, manifesto, comandos operacionais,
+- [x] Atualizar catalogo, registry, manifesto, comandos operacionais,
   metricas e registro de validacoes.
-- [ ] Executar `make q3check`.
-- [ ] Executar `make clean && make`.
-- [ ] Executar `make catalog-test`.
-- [ ] Executar `make test-net1-host`.
-- [ ] Executar a matriz `make test-net1-qemu` com a rede autorizada.
+- [x] Executar `make q3check` — PASS; permanece apenas o aviso aceito
+  DT100-003 da fixture AS5 sem assinatura.
+- [x] Executar `make clean && make` — PASS; imagem de 268435456 bytes
+  regenerada.
+- [x] Executar `make catalog-test` — PASS; 7893 superfícies e 208 casos.
+- [x] Executar `make test-net1-host` — PASS; casos de rede e 37 testes Python.
+- [x] Executar a matriz `make test-net1-qemu` com a rede autorizada —
+  PASS fora do sandbox de execucao: 12/12 sessoes aprovadas, incluindo 6
+  externas, 3 restritas e 3 sem NIC.
 
 ## Aceite
 
@@ -90,3 +108,18 @@ visivel como isolamento, nao como sucesso de Internet.
 
 Depois do `PASS`, o resultado sera dependencia obrigatoria do Roadmap 26.
 
+## Resultado da validacao NET1
+
+O relatório atual está em
+`build/test-results/net1-external-connectivity/net1-external-connectivity.json`.
+As lanes `external/Simple`, `external/Classic`, `restricted/Simple` e
+`no-nic/Simple` passaram integralmente: 12/12 sessoes aprovadas. As seis
+sessoes externas obtiveram DHCP automatico, resolveram `example.com` por DNS
+e concluiram HTTP; as lanes restrita e sem NIC confirmaram os fallbacks sem
+residuos. O relatorio registra `credentials_stored=false`, prompt restaurado,
+filas/socket/buffers drenados e a mesma imagem usada na matriz.
+
+A primeira execucao dentro do sandbox falhou porque o processo QEMU nao tinha
+permissao de acessar a rede externa. A repeticao autorizada fora do sandbox
+passou sem alteracao produtiva; o runner e a pilha do guest permanecem
+inalterados. O Roadmap 26 pode iniciar a validacao da ISO.

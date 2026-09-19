@@ -12336,6 +12336,123 @@
           "py:tools/release_baseline.py:version_from_header"
         ]
       }
+    },
+    {
+      "id": "net1-external-connectivity",
+      "domain": "network-connectivity",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:net1:external-connectivity"
+      ],
+      "surface_ids": [
+        "py:tools/net1_external_connectivity.py:build_interaction",
+        "py:tools/net1_external_connectivity.py:build_report",
+        "py:tools/net1_external_connectivity.py:matrix_plan",
+        "py:tools/net1_external_connectivity.py:run",
+        "py:tools/net1_external_connectivity.py:validate_run"
+      ],
+      "evidence": "PASS: gates q3check, clean build, catalog-test e host PASS; matriz QEMU 12/12 PASS fora do sandbox de execucao (3 external/Simple, 3 external/Classic, 3 restricted/Simple e 3 no-nic/Simple); DHCP automatico, DNS, HTTP externo, prompt e limpeza validados no relatorio build/test-results/net1-external-connectivity/net1-external-connectivity.json",
+      "case_definition": {
+        "id": "qemu:net1:external-connectivity",
+        "scenario": "DHCP automatico, DNS e conectividade HTTP externa com fallbacks",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "smoke",
+        "guest_case": "qemu:tst5:network",
+        "qemu_profile": "baseline",
+        "required_capabilities": [],
+        "timeout_seconds": 240,
+        "heartbeat_timeout_seconds": 30,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1 + ZMETRIC/1",
+          "network": "user,model=e1000",
+          "external_host": "NET1_EXTERNAL_HOST",
+          "external_url": "NET1_EXTERNAL_URL",
+          "profiles": "external,restricted,no-nic",
+          "modes": "simple,classic,simple",
+          "iterations": 3,
+          "workers_default": 4,
+          "host_sample_interval_seconds": 0.25,
+          "diagnostics": "net status,kmetrics machine,nslookup,http get"
+        },
+        "preconditions": "imagem pronta, QEMU com serial/QMP e rede user-mode configuravel",
+        "action": "validar lease DHCP automatico, resolucao DNS, HTTP externo e estados restritos",
+        "expected": "6 sessoes externas com DHCP/DNS/HTTP, 3 restritas identificadas e 3 sem NIC sem residuos",
+        "errors": "envelope ausente, protocolo, timeout, prompt ausente, recurso residual ou conectividade positiva nao comprovada",
+        "effects": "somente processos QEMU isolados, logs e relatorio JSON",
+        "cleanup": "encerrar cada QEMU e preservar manifest, serial, QMP e input",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "py:tools/net1_external_connectivity.py:build_interaction",
+          "py:tools/net1_external_connectivity.py:build_report",
+          "py:tools/net1_external_connectivity.py:matrix_plan",
+          "py:tools/net1_external_connectivity.py:run",
+          "py:tools/net1_external_connectivity.py:validate_run"
+        ],
+        "tags": ["qemu", "net1", "network", "dhcp", "dns", "http", "external"],
+        "interaction": {
+          "mode": "qmp-input",
+          "steps": [{"op": "phase", "phase": "boot"}],
+          "post_action": {"type": "none", "steps": []}
+        }
+      }
+    },
+    {
+      "id": "net1-external-connectivity-host",
+      "domain": "network-connectivity",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:net1:external-connectivity"
+      ],
+      "surface_ids": [
+        "py:tools/net1_external_connectivity.py:build_interaction",
+        "py:tools/net1_external_connectivity.py:build_report",
+        "py:tools/net1_external_connectivity.py:matrix_plan",
+        "py:tools/net1_external_connectivity.py:validate_external_host",
+        "py:tools/net1_external_connectivity.py:validate_external_url",
+        "py:tools/net1_external_connectivity.py:validate_run"
+      ],
+      "evidence": "PASS: make test-net1-host; contratos Python e casos host de rede executados",
+      "case_definition": {
+        "id": "host:net1:external-connectivity",
+        "scenario": "Contratos host-only do auditor NET1 e destinos configuraveis",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "schema": "zephyros-net1-external-connectivity-v1",
+          "external_host_default": "example.com",
+          "external_url_default": "http://example.com/",
+          "workers_default": 4,
+          "sessions": 12
+        },
+        "preconditions": "Python 3 e fixtures deterministicas",
+        "action": "validar planos, fases, parser, estados, redaction e agregacao NET1",
+        "expected": "PASS, FAIL e BLOCKED distinguem conectividade, protocolo e suporte ausente",
+        "errors": "credencial na URL, host invalido, envelope incompleto, prompt ausente ou estado residual",
+        "effects": "somente fixtures temporarias e teste host",
+        "cleanup": "remover fixtures temporarias",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "py:tools/net1_external_connectivity.py:build_interaction",
+          "py:tools/net1_external_connectivity.py:build_report",
+          "py:tools/net1_external_connectivity.py:matrix_plan",
+          "py:tools/net1_external_connectivity.py:validate_external_host",
+          "py:tools/net1_external_connectivity.py:validate_external_url",
+          "py:tools/net1_external_connectivity.py:validate_run"
+        ],
+        "tags": ["host", "net1", "network", "contract"]
+      }
     }
   ]
 }

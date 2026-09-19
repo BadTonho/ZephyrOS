@@ -4,8 +4,8 @@
 
 ## Resumo
 
-- Superfícies ativas: **7871**
-- Casos de teste: **206**
+- Superfícies ativas: **7893**
+- Casos de teste: **208**
 - Superfícies aposentadas: **61**
 
 | Tipo | Quantidade |
@@ -13,20 +13,20 @@
 | `api_function` | 1676 |
 | `asm_entry` | 101 |
 | `c_function` | 5898 |
-| `python_function` | 76 |
+| `python_function` | 98 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7753 |
+| `COVERED` | 7771 |
 | `MANUAL` | 0 |
-| `PENDING` | 118 |
+| `PENDING` | 122 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 206 |
+| `AUTOMATED` | 208 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -48,7 +48,7 @@
 | `kernel` | 66 |
 | `memory` | 202 |
 | `process` | 339 |
-| `quality` | 76 |
+| `quality` | 98 |
 | `settings` | 62 |
 | `shell` | 1143 |
 | `taskbar` | 48 |
@@ -88,15 +88,15 @@
 | `api:src/include/apps/mediaplayer.h:mp_resume` | `src/include/apps/mediaplayer.h` | `mp_resume` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_stop` | `src/include/apps/mediaplayer.h` | `mp_stop` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_update` | `src/include/apps/mediaplayer.h` | `mp_update` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell.h:shell_handle_mouse` | `src/include/apps/shell.h` | `shell_handle_mouse` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell.h:shell_init` | `src/include/apps/shell.h` | `shell_init` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts` | `src/include/apps/shell_checks.h` | `shell_checks_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 7 |
@@ -215,20 +215,20 @@
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_begin_operation` | `src/include/apps/shell_runtime.h` | `shell_runtime_begin_operation` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_close_hosted` | `src/include/apps/shell_runtime.h` | `shell_runtime_close_hosted` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_close_hosted` | `src/include/apps/shell_runtime.h` | `shell_runtime_close_hosted` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 10 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_get_lifecycle_status` | `src/include/apps/shell_runtime.h` | `shell_runtime_get_lifecycle_status` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 10 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 5 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_error` | `src/include/apps/shell_runtime.h` | `shell_runtime_note_lifecycle_error` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_input_blocked` | `src/include/apps/shell_runtime.h` | `shell_runtime_note_lifecycle_input_blocked` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_note_lifecycle_layer` | `src/include/apps/shell_runtime.h` | `shell_runtime_note_lifecycle_layer` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 9 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_reset_lifecycle_status` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_lifecycle_status` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal` | `apps` | `COVERED` | 9 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 9 |
 | `api:src/include/apps/taskmanager.h:taskmgr_close` | `src/include/apps/taskmanager.h` | `taskmgr_close` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_key` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_key` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_mouse` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_mouse` | `apps` | `COVERED` | 2 |
@@ -1030,16 +1030,16 @@
 | `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
@@ -2844,38 +2844,38 @@
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector` | `src/core/kernel_tests_assembly.c` | `kernel_tests_trigger_vector` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_interrupt_return` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_interrupt_return` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_vectors` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_contains_prompt` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains_prompt` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 3 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_find` | `src/core/kernel_tests_blackbox.c` | `blackbox_find` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete` | `src/core/kernel_tests_blackbox.c` | `blackbox_hw6_observation_complete` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_hw6_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf3_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_find` | `src/core/kernel_tests_blackbox.c` | `blackbox_find` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete` | `src/core/kernel_tests_blackbox.c` | `blackbox_hw6_observation_complete` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_hw6_case` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf3_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf3_case` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf4_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf4_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf5_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf5_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf6_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_rls2_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_rls2_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_rls3_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_rls3_case` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_sec6_case` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 3 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker_completed` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf5_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf5_case` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_perf6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_perf6_case` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_rls2_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_rls2_case` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_rls3_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_rls3_case` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_sec6_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker_completed` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_report_hw6_missing` | `src/core/kernel_tests_blackbox.c` | `blackbox_report_hw6_missing` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing` | `src/core/kernel_tests_blackbox.c` | `blackbox_report_krn6_missing` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing` | `src/core/kernel_tests_blackbox.c` | `blackbox_report_krn6_missing` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_report_shell_liveness` | `src/core/kernel_tests_blackbox.c` | `blackbox_report_shell_liveness` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_report_shell_liveness_value` | `src/core/kernel_tests_blackbox.c` | `blackbox_report_shell_liveness_value` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt` | `src/core/kernel_tests_blackbox.c` | `blackbox_requires_prompt` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_hw6_observation` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt` | `src/core/kernel_tests_blackbox.c` | `blackbox_requires_prompt` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_hw6_observation` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_krn6_observation` | `core` | `COVERED` | 2 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_sec6_observation` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 3 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_hw6_output` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_krn6_output` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_sec6_output` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 3 |
-| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_sec6_observation` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_hw6_output` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_krn6_output` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_sec6_output` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_execution.c:execution_check_ipc` | `src/core/kernel_tests_execution.c` | `execution_check_ipc` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_execution.c:execution_check_processes` | `src/core/kernel_tests_execution.c` | `execution_check_processes` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_execution.c:execution_check_signal` | `src/core/kernel_tests_execution.c` | `execution_check_signal` | `core` | `COVERED` | 2 |
@@ -6510,7 +6510,7 @@
 | `c:src/shell/mediaplayer.c:mp_stop` | `src/shell/mediaplayer.c` | `mp_stop` | `shell` | `COVERED` | 1 |
 | `c:src/shell/mediaplayer.c:mp_update` | `src/shell/mediaplayer.c` | `mp_update` | `shell` | `COVERED` | 1 |
 | `c:src/shell/mediaplayer.c:str_copy` | `src/shell/mediaplayer.c` | `str_copy` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:process_input` | `src/shell/shell.c` | `process_input` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:process_input` | `src/shell/shell.c` | `process_input` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell.c:shell_finalize_closed_scene` | `src/shell/shell.c` | `shell_finalize_closed_scene` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell.c:shell_handle_app_request` | `src/shell/shell.c` | `shell_handle_app_request` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 9 |
@@ -6519,8 +6519,8 @@
 | `c:src/shell/shell.c:shell_lifecycle_blocking_layer` | `src/shell/shell.c` | `shell_lifecycle_blocking_layer` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_lifecycle_refresh` | `src/shell/shell.c` | `shell_lifecycle_refresh` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_lifecycle_scene_active` | `src/shell/shell.c` | `shell_lifecycle_scene_active` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 8 |
-| `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 9 |
+| `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_prompt_hide` | `src/shell/shell.c` | `shell_prompt_hide` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_prompt_reconcile` | `src/shell/shell.c` | `shell_prompt_reconcile` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_prompt_request` | `src/shell/shell.c` | `shell_prompt_request` | `shell` | `COVERED` | 1 |
@@ -6535,12 +6535,12 @@
 | `c:src/shell/shell.c:shell_runtime_note_lifecycle_input_blocked` | `src/shell/shell.c` | `shell_runtime_note_lifecycle_input_blocked` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_note_lifecycle_layer` | `src/shell/shell.c` | `shell_runtime_note_lifecycle_layer` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_prepare_filemanager` | `src/shell/shell.c` | `shell_runtime_prepare_filemanager` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_runtime_reset_lifecycle_status` | `src/shell/shell.c` | `shell_runtime_reset_lifecycle_status` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_runtime_resume_terminal` | `src/shell/shell.c` | `shell_runtime_resume_terminal` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell.c:shell_runtime_resume_terminal` | `src/shell/shell.c` | `shell_runtime_resume_terminal` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal` | `src/shell/shell.c` | `shell_runtime_suspend_terminal` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene` | `src/shell/shell.c` | `shell_runtime_suspend_terminal_for_scene` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell.c:shell_update_hosted_terminal` | `src/shell/shell.c` | `shell_update_hosted_terminal` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_checks.c:cmd_appcheck` | `src/shell/shell_checks.c` | `cmd_appcheck` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_devices` | `src/shell/shell_checks.c` | `cmd_appcheck_devices` | `shell` | `COVERED` | 1 |
@@ -7283,9 +7283,9 @@
 | `c:src/shell/shell_hosted.c:shell_hosted_mouse` | `src/shell/shell_hosted.c` | `shell_hosted_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_open` | `src/shell/shell_hosted.c` | `shell_hosted_open` | `shell` | `COVERED` | 4 |
 | `c:src/shell/shell_hosted.c:shell_hosted_present_progress` | `src/shell/shell_hosted.c` | `shell_hosted_present_progress` | `shell` | `COVERED` | 4 |
-| `c:src/shell/shell_hosted.c:shell_hosted_release` | `src/shell/shell_hosted.c` | `shell_hosted_release` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_hosted.c:shell_hosted_release` | `src/shell/shell_hosted.c` | `shell_hosted_release` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_reset` | `src/shell/shell_hosted.c` | `shell_hosted_reset` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_hosted.c:shell_runtime_close_hosted` | `src/shell/shell_hosted.c` | `shell_runtime_close_hosted` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_hosted.c:shell_runtime_close_hosted` | `src/shell/shell_hosted.c` | `shell_runtime_close_hosted` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible` | `src/shell/shell_hosted.c` | `shell_runtime_is_hosted_visible` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell_input.c:shell_input_cancel_extended` | `src/shell/shell_input.c` | `shell_input_cancel_extended` | `shell` | `COVERED` | 9 |
 | `c:src/shell/shell_input.c:shell_input_get_buffer` | `src/shell/shell_input.c` | `shell_input_get_buffer` | `shell` | `COVERED` | 1 |
@@ -7753,6 +7753,28 @@
 
 | ID | Fonte | Símbolo | Proprietário | Status | Casos |
 |---|---|---|---|---|---:|
+| `py:tools/net1_external_connectivity.py:_arguments` | `tools/net1_external_connectivity.py` | `_arguments` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_case` | `tools/net1_external_connectivity.py` | `_case` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_command_steps` | `tools/net1_external_connectivity.py` | `_command_steps` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_latest_values` | `tools/net1_external_connectivity.py` | `_latest_values` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_metric_value` | `tools/net1_external_connectivity.py` | `_metric_value` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_prompt_observed` | `tools/net1_external_connectivity.py` | `_prompt_observed` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_required_common` | `tools/net1_external_connectivity.py` | `_required_common` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_run_id` | `tools/net1_external_connectivity.py` | `_run_id` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_run_session` | `tools/net1_external_connectivity.py` | `_run_session` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:_sample_host` | `tools/net1_external_connectivity.py` | `_sample_host` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:build_interaction` | `tools/net1_external_connectivity.py` | `build_interaction` | `quality` | `COVERED` | 2 |
+| `py:tools/net1_external_connectivity.py:build_report` | `tools/net1_external_connectivity.py` | `build_report` | `quality` | `COVERED` | 2 |
+| `py:tools/net1_external_connectivity.py:main` | `tools/net1_external_connectivity.py` | `main` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:matrix_plan` | `tools/net1_external_connectivity.py` | `matrix_plan` | `quality` | `COVERED` | 2 |
+| `py:tools/net1_external_connectivity.py:parser` | `tools/net1_external_connectivity.py` | `parser` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:relative_path` | `tools/net1_external_connectivity.py` | `relative_path` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:run` | `tools/net1_external_connectivity.py` | `run` | `quality` | `COVERED` | 1 |
+| `py:tools/net1_external_connectivity.py:validate_external_host` | `tools/net1_external_connectivity.py` | `validate_external_host` | `quality` | `COVERED` | 1 |
+| `py:tools/net1_external_connectivity.py:validate_external_url` | `tools/net1_external_connectivity.py` | `validate_external_url` | `quality` | `COVERED` | 1 |
+| `py:tools/net1_external_connectivity.py:validate_phases` | `tools/net1_external_connectivity.py` | `validate_phases` | `quality` | `PENDING` | 0 |
+| `py:tools/net1_external_connectivity.py:validate_run` | `tools/net1_external_connectivity.py` | `validate_run` | `quality` | `COVERED` | 2 |
+| `py:tools/net1_external_connectivity.py:validate_workers` | `tools/net1_external_connectivity.py` | `validate_workers` | `quality` | `PENDING` | 0 |
 | `py:tools/release_baseline.py:artifact_record` | `tools/release_baseline.py` | `artifact_record` | `quality` | `COVERED` | 1 |
 | `py:tools/release_baseline.py:audit` | `tools/release_baseline.py` | `audit` | `quality` | `PENDING` | 0 |
 | `py:tools/release_baseline.py:base_report` | `tools/release_baseline.py` | `base_report` | `quality` | `PENDING` | 0 |
@@ -8170,6 +8192,8 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `qemu:net1:external-connectivity` | `qemu` | `smoke` | `qemu:tst5:network` | `AUTOMATED` | 240 | 30 | `snapshot` | `quality` | `qemu` | imagem pronta, QEMU com serial/QMP e rede user-mode configuravel | validar lease DHCP automatico, resolucao DNS, HTTP externo e estados restritos | 6 sessoes externas com DHCP/DNS/HTTP, 3 restritas identificadas e 3 sem NIC sem residuos | envelope ausente, protocolo, timeout, prompt ausente, recurso residual ou conectividade positiva nao comprovada | somente processos QEMU isolados, logs e relatorio JSON | encerrar cada QEMU e preservar manifest, serial, QMP e input |
+| `host:net1:external-connectivity` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | Python 3 e fixtures deterministicas | validar planos, fases, parser, estados, redaction e agregacao NET1 | PASS, FAIL e BLOCKED distinguem conectividade, protocolo e suporte ausente | credencial na URL, host invalido, envelope incompleto, prompt ausente ou estado residual | somente fixtures temporarias e teste host | remover fixtures temporarias |
 
 ## Superfícies sem caso associado
 
@@ -8187,18 +8211,9 @@
 - `c:src/boot/recovery_loader.c:recovery_in8`
 - `c:src/boot/recovery_loader.c:recovery_out16`
 - `c:src/boot/recovery_loader.c:recovery_out8`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_find`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_report_hw6_missing`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_report_shell_liveness`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_report_shell_liveness_value`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation`
-- `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output`
 - `c:src/core/kernel_tests_tst6.c:tst6_run_usb_storage_ehci`
 - `c:src/core/update_system.c:any_nonzero`
 - `c:src/core/update_system.c:update_system_base_equal`
@@ -8249,8 +8264,21 @@
 - `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
 - `c:src/process/resource.c:process_resource_note_descriptor_success`
 - `c:src/process/resource.c:process_resource_note_pipe_success`
-- `c:src/shell/shell_hosted.c:shell_hosted_release`
-- `c:src/shell/shell_hosted.c:shell_runtime_close_hosted`
+- `py:tools/net1_external_connectivity.py:_arguments`
+- `py:tools/net1_external_connectivity.py:_case`
+- `py:tools/net1_external_connectivity.py:_command_steps`
+- `py:tools/net1_external_connectivity.py:_latest_values`
+- `py:tools/net1_external_connectivity.py:_metric_value`
+- `py:tools/net1_external_connectivity.py:_prompt_observed`
+- `py:tools/net1_external_connectivity.py:_required_common`
+- `py:tools/net1_external_connectivity.py:_run_id`
+- `py:tools/net1_external_connectivity.py:_run_session`
+- `py:tools/net1_external_connectivity.py:_sample_host`
+- `py:tools/net1_external_connectivity.py:main`
+- `py:tools/net1_external_connectivity.py:parser`
+- `py:tools/net1_external_connectivity.py:relative_path`
+- `py:tools/net1_external_connectivity.py:validate_phases`
+- `py:tools/net1_external_connectivity.py:validate_workers`
 - `py:tools/release_baseline.py:audit`
 - `py:tools/release_baseline.py:base_report`
 - `py:tools/release_baseline.py:ceil_sectors`

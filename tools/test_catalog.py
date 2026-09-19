@@ -19,7 +19,7 @@ DEFAULT_VIEW = Path("docs/qualidade/catalogo-testes.md")
 DEFAULT_COVERAGE_REGISTRY = Path("tests/coverage/registry.json")
 QUALITY_PYTHON_TOOLS = (
     "release_baseline.py", "rls4_supported_matrix.py",
-    "rls5_release_candidate.py",
+    "rls5_release_candidate.py", "net1_external_connectivity.py",
 )
 SCHEMA = "zephyros-test-catalog-v1"
 COVERAGE_REGISTRY_SCHEMA = "zephyros-coverage-registry-v1"

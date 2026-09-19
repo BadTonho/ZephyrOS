@@ -5,6 +5,9 @@
 #include "apps/shell_job.h"
 #include "apps/shell_runtime.h"
 #include "core/ethernet.h"
+#include "core/dhcp.h"
+#include "core/dns.h"
+#include "core/http.h"
 #include "core/input.h"
 #include "core/irq_deferred.h"
 #include "core/keyboard.h"
@@ -16,6 +19,8 @@
 #include "core/service_supervisor.h"
 #include "core/sk_buff.h"
 #include "core/socket.h"
+#include "core/ipv4.h"
+#include "core/tcp.h"
 #include "core/update.h"
 #include "core/update_system_slots.h"
 #include "core/workqueue.h"
@@ -115,6 +120,14 @@ typedef struct {
     block_durability_status_t durability;
     ethernet_status_t ethernet;
     network_manager_status_t network;
+    network_interface_info_t network_interface;
+    network_ethernet_diagnostic_t network_ethernet;
+    uint8_t network_interface_valid;
+    dhcp_status_t dhcp;
+    dns_status_t dns;
+    ipv4_status_t ipv4;
+    tcp_status_t tcp;
+    http_status_t http;
     net_buffer_stats_t net_buffer;
     sk_buff_stats_t sk_buff;
     socket_status_t sockets;
@@ -151,6 +164,13 @@ typedef struct {
     int durability_result;
     int ethernet_result;
     int network_result;
+    int network_interface_result;
+    int network_ethernet_result;
+    int dhcp_result;
+    int dns_result;
+    int ipv4_result;
+    int tcp_result;
+    int http_result;
     int memory_detailed_result;
     int net_buffer_result;
     int sk_buff_result;
